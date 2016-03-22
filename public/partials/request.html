@@ -1,0 +1,64 @@
+<!-- public/partials/request.html -->
+<div class="container-card">
+  <h1>Request Money</h1>
+
+  <form role="form" ng-submit="submitCreateRequestForm()">
+    <div class="form-group">
+      <label for="description">Name:</label>
+      <input class="form-control" type="text" ng-model="name" placeholder="Joe Student">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Olin Email:</label>
+      <input class="form-control" type="text" ng-model="email" placeholder="joe.student@students.olin.edu">
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input class="form-control" type="number" min="0" step=".01" ng-model="amount" placeholder="0.00">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Event Date:</label>
+      <input class="form-control" type="text" ng-model="eventDate" placeholder="MM/DD/YYYY">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input class="form-control" type="text" ng-model="description" placeholder="What was this for?">
+    </div>
+
+    <div class="form-group">
+      <label for="amount">Expected Turnout:</label>
+      <input class="form-control" type="number" min="0" step="1" ng-model="turnout" placeholder="0">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Itemized list:</label>
+      <textarea class="form-control" type="text" ng-model="itemizedList" placeholder="What was this for?"></textarea>
+    </div>
+
+
+
+
+
+
+    <div class="form-group">
+      <label for="sel1">Organization</label>
+      <select class="form-control" ng-model="org">
+        <option ng-repeat="org in orgs" value="{{org._id}}">{{org.name}}</option>
+      </select>
+    </div>
+
+    <button class="right">Submit</button>
+  </form>
+</div>
+
+<div class="container-card red-edging" ng-repeat="error in errors">
+  <div>{{error.message}}</div>
+</div>
+
+<div class="container-card green-edging" ng-repeat="allocation in allocations">
+  <div><b>{{allocation.amount}}</b> allocated to <b>{{allocation.org}}</b> for <b>{{allocation.description}}</b></div>
+  <div class="subtext">SUCCESS: {{allocation.date}}</div>
+</div>
