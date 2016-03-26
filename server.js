@@ -14,6 +14,7 @@ var dotenv         = require('dotenv');
 var path           = require('path');
 var logger         = require('morgan');
 var cookieParser   = require('cookie-parser');
+var q              = require('q');
 
 // express modules
 var express        = require('express');
@@ -27,9 +28,12 @@ var mongoose       = require('mongoose');
 var routes         = require('./routes/routes');
 
 // authentication modules
-var authentication = require('./authentication.js');
+var authentication = require('./authentication');
 var session        = require('express-session');
 var MongoStore     = require('connect-mongo')(session);
+
+// startup modules
+var startup        = require('./startup');
 
 // CONFIGURATION ===============================================================
 
@@ -63,19 +67,80 @@ app.use(passport.session());
 // ROUTES ======================================================================
 
 // GET requests
-app.get('/api/getOrgs', authentication.checkAuthentication, routes.getOrgs);
-app.get('/api/getUserPermissions', authentication.getUserPermissions)
+// authentication GET requests
 app.get('/logout', authentication.logout);
+app.get('/api/getUserPermissions', authentication.getUserPermissions)
+// user GET requests
+app.get('/api/getUserList',
+    authentication.authenticateAdmin, routes.getUserList);
+app.get('/api/getUserOrgs',
+    authentication.authenticateUser, routes.getUserOrgs);
+// org GET requests
+app.get('/api/getListedOrgs',
+    authentication.authenticateUser, routes.getListedOrgs);
+app.get('/api/getOrgFinances',
+    authentication.authenticateOwner, routes.getOrgFinances);
+// request GET requests
+app.get('/api/getOrgRequests',
+    authentication.authenticateOwner, routes.getOrgRequests);
+app.get('/api/getUserRequests',
+    authentication.authenticateUser, routes.getUserRequests);
+// record GET requests
+app.get('/api/getOrgRecords',
+    authentication.authenticateOwner, routes.getOrgRecords);
+app.get('/api/getUserRecords',
+    authentication.authenticateUser, routes.getUserRecords);
+
 // POST requests
-app.post('/api/createAllocation', authentication.checkAuthentication, routes.createAllocation);
+// authentication GET requests
 app.post('/login', authentication.login);
 app.post('/signup', authentication.signup);
+app.post('/changeEmail',
+    authentication.authenticateUser, authentication.changeEmail);
+app.post('/changePassword',
+    authentication.authenticateUser,
+    authentication.confirmPassword,
+    authentication.changePassword);
+// user POST requests
+app.post('/api/changeOwnership',
+    authentication.authenticateAdmin, routes.changeOwnership);
+// org POST requests
+app.post('/api/createOrg',
+    authentication.authenticateOwner, routes.createOrg);
+app.post('/api/editOrg',
+    authentication.authenticateOwner, routes.editOrg);
+app.post('/api/deleteOrg',
+    authentication.authenticateOwner, routes.deleteOrg);
+// requests POST requests
+app.post('/api/createRequest',
+    authentication.authenticateUser, routes.createRequest);
+app.post('/api/approveRequest',
+    authentication.authenticateOwner, routes.approveRequest);
+app.post('/api/closeRequest',
+    authentication.authenticateOwner, routes.closeRequest);
+// record POST requests
+app.post('/api/createRecord',
+    authentication.authenticateUser, routes.createRecord);
+app.post('/api/editRecord',
+    authentication.authenticateOwner, routes.editRecord);
+app.post('/api/voidRecord',
+    authentication.authenticateOwner, routes.voidRecord);
+
 // AngularJS requests
 app.get('*', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
+// INITIALIZE DATABASE AND DEFAULT ADMIN USER ==================================
+var initialize = startup.initialize();
 
 // START SERVER ================================================================
-app.listen(process.env.PORT, function() {
-  console.log("Ledger running on port:", process.env.PORT);
+initialize.then(function(err) {
+  if (!err) {
+    app.listen(process.env.PORT, function() {
+      console.log('Ledger running on port:', process.env.PORT);
+    });
+  } else {
+    console.log('STARTUP ERROR: ' + err);
+  }
 });
+

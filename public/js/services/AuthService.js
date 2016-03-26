@@ -1,18 +1,17 @@
 // public/js/services/AuthService.js
 
 var roles = {
-  owner: 0,
-  admin: 1,
-  user: 2
+  USER: 0,
+  OWNER: 1,
+  ADMIN: 2
 };
 
 var routeForUnauthorizedAccess = '/login';
 
 app.service('AuthService', function($http, $q, $rootScope, $location) {
 
-  this.userPermissions = {
-    permissions: {},
-    isPermissionLoaded: false
+  this.user = {
+    isAuthenticated: false
   };
 
   this.permissionsUpdateCallbacks = [];
@@ -20,21 +19,22 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   this.registerPermissionsUpdateCallback = function(callback) {
     var service = this;
     this.permissionsUpdateCallbacks.push(callback);
-    if (!this.userPermissions.isPermissionLoaded) {
+    if (!this.user.isAuthenticated) {
       this.fetchPermissions().then(function success(response) {
-        service.userPermissions.permissions = response.data;
-        service.userPermissions.isPermissionLoaded = true;
-        callback(service.userPermissions.permissions);
+        service.user = response.data;
+        console.log(response.data);
+        callback(service.user);
       })
     } else {
-      callback(service.userPermissions.permissions);
+      callback(service.user);
     }
   };
 
   this.broadcastPermissionsChange = function() {
-    for (var i = 0; i < this.permissionsUpdateCallbacks.length; i++) {
-      this.permissionsUpdateCallbacks[i](this.userPermissions.permissions);
-    }
+    var service = this;
+    angular.forEach(this.permissionsUpdateCallbacks, function(callback) {
+      callback(service.user);
+    });
   };
 
   this.fetchPermissions = function() {
@@ -43,25 +43,30 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
 
   this.login = function(credentials) {
     var service = this;
+    var deferred = $q.defer();
     $http.post('/login', credentials).then(function success(response) {
       service.fetchPermissions().then(function success(response) {
-        service.userPermissions.permissions = response.data;
-        service.userPermissions.isPermissionLoaded = true;
+        service.user = response.data;
         service.broadcastPermissionsChange();
-      })
-      $location.path('/');
+        if (service.user.isAuthenticated) {
+          $location.path('/');
+        }
+        deferred.resolve(service.user.isAuthenticated);
+      });
     });
+    return deferred.promise;
   };
 
   this.logout = function() {
     var service = this;
     $http.get('/logout').then(function success(response) {
       service.fetchPermissions().then(function success(response) {
-        service.userPermissions.permissions = response.data;
-        service.userPermissions.isPermissionLoaded = true;
+        service.user = response.data;
         service.broadcastPermissionsChange();
-      })
-      $location.path('/');
+        if (!service.user.isAuthenticated) {
+          $location.path(routeForUnauthorizedAccess);
+        }
+      });
     });
   };
 
@@ -74,13 +79,12 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     var deferred = $q.defer();
     var service = this;
 
-    if (this.userPermissions.isPermissionLoaded) {
-      this.evaluatePermissions(this.userPermissions, validRoles, deferred);
+    if (this.user.isAuthenticated) {
+      this.evaluatePermissions(this.user, validRoles, deferred);
     } else {
       this.fetchPermissions().then(function success(response) {
-        service.userPermissions.permissions = response.data;
-        service.userPermissions.isPermissionLoaded = true;
-        service.evaluatePermissions(service.userPermissions, validRoles, deferred);
+        service.user = response.data;
+        service.evaluatePermissions(service.user, validRoles, deferred);
         service.broadcastPermissionsChange();
       }, function error(response) {
         if (response.status == 401) {
@@ -94,23 +98,23 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
-  this.evaluatePermissions = function(userPermissions, validRoles, deferred) {
+  this.evaluatePermissions = function(user, validRoles, deferred) {
     var ifPermissionPassed = false;
 
     angular.forEach(validRoles, function (role) {
       switch (role) {
-        case roles.owner:
-          if (userPermissions.permissions.isOwner) {
+        case roles.OWNER:
+          if (user.orgs.length > 0) {
             ifPermissionPassed = true;
           }
           break;
-        case roles.admin:
-          if (userPermissions.permissions.isAdmin) {
+        case roles.ADMIN:
+          if (user.isAdmin) {
             ifPermissionPassed = true;
           }
           break;
-        case roles.user:
-          if (userPermissions.permissions.isUser) {
+        case roles.USER:
+          if (user.isAuthenticated) {
             ifPermissionPassed = true;
           }
           break;
@@ -126,6 +130,29 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     } else {
       deferred.resolve();
     }
+  };
+
+  this.changeEmail = function(newEmail) {
+    var service = this;
+    var deferred = $q.defer();
+    $http.post('/changeEmail', {newEmail: newEmail})
+      .then(function success(response) {
+        service.user = response.data;
+        service.broadcastPermissionsChange();
+        deferred.resolve(service.user.email == newEmail);
+      });
+    return deferred.promise;
+  };
+
+  this.changePassword = function(password, newPassword) {
+    var deferred = $q.defer();
+    $http.post('/changePassword', {
+      password: password,
+      newPassword: newPassword
+    }).then(function success(response) {
+      deferred.resolve(response.data);
+    });
+    return deferred.promise;
   };
 
 });

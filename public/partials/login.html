@@ -1,14 +1,19 @@
-<div class="container-card">
-  <h1>Login</h1>
-  <form role="form" ng-submit="loginForm()">
-      <div class="form-group">
-          <label>Username</label>
-          <input type="text" class="form-control" ng-model="username">
-      </div>
-      <div class="form-group">
-          <label>Password</label>
-          <input type="password" class="form-control" ng-model="password">
-      </div>
-      <button class="right">Submit</button>
-  </form>
-</div>
+<uib-alert 
+    ng-repeat="alert in alerts"
+    type="{{alert.type}}"
+    close="dismissAlert($index)">
+  {{alert.msg}}
+</uib-alert>
+
+<h1>Login</h1>
+<form role="form" ng-submit="loginForm()">
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" class="form-control" ng-model="username">
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" ng-model="password">
+    </div>
+    <button class="right">Submit</button>
+</form>

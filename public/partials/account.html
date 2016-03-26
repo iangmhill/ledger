@@ -1,0 +1,165 @@
+<uib-alert 
+    ng-repeat="alert in alerts"
+    type="{{alert.type}}"
+    close="dismissAlert($index)">
+  {{alert.msg}}
+</uib-alert>
+
+<h1>Account Settings</h1>
+
+<label class="col-sm-2">Username</label>
+<div class="col-sm-10">
+  <p>{{user.username}}</p>
+</div>
+
+<label class="col-sm-2">Email</label>
+<div class="col-sm-10">
+  <p>{{user.email}}</p>
+</div>
+
+<button
+    type="button"
+    class="btn btn-primary"
+    ng-click="openChangePasswordModal()">
+  Change Password
+</button>
+<button
+    type="button"
+    class="btn btn-primary"
+    ng-click="openChangeEmailModal()">
+  Change Email
+</button>
+
+
+<script type="text/ng-template" id="changePasswordModal.html">
+  <div class="modal-header">
+      <h3 class="modal-title">Change Password</h3>
+  </div>
+  <div class="modal-body">
+    <uib-alert 
+        ng-repeat="alert in alerts"
+        type="{{alert.type}}"
+        close="dismissAlert($index)">
+      {{alert.msg}}
+    </uib-alert>
+    <form role="form" autocomplete="off">
+      <div class="form-group row">
+        <label
+            for="inputPassword"
+            class="col-sm-4
+            form-control-label">
+          Current Password
+        </label>
+        <div class="col-sm-8">
+          <input
+              id="inputPassword"
+              type="password"
+              class="form-control"
+              placeholder="current password"
+              autocomplete="new-password"
+              ng-model="currentPassword"
+              required>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label
+            for="inputPassword"
+            class="col-sm-4
+            form-control-label">
+          New Password
+        </label>
+        <div class="col-sm-8">
+          <input
+              id="inputPassword"
+              type="password"
+              class="form-control"
+              placeholder="new password"
+              autocomplete="new-password"
+              ng-model="newPassword"
+              required>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label
+            for="inputPassword"
+            class="col-sm-4
+            form-control-label">
+          Confirm New Password
+        </label>
+        <div class="col-sm-8">
+          <input
+              id="inputPassword"
+              type="password"
+              class="form-control"
+              placeholder="new password"
+              autocomplete="new-password"
+              ng-model="confirmNewPassword"
+              required>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+      <button
+          class="btn btn-primary"
+          type="button"
+          ng-click="save()">
+        Save
+      </button>
+      <button
+          class="btn btn-warning"
+          type="button"
+          ng-click="cancel()">
+        Cancel
+      </button>
+  </div>
+</script>
+
+<script type="text/ng-template" id="changeEmailModal.html">
+  <div class="modal-header">
+      <h3 class="modal-title">Change Email</h3>
+  </div>
+  <div class="modal-body">
+    <uib-alert 
+        ng-repeat="alert in alerts"
+        type="{{alert.type}}"
+        close="dismissAlert($index)">
+      {{alert.msg}}
+    </uib-alert>
+    <form role="form" autocomplete="off" name="emailForm">
+      <div class="form-group row">
+        <label
+            for="inputPassword"
+            class="col-sm-4
+            form-control-label">
+          New email
+        </label>
+        <div class="col-sm-8">
+          <input
+              name="email"
+              id="inputPassword"
+              type="email"
+              class="form-control"
+              placeholder="joe.student@students.olin.edu"
+              autocomplete="off"
+              ng-model="newEmail"
+              required>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+      <button
+          class="btn btn-primary"
+          type="button"
+          ng-click="save()">
+        Save
+      </button>
+      <button
+          class="btn btn-warning"
+          type="button"
+          ng-click="cancel()">
+        Cancel
+      </button>
+  </div>
+</script>

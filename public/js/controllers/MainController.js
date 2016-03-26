@@ -1,60 +1,54 @@
 app.controller('MainController', function($scope, $location, AuthService) {
   
-  $scope.headerRoutes = [{
-    name: 'Request',
-    path: '/request'
-  },{
-    name: 'Record',
-    path: '/record'
-  }];
-  $scope.footerRoutes = [{
+  $scope.user = {
+    isAuthenticated: false
+  };
+  $scope.navRoutes = [];
+  $scope.authRoutes = [{
     name: 'Login',
     path: '/login'
   }];
 
-  this.onPermissionsUpdate = function(permissions) {
-    var headerRoutes = [{
-      name: 'Request',
-      path: '/request'
-    },{
-      name: 'Record',
-      path: '/record'
-    }];
-    var footerRoutes = [{
+  this.onPermissionsUpdate = function(user) {
+    $scope.user = user;
+    var navRoutes = [];
+    var authRoutes = [{
       name: 'Login',
       path: '/login'
     }];
-    if (permissions.isAuthenticated) {
-      footerRoutes = [{
-        name: 'Logout',
-        path: '/logout'
+    if (user.isAuthenticated) {
+      authRoutes = [{
+        name: 'Account',
+        path: '/account'
       }];
-      if (permissions.isUser) {
-        headerRoutes.push({
-          name: 'Search',
-          path: '/search'
-        });
-      }
-      if (permissions.isAdmin) {
-        headerRoutes.push({
+      navRoutes.push({
+        name: 'Request',
+        path: '/request'
+      });
+      navRoutes.push({
+        name: 'Record',
+        path: '/record'
+      });
+      if (user.orgs.length > 0) {
+        navRoutes.push({
           name: 'Allocate',
           path: '/allocate'
         });
-        headerRoutes.push({
+        navRoutes.push({
           name: 'Manage',
           path: '/manage'
         });
       }
-      if (permissions.isOwner) {
-        headerRoutes.push({
-          name: 'Users',
-          path: '/users'
+      if (user.isAdmin) {
+        navRoutes.push({
+          name: 'Admin',
+          path: '/admin'
         });
       }
     }
 
-    $scope.headerRoutes = headerRoutes;
-    $scope.footerRoutes = footerRoutes;
+    $scope.navRoutes = navRoutes;
+    $scope.authRoutes = authRoutes;
   };
 
   $scope.getClass = function(path) {

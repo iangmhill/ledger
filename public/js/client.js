@@ -1,17 +1,23 @@
 var app = angular.module('ledger', [
     'ngRoute',
-    'ngMaterial'
+    'ngAnimate',
+    'ngTouch',
+    'ui.bootstrap'
   ]).config([
     '$routeProvider',
     '$locationProvider',
   function($routeProvider, $locationProvider) {
 
     $routeProvider
-
       // summary landing page
       .when('/', {
         templateUrl: 'partials/summary.html',
-        controller: 'SummaryController'
+        controller: 'SummaryController',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.USER]);
+          }
+        }
       })
 
       .when('/login', {
@@ -21,20 +27,20 @@ var app = angular.module('ledger', [
 
       .when('/request', {
         templateUrl: 'partials/request.html',
-        controller: 'RequestController'
+        controller: 'RequestController',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.USER]);
+          }
+        }
       })
 
       .when('/record', {
         templateUrl: 'partials/record.html',
-        controller: 'RecordController'
-      })
-
-      .when('/search', {
-        templateUrl: 'partials/search.html',
-        controller: 'SearchController',
+        controller: 'RecordController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.user]);
+            return AuthService.permissionCheck([roles.USER]);
           }
         }
       })
@@ -44,7 +50,7 @@ var app = angular.module('ledger', [
         controller: 'AllocateController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.admin]);
+            return AuthService.permissionCheck([roles.USER, roles.OWNER]);
           }
         }
       })
@@ -54,19 +60,29 @@ var app = angular.module('ledger', [
         controller: 'ManageController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.admin]);
+            return AuthService.permissionCheck([roles.USER, roles.OWNER]);
           }
         }
       })
 
-      .when('/users', {
-        templateUrl: 'partials/users.html',
-        controller: 'UserController',
+      .when('/admin', {
+        templateUrl: 'partials/admin.html',
+        controller: 'AdminController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.owner]);
+            return AuthService.permissionCheck([roles.USER, roles.ADMIN]);
           }
-        }        
+        }
+      })
+
+      .when('/account', {
+        templateUrl: 'partials/account.html',
+        controller: 'AccountController',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.USER]);
+          }
+        }
       })
 
       .when('/logout', {
@@ -79,4 +95,17 @@ var app = angular.module('ledger', [
 
     $locationProvider.html5Mode(true);
 
-}])
+}]).controller('NavigationCtrl', function($scope, $location) {
+  $scope.isActive = function (viewLocation) { 
+      return viewLocation === $location.path();
+  };
+  var vm = this;
+  vm.isCollapsed = true;
+  vm.toggleCollapse = toggleCollapse;
+
+  function toggleCollapse() {
+      vm.isCollapsed = !vm.isCollapsed;
+  }
+});
+
+

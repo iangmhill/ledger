@@ -7,28 +7,27 @@
 
   <title>Ledger</title>
 
-  
-  <!-- Angular Material style sheet -->
-  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
-
   <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css">
-
+<!--   <link rel="stylesheet" href="css/style.css">
+ -->
   <!-- FONTS -->
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link rel="icon" type="image/png" href="images/favicon.png?v=5">
 
+  <!-- BOOTSTRAP CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
   <!-- ANGULAR -->
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-route.min.js"></script>
 
-  <!-- ANGULAR MATERIAL DEPENDENCIES -->
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+  <!-- UI BOOTSTRAP DEPENDENCIES -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-touch.min.js"></script>
 
-  <!-- ANGULAR MATERIAL -->
-  <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- UI BOOTSTRAP -->
+  <script src="js/libs/ui-bootstrap-1.2.5.js"></script>
+  <script src="js/libs/ui-bootstrap-tpls-1.2.5.js"></script>
 
   <!-- ANGULAR CUSTOM -->
   <script src="js/client.js"></script>
@@ -38,38 +37,58 @@
   <script src="js/services/OrgService.js"></script>
   <script src="js/services/SummaryService.js"></script>
 
+  <script src="js/controllers/AccountController.js"></script>
   <script src="js/controllers/AllocateController.js"></script>
   <script src="js/controllers/LoginController.js"></script>
   <script src="js/controllers/MainController.js"></script>
   <script src="js/controllers/ManageController.js"></script>
   <script src="js/controllers/RecordController.js"></script>
   <script src="js/controllers/RequestController.js"></script>
-  <script src="js/controllers/SearchController.js"></script>
   <script src="js/controllers/SummaryController.js"></script>
-  <script src="js/controllers/UserController.js"></script>
+  <script src="js/controllers/AdminController.js"></script>
 </head>
 <body ng-app="ledger" ng-controller="MainController">
 
   <!-- HEADER -->
-  <header id="section-header" class="container-body">
-    <a href="/" class="logo"><span>Ledger</span></a>
-    <nav role="navigation" class="navigation">
-        <a ng-class="getClass('{{route.path}}')" class="navigation-item" href="{{route.path}}" ng-repeat="route in headerRoutes"><span>{{route.name}}</span></a>
-    </nav>
-  </header>
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid" ng-controller="NavigationCtrl as vm">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" ng-click="vm.toggleCollapse()">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Ledger</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="navbar-collapse" uib-collapse="vm.    isCollapsed">
+      <ul class="nav navbar-nav">
+        <li ng-repeat="route in navRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}">{{route.name}}</a></li>     
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li uib-dropdown class="dropdown" ng-if="user.isAuthenticated">
+          <a href="#" uib-dropdown-toggle>{{user.username}} <b class="caret"></b></a>
+          <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            <li ng-repeat="route in authRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}">{{route.name}}</a></li>
+            <li class="divider"></li>
+            <li role="menuitem"><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
   <!-- ANGULAR DYNAMIC CONTENT -->
   <div id="section-content" class="container-body">
-    <div class="container-limiting">
+    <div class="container">
       <div ng-view></div>
     </div>
   </div>
-
-  <footer id="section-footer" class="container-body">
-    <nav role="navigation" class="navigation">
-        <a class="navigation-item" href="{{route.path}}" ng-repeat="route in footerRoutes"><span>{{route.name}}</span></a>
-    </nav>
-  </footer>
 
 </body>
 </html>

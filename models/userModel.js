@@ -1,47 +1,54 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt');
 
-var Permissions = mongoose.Schema({
-  isUser: {
-    type: Boolean,
-    required: true,
-    default: true
-  },
-  isAdmin: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  isOwner: {
-    type: Boolean,
-    required: true,
-    default: false
-  }
-});
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var User = mongoose.Schema({
   username: {
     type: String,
-    required: true
+    required: true,
+    index: {
+      unique: true,
+      dropDups: true
+    },
+    validate: [
+      {validator: isUsernameUnique, msg: 'Username already exists'}
+    ]
   },
   password: {
     type: String,
     required: true
   },
-  created: {
-    type: Date,
-    required: true,
-    default: Date.now
+  email: {
+    type: String,
+    required: true
   },
-  permissions: {
-    type: Permissions,
+  orgs: {
+    type: [ObjectId],
     required: true,
-    default: Permissions
+    default: []
+  },
+  isAdmin: {
+    type: Boolean,
+    required: true,
+    default: false
   }
 });
 
+function isUsernameUnique(value, done) {
+  if (value) {
+    mongoose.models['users'].count({ _id: {'$ne': this._id }, username: value }, function (err, count) {
+      if (err) {
+        return done(err);
+      }
+      // If `count` is greater than zero, "invalidate"
+      done(!count);
+    });
+  }
+}
+
 // generating a hash
-User.methods.generateHash = function(password) {
+User.statics.generateHash = function(password) {
   return new Promise(function(resolve, reject) {
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(password, salt, function(err, hash) {
