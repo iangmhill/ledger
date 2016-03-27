@@ -97,15 +97,16 @@ var app = angular.module('ledger', [
 
 }]).controller('NavigationCtrl', function($scope, $location) {
   $scope.isActive = function (viewLocation) { 
-      return viewLocation === $location.path();
+    return viewLocation === $location.path();
   };
   var vm = this;
   vm.isCollapsed = true;
-  vm.toggleCollapse = toggleCollapse;
-
-  function toggleCollapse() {
-      vm.isCollapsed = !vm.isCollapsed;
-  }
+  vm.toggleCollapse = function() {
+    vm.isCollapsed = !vm.isCollapsed;
+  };
+  vm.hideMenu = function() {
+    vm.isCollapsed = true;
+  };
 });
 
 

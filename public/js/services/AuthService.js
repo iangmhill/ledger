@@ -135,12 +135,13 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   this.changeEmail = function(newEmail) {
     var service = this;
     var deferred = $q.defer();
-    $http.post('/changeEmail', {newEmail: newEmail})
-      .then(function success(response) {
-        service.user = response.data;
-        service.broadcastPermissionsChange();
-        deferred.resolve(service.user.email == newEmail);
-      });
+    $http.post('/changeEmail', {
+      newEmail: newEmail
+    }).then(function success(response) {
+      service.user = response.data;
+      service.broadcastPermissionsChange();
+      deferred.resolve(service.user.email == newEmail);
+    });
     return deferred.promise;
   };
 
@@ -151,6 +152,19 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
       newPassword: newPassword
     }).then(function success(response) {
       deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
+
+  this.changeName = function(newName) {
+    var service = this;
+    var deferred = $q.defer();
+    $http.post('/changeName', {
+      newName: newName
+    }).then(function success(response) {
+      service.user = response.data;
+      service.broadcastPermissionsChange();
+      deferred.resolve(service.user.name == newName);
     });
     return deferred.promise;
   };

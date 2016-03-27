@@ -97,6 +97,8 @@ app.post('/login', authentication.login);
 app.post('/signup', authentication.signup);
 app.post('/changeEmail',
     authentication.authenticateUser, authentication.changeEmail);
+app.post('/changeName',
+    authentication.authenticateUser, authentication.changeName);
 app.post('/changePassword',
     authentication.authenticateUser,
     authentication.confirmPassword,

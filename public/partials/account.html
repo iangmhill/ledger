@@ -6,30 +6,187 @@
 </uib-alert>
 
 <h1>Account Settings</h1>
-
-<label class="col-sm-2">Username</label>
-<div class="col-sm-10">
-  <p>{{user.username}}</p>
+<hr>
+<div class="row">
+  <label class="col-sm-2">Username</label>
+  <div class="col-sm-10">
+    <p>{{user.username}}</p>
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-xs-9">
+    <div class="row">
+      <label class="col-sm-3">Name</label>
+      <div class="col-sm-9">
+        <p>{{user.name}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-3" ng-switch="nameEditor.isCollapsed">
+    <button
+        type="button"
+        class="btn btn-default pull-right"
+        ng-click="nameEditor.isCollapsed = false"
+        ng-switch-when="true">
+      Edit
+    </button>
+    <button
+        type="button"
+        class="btn btn-default pull-right"
+        ng-click="nameEditor.isCollapsed = false"
+        ng-switch-when="false" disabled>
+      Edit
+    </button>
+  </div>
 </div>
 
-<label class="col-sm-2">Email</label>
-<div class="col-sm-10">
-  <p>{{user.email}}</p>
+<div uib-collapse="nameEditor.isCollapsed" class="panel panel-default margin-top-10">
+  <div class="panel-heading">Edit Name</div>
+  <div class="panel-body">
+    <form role="form" autocomplete="off" name="nameForm">
+      <div class="form-group row">
+        <label
+            for="inputName"
+            class="col-sm-2
+            form-control-label">
+          New name
+        </label>
+        <div class="col-sm-10">
+          <div
+              class="form-group"
+              ng-class="{valid:'has-success has-feedback', invalid:'has-error has-feedback', empty:''}[newName.validation.isValid]">
+            <input
+                name="name"
+                id="inputName"
+                type="text"
+                class="form-control"
+                placeholder="Joe Student"
+                autocomplete="off"
+                ng-model="newName.value"
+                ng-blur="newName.validate()"
+                required>
+            <span ng-if="newName.validation.isValid == 'valid'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+            <span ng-if="newName.validation.isValid == 'invalid'" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            <span ng-if="newName.validation.isValid == 'invalid'"class="help-block">{{newName.validation.helpBlock}}</span>
+          </div>
+        </div>
+
+      </div>
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click="cancelEditName()">
+        Cancel
+      </button>
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click="saveEditName()">
+        Save
+      </button>
+    </form>
+  </div>
 </div>
 
-<button
-    type="button"
-    class="btn btn-primary"
-    ng-click="openChangePasswordModal()">
-  Change Password
-</button>
-<button
-    type="button"
-    class="btn btn-primary"
-    ng-click="openChangeEmailModal()">
-  Change Email
-</button>
+<hr>
+<div class="row">
+  <div class="col-xs-9">
+    <div class="row">
+      <label class="col-sm-3">Email</label>
+      <div class="col-sm-9">
+        <p>{{user.email}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-3"ng-switch="emailEditor.isCollapsed">
+    <button
+        type="button"
+        class="btn btn-default pull-right"
+        ng-click="emailEditor.isCollapsed = false"
+        ng-switch-when="true">
+      Edit
+    </button>
+    <button
+        type="button"
+        class="btn btn-default pull-right"
+        ng-click="emailEditor.isCollapsed = false"
+        ng-switch-when="false" disabled>
+      Edit
+    </button>
+  </div>
+</div>
 
+<div uib-collapse="emailEditor.isCollapsed" class="panel panel-default margin-top-10">
+  <div class="panel-heading">Edit Email</div>
+  <div class="panel-body">
+    <form role="form" autocomplete="off" name="emailForm">
+      <div class="form-group row">
+        <label
+            for="inputName"
+            class="col-sm-2
+            form-control-label">
+          New email
+        </label>
+        <div class="col-sm-10">
+          <div
+              class="form-group"
+              ng-class="{valid:'has-success has-feedback', invalid:'has-error has-feedback', empty:''}[newEmail.validation.isValid]">
+            <input
+                name="email"
+                id="inputEmail"
+                type="email"
+                class="form-control"
+                placeholder="Joe.Student@students.olin.edu"
+                autocomplete="off"
+                ng-model="newEmail.value"
+                ng-blur="newEmail.validate()"
+                required>
+            <span ng-if="newEmail.validation.isValid == 'valid'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+            <span ng-if="newEmail.validation.isValid == 'invalid'" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            <span ng-if="newEmail.validation.isValid == 'invalid'"class="help-block">{{newEmail.validation.helpBlock}}</span>
+          </div>
+        </div>
+      </div>
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click="cancelEditEmail()">
+        Cancel
+      </button>
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click="saveEditEmail()">
+        Save
+      </button>
+    </form>
+  </div>
+</div>
+
+
+
+<hr>
+<div class="row">
+  <div class="col-xs-9">
+    <div class="row">
+      <label class="col-sm-3">Password</label>
+      <div class="col-sm-9">
+        <p>&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-3">
+    <button
+        type="button"
+        class="btn btn-default pull-right"
+        ng-click="openChangePasswordModal()">
+      Edit
+    </button>
+  </div>
+</div>
+
+<hr>
 
 <script type="text/ng-template" id="changePasswordModal.html">
   <div class="modal-header">

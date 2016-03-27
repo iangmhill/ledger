@@ -42,6 +42,7 @@ var startup = {
               User.create({
                 username: 'admin',
                 password: hash,
+                name: 'Frank Olin',
                 email: 'core@students.olin.edu',
                 orgs: [systemOrgId],
                 isAdmin: true

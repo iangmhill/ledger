@@ -31,6 +31,7 @@ var authentication = {
             passwordPromise.then(function(hash) {
               newUser.password = hash;
               newUser.email = req.body.email;
+              newUser.name = req.body.name;
               newUser.save(function(err) {
                 if (err) { throw err; }
                 return done(null, newUser);
@@ -97,6 +98,7 @@ var authentication = {
       res.json({
         isAuthenticated: true,
         username: req.user.username,
+        name: req.user.name,
         email: req.user.email,
         orgs: req.user.orgs,
         isAdmin: req.user.isAdmin
@@ -130,6 +132,7 @@ var authentication = {
           res.json({
             isAuthenticated: true,
             username: user.username,
+            name: user.name,
             email: user.email,
             orgs: user.orgs,
             isAdmin: user.isAdmin
@@ -140,6 +143,46 @@ var authentication = {
       res.json({
         isAuthenticated: true,
         username: req.user.username,
+        name: req.user.name,
+        email: req.user.email,
+        orgs: req.user.orgs,
+        isAdmin: req.user.isAdmin
+      });
+    }
+  },
+  changeName: function(req, res) {
+    newName = req.body.newName;
+    console.log(newName);
+    if (typeof newName === 'string' && newName.trim().length > 0) {
+      newName = newName.trim();
+      User.findById({_id: req.user._id}, function(err, user) {
+        user.name = req.body.newName;
+        user.save(function(err, user) {
+          if (err) {
+            return res.json({
+              isAuthenticated: true,
+              username: req.user.username,
+              name: req.user.name,
+              email: req.user.email,
+              orgs: req.user.orgs,
+              isAdmin: req.user.isAdmin
+            });
+          }
+          res.json({
+            isAuthenticated: true,
+            username: user.username,
+            name: user.name,
+            email: user.email,
+            orgs: user.orgs,
+            isAdmin: user.isAdmin
+          });
+        });
+      })
+    } else {
+      res.json({
+        isAuthenticated: true,
+        username: req.user.username,
+        name: req.user.name,
         email: req.user.email,
         orgs: req.user.orgs,
         isAdmin: req.user.isAdmin

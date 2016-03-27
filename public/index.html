@@ -3,13 +3,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="/">
 
   <title>Ledger</title>
 
   <!-- CSS -->
-<!--   <link rel="stylesheet" href="css/style.css">
- -->
+  <link rel="stylesheet" href="css/ledger.css">
+
   <!-- FONTS -->
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link rel="icon" type="image/png" href="images/favicon.png?v=5">
@@ -64,18 +65,18 @@
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="navbar-collapse" uib-collapse="vm.    isCollapsed">
+    <div class="navbar-collapse" style="overflow:hidden;" uib-collapse="vm.    isCollapsed">
       <ul class="nav navbar-nav">
-        <li ng-repeat="route in navRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}">{{route.name}}</a></li>     
+        <li ng-repeat="route in navRoutes" ng-class="{ active: isActive(route.path)}" ng-click="vm.hideMenu()"><a href="{{route.path}}">{{route.name}}</a></li>     
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
         <li uib-dropdown class="dropdown" ng-if="user.isAuthenticated">
           <a href="#" uib-dropdown-toggle>{{user.username}} <b class="caret"></b></a>
           <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
-            <li ng-repeat="route in authRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}">{{route.name}}</a></li>
+            <li ng-repeat="route in authRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}" ng-click="vm.hideMenu()">{{route.name}}</a></li>
             <li class="divider"></li>
-            <li role="menuitem"><a href="/logout">Logout</a></li>
+            <li role="menuitem" ng-click="vm.hideMenu()"><a href="/logout">Logout</a></li>
           </ul>
         </li>
       </ul>
