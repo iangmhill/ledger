@@ -110,7 +110,11 @@ var authentication = {
     }
   },
   confirmPassword: function(req, res, next) {
-    var errorResponse = {success: false, error: 'Wrong password.'};
+    var errorResponse = {
+      success: false,
+      isAuthenticated: false,
+      error: 'Wrong password.'
+    };
     var password = req.body.password;
     if (typeof password === 'string') {
       User.findOne({ 'username' :  req.user.username }, function(err, user) {
@@ -196,12 +200,15 @@ var authentication = {
         User.generateHash(newPassword).then(function(hash) {
           user.password = hash;
           user.save(function(err, user) {
-            res.json({ success: true });
+            res.json({ success: true, isAuthenticated: true });
           });
         });
       })
     } else {
-      res.json({ success: false, error: 'Invalid new password.'});
+      res.json({
+        success: false, 
+        isAuthenticated: true,
+        error: 'Invalid new password.'});
     }
   }
 

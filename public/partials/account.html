@@ -1,3 +1,10 @@
+<!--
+File: public/partials/account.html
+Description: Describes the user account page which displays user profile
+    information and allows users to change their account information.
+-->
+
+<!-- Alerts indicating the result of a requested operation appear at the top -->
 <uib-alert 
     ng-repeat="alert in alerts"
     type="{{alert.type}}"
@@ -5,15 +12,25 @@
   {{alert.msg}}
 </uib-alert>
 
+<!-- The actual account settings information -->
+
 <h1>Account Settings</h1>
 <hr>
+
+<!-- The username is unique to each user and cannot be edited -->
 <div class="row">
-  <label class="col-sm-2">Username</label>
-  <div class="col-sm-10">
-    <p>{{user.username}}</p>
+  <div class="col-xs-9">
+    <div class="row">
+      <label class="col-sm-3">Username</label>
+      <div class="col-sm-9">
+        <p>{{user.username}}</p>
+      </div>
+    </div>
   </div>
 </div>
 <hr>
+
+<!-- Display and allow users to edit their real name -->
 <div class="row">
   <div class="col-xs-9">
     <div class="row">
@@ -23,25 +40,21 @@
       </div>
     </div>
   </div>
-  <div class="col-xs-3" ng-switch="nameEditor.isCollapsed">
+  <div class="col-xs-3">
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="nameEditor.isCollapsed = false"
-        ng-switch-when="true">
-      Edit
-    </button>
-    <button
-        type="button"
-        class="btn btn-default pull-right"
-        ng-click="nameEditor.isCollapsed = false"
-        ng-switch-when="false" disabled>
+        ng-click="nameEditor.isCollapsed = !nameEditor.isCollapsed"
+        ng-disabled="!nameEditor.isCollapsed">
       Edit
     </button>
   </div>
 </div>
 
-<div uib-collapse="nameEditor.isCollapsed" class="panel panel-default margin-top-10">
+<!-- Collapsable name editing form -->
+<div
+    uib-collapse="nameEditor.isCollapsed"
+    class="panel panel-default margin-top-10">
   <div class="panel-heading">Edit Name</div>
   <div class="panel-body">
     <form role="form" autocomplete="off" name="nameForm">
@@ -55,7 +68,9 @@
         <div class="col-sm-10">
           <div
               class="form-group"
-              ng-class="{valid:'has-success has-feedback', invalid:'has-error has-feedback', empty:''}[newName.validation.isValid]">
+              ng-class="{valid:'has-success has-feedback',
+                  invalid:'has-error has-feedback',
+                  empty:''}[newName.validation.isValid]">
             <input
                 name="name"
                 id="inputName"
@@ -66,17 +81,26 @@
                 ng-model="newName.value"
                 ng-blur="newName.validate()"
                 required>
-            <span ng-if="newName.validation.isValid == 'valid'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-            <span ng-if="newName.validation.isValid == 'invalid'" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            <span ng-if="newName.validation.isValid == 'invalid'"class="help-block">{{newName.validation.helpBlock}}</span>
-          </div>
-        </div>
-
-      </div>
+            <span
+                ng-if="newName.validation.isValid == 'valid'"
+                class="glyphicon glyphicon-ok form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newName.validation.isValid == 'invalid'"
+                class="glyphicon glyphicon-remove form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newName.validation.isValid == 'invalid'"
+                class="help-block">
+              {{newName.validation.helpBlock}}
+            </span>
+          </div> <!-- .form-group -->
+        </div> <!-- .col-sm-10 --> 
+      </div> <!-- .form-group .row -->
       <button
           type="button"
           class="btn btn-default pull-right"
-          ng-click="cancelEditName()">
+          ng-click="closeEditName()">
         Cancel
       </button>
       <button
@@ -88,8 +112,9 @@
     </form>
   </div>
 </div>
-
 <hr>
+
+<!-- Display and allow users to edit their email address -->
 <div class="row">
   <div class="col-xs-9">
     <div class="row">
@@ -99,31 +124,27 @@
       </div>
     </div>
   </div>
-  <div class="col-xs-3"ng-switch="emailEditor.isCollapsed">
+  <div class="col-xs-3">
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="emailEditor.isCollapsed = false"
-        ng-switch-when="true">
-      Edit
-    </button>
-    <button
-        type="button"
-        class="btn btn-default pull-right"
-        ng-click="emailEditor.isCollapsed = false"
-        ng-switch-when="false" disabled>
+        ng-click="emailEditor.isCollapsed = !emailEditor.isCollapsed"
+        ng-disabled="!emailEditor.isCollapsed">
       Edit
     </button>
   </div>
 </div>
 
-<div uib-collapse="emailEditor.isCollapsed" class="panel panel-default margin-top-10">
+<!-- Collapsable email editing form -->
+<div
+    uib-collapse="emailEditor.isCollapsed"
+    class="panel panel-default margin-top-10">
   <div class="panel-heading">Edit Email</div>
   <div class="panel-body">
     <form role="form" autocomplete="off" name="emailForm">
       <div class="form-group row">
         <label
-            for="inputName"
+            for="inputEmail"
             class="col-sm-2
             form-control-label">
           New email
@@ -131,7 +152,9 @@
         <div class="col-sm-10">
           <div
               class="form-group"
-              ng-class="{valid:'has-success has-feedback', invalid:'has-error has-feedback', empty:''}[newEmail.validation.isValid]">
+              ng-class="{valid:'has-success has-feedback',
+                  invalid:'has-error has-feedback',
+                  empty:''}[newEmail.validation.isValid]">
             <input
                 name="email"
                 id="inputEmail"
@@ -142,16 +165,26 @@
                 ng-model="newEmail.value"
                 ng-blur="newEmail.validate()"
                 required>
-            <span ng-if="newEmail.validation.isValid == 'valid'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-            <span ng-if="newEmail.validation.isValid == 'invalid'" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            <span ng-if="newEmail.validation.isValid == 'invalid'"class="help-block">{{newEmail.validation.helpBlock}}</span>
-          </div>
-        </div>
-      </div>
+            <span
+                ng-if="newEmail.validation.isValid == 'valid'"
+                class="glyphicon glyphicon-ok form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newEmail.validation.isValid == 'invalid'"
+                class="glyphicon glyphicon-remove form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newEmail.validation.isValid == 'invalid'"
+                class="help-block">
+              {{newEmail.validation.helpBlock}}
+            </span>
+          </div> <!-- .form-group -->
+        </div> <!-- .col-sm-10 --> 
+      </div> <!-- .form-group .row -->
       <button
           type="button"
           class="btn btn-default pull-right"
-          ng-click="cancelEditEmail()">
+          ng-click="closeEditEmail()">
         Cancel
       </button>
       <button
@@ -163,10 +196,9 @@
     </form>
   </div>
 </div>
-
-
-
 <hr>
+
+<!-- Do not display a users password, but allow them to edit it -->
 <div class="row">
   <div class="col-xs-9">
     <div class="row">
@@ -180,143 +212,152 @@
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="openChangePasswordModal()">
+        ng-click="passwordEditor.isCollapsed = !passwordEditor.isCollapsed"
+        ng-disabled="!passwordEditor.isCollapsed">
       Edit
     </button>
   </div>
 </div>
-
 <hr>
 
-<script type="text/ng-template" id="changePasswordModal.html">
-  <div class="modal-header">
-      <h3 class="modal-title">Change Password</h3>
-  </div>
-  <div class="modal-body">
-    <uib-alert 
-        ng-repeat="alert in alerts"
-        type="{{alert.type}}"
-        close="dismissAlert($index)">
-      {{alert.msg}}
-    </uib-alert>
-    <form role="form" autocomplete="off">
+<!-- Collapsable password editing form -->
+<div
+    uib-collapse="passwordEditor.isCollapsed"
+    class="panel panel-default margin-top-10">
+  <div class="panel-heading">Edit Password</div>
+  <div class="panel-body">
+    <form role="form" autocomplete="off" name="passwordForm">
       <div class="form-group row">
         <label
-            for="inputPassword"
-            class="col-sm-4
+            for="inputCurrentPassword"
+            class="col-sm-2
             form-control-label">
-          Current Password
+          Current password
         </label>
-        <div class="col-sm-8">
-          <input
-              id="inputPassword"
-              type="password"
-              class="form-control"
-              placeholder="current password"
-              autocomplete="new-password"
-              ng-model="currentPassword"
-              required>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label
-            for="inputPassword"
-            class="col-sm-4
-            form-control-label">
-          New Password
-        </label>
-        <div class="col-sm-8">
-          <input
-              id="inputPassword"
-              type="password"
-              class="form-control"
-              placeholder="new password"
-              autocomplete="new-password"
-              ng-model="newPassword"
-              required>
-        </div>
-      </div>
-      <div class="form-group row">
-        <label
-            for="inputPassword"
-            class="col-sm-4
-            form-control-label">
-          Confirm New Password
-        </label>
-        <div class="col-sm-8">
-          <input
-              id="inputPassword"
-              type="password"
-              class="form-control"
-              placeholder="new password"
-              autocomplete="new-password"
-              ng-model="confirmNewPassword"
-              required>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-      <button
-          class="btn btn-primary"
-          type="button"
-          ng-click="save()">
-        Save
-      </button>
-      <button
-          class="btn btn-warning"
-          type="button"
-          ng-click="cancel()">
-        Cancel
-      </button>
-  </div>
-</script>
+        <div class="col-sm-10">
+          <div
+              class="form-group"
+              ng-class="{valid:'has-success has-feedback',
+                  invalid:'has-error has-feedback',
+                  empty:''}[currentPassword.validation.isValid]">
+            <input
+                name="currentPassword"
+                id="inputCurrentPassword"
+                type="password"
+                class="form-control"
+                placeholder="current password"
+                autocomplete="new-password"
+                ng-model="currentPassword.value"
+                ng-blur="currentPassword.clearValidation()"
+                required>
+            <span
+                ng-if="currentPassword.validation.isValid == 'valid'"
+                class="glyphicon glyphicon-ok form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="currentPassword.validation.isValid == 'invalid'"
+                class="glyphicon glyphicon-remove form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="currentPassword.validation.isValid == 'invalid'"
+                class="help-block">
+              {{currentPassword.validation.helpBlock}}
+            </span>
+          </div> <!-- .form-group -->
+        </div> <!-- .col-sm-10 --> 
+      </div> <!-- currentPassword .form-group .row -->
 
-<script type="text/ng-template" id="changeEmailModal.html">
-  <div class="modal-header">
-      <h3 class="modal-title">Change Email</h3>
-  </div>
-  <div class="modal-body">
-    <uib-alert 
-        ng-repeat="alert in alerts"
-        type="{{alert.type}}"
-        close="dismissAlert($index)">
-      {{alert.msg}}
-    </uib-alert>
-    <form role="form" autocomplete="off" name="emailForm">
       <div class="form-group row">
         <label
-            for="inputPassword"
-            class="col-sm-4
+            for="inputNewPassword"
+            class="col-sm-2
             form-control-label">
-          New email
+          New password
         </label>
-        <div class="col-sm-8">
-          <input
-              name="email"
-              id="inputPassword"
-              type="email"
-              class="form-control"
-              placeholder="joe.student@students.olin.edu"
-              autocomplete="off"
-              ng-model="newEmail"
-              required>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
+        <div class="col-sm-10">
+          <div
+              class="form-group"
+              ng-class="{valid:'has-success has-feedback',
+                  invalid:'has-error has-feedback',
+                  empty:''}[newPassword.validation.isValid]">
+            <input
+                name="newPassword"
+                id="inputNewPassword"
+                type="password"
+                class="form-control"
+                placeholder="new password"
+                autocomplete="new-password"
+                ng-model="newPassword.value"
+                ng-blur="newPassword.validate()"
+                required>
+            <span
+                ng-if="newPassword.validation.isValid == 'valid'"
+                class="glyphicon glyphicon-ok form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newPassword.validation.isValid == 'invalid'"
+                class="glyphicon glyphicon-remove form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="newPassword.validation.isValid == 'invalid'"
+                class="help-block">
+              {{newPassword.validation.helpBlock}}
+            </span>
+          </div> <!-- .form-group -->
+        </div> <!-- .col-sm-10 --> 
+      </div> <!-- newPassword .form-group .row -->
+
+      <div class="form-group row">
+        <label
+            for="inputConfirmNewPassword"
+            class="col-sm-2
+            form-control-label">
+          Confirm new password
+        </label>
+        <div class="col-sm-10">
+          <div
+              class="form-group"
+              ng-class="{valid:'has-success has-feedback',
+                  invalid:'has-error has-feedback',
+                  empty:''}[confirmNewPassword.validation.isValid]">
+            <input
+                name="confirmNewPassword"
+                id="inputConfirmNewPassword"
+                type="password"
+                class="form-control"
+                placeholder="new password"
+                autocomplete="new-password"
+                ng-model="confirmNewPassword.value"
+                ng-blur="confirmNewPassword.validate()"
+                required>
+            <span
+                ng-if="confirmNewPassword.validation.isValid == 'valid'"
+                class="glyphicon glyphicon-ok form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="confirmNewPassword.validation.isValid == 'invalid'"
+                class="glyphicon glyphicon-remove form-control-feedback"
+                aria-hidden="true"></span>
+            <span
+                ng-if="confirmNewPassword.validation.isValid == 'invalid'"
+                class="help-block">
+              {{confirmNewPassword.validation.helpBlock}}
+            </span>
+          </div> <!-- .form-group -->
+        </div> <!-- .col-sm-10 --> 
+      </div> <!-- confirmNewPassword .form-group .row -->
       <button
-          class="btn btn-primary"
           type="button"
-          ng-click="save()">
-        Save
-      </button>
-      <button
-          class="btn btn-warning"
-          type="button"
-          ng-click="cancel()">
+          class="btn btn-default pull-right"
+          ng-click="closeEditPassword()">
         Cancel
       </button>
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click="saveEditPassword()">
+        Save
+      </button>
+    </form>
   </div>
-</script>
+</div>
