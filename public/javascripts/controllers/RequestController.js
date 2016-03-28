@@ -1,4 +1,4 @@
-// public/js/controllers/RequestController.js
+// public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope) {
 
 });

@@ -1,4 +1,4 @@
-// public/js/services/AllocationService.js
+// public/javascripts/services/AllocationService.js
 app.service('AllocationService', function($http, $q) {
 
   this.create = function(allocationData) {

@@ -32,18 +32,14 @@ app.controller('MainController', function($scope, $location, AuthService) {
       });
       if (user.orgs.length > 0) {
         navRoutes.push({
-          name: 'Allocate',
-          path: '/allocate'
+          name: 'Search',
+          path: '/search'
         });
+      }
+      if (user.isAdmin || user.orgs.length > 0) {
         navRoutes.push({
           name: 'Manage',
           path: '/manage'
-        });
-      }
-      if (user.isAdmin) {
-        navRoutes.push({
-          name: 'Admin',
-          path: '/admin'
         });
       }
     }

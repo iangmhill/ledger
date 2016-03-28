@@ -1,4 +1,4 @@
-// public/js/controllers/SignupController.js
+// public/javascripts/controllers/SignupController.js
 app.controller('SignupController', function(AuthService) {
   var SgnpCtrl = this;
   this.alerts = [];

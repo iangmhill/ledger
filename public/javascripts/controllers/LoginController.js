@@ -1,4 +1,4 @@
-// public/js/controllers/LoginController.js
+// public/javascripts/controllers/LoginController.js
 app.controller('LoginController', function(AuthService) {
   this.username = '';
   this.password = '';

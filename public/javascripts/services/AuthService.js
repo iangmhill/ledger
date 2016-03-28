@@ -1,4 +1,4 @@
-// public/js/services/AuthService.js
+// public/javascripts/services/AuthService.js
 
 var roles = {
   UNAUTH: 0,
@@ -23,7 +23,6 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     if (!this.user.isAuthenticated) {
       this.fetchPermissions().then(function success(response) {
         service.user = response.data;
-        console.log(response.data);
         callback(service.user);
       })
     } else {

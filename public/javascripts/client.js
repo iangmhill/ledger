@@ -23,8 +23,8 @@ var app = angular.module('ledger', [
       })
 
       .when('/', {
-        templateUrl: 'partials/summary.html',
-        controller: 'SummaryController',
+        templateUrl: 'partials/dashboard.html',
+        controller: 'DashboardController',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);
@@ -52,12 +52,12 @@ var app = angular.module('ledger', [
         }
       })
 
-      .when('/allocate', {
-        templateUrl: 'partials/allocate.html',
-        controller: 'AllocateController',
+      .when('/search', {
+        templateUrl: 'partials/search.html',
+        controller: 'SearchController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.USER, roles.OWNER]);
+            return AuthService.permissionCheck([roles.OWNER]);
           }
         }
       })
@@ -67,17 +67,7 @@ var app = angular.module('ledger', [
         controller: 'ManageController',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.USER, roles.OWNER]);
-          }
-        }
-      })
-
-      .when('/admin', {
-        templateUrl: 'partials/admin.html',
-        controller: 'AdminController',
-        resolve: {
-          permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.USER, roles.ADMIN]);
+            return AuthService.permissionCheck([roles.OWNER, roles.ADMIN]);
           }
         }
       })

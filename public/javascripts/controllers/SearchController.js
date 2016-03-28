@@ -1,5 +1,5 @@
-// public/js/controllers/AllocateController.js
-app.controller('AllocateController', function($scope, AllocationService, OrgService) {
+// public/javascripts/controllers/SearchController.js
+app.controller('SearchController', function($scope, AllocationService, OrgService) {
 
   $scope.allocations = [];
   $scope.errors = [];
@@ -7,8 +7,6 @@ app.controller('AllocateController', function($scope, AllocationService, OrgServ
 
   OrgService.get().then(function(orgs) {
     $scope.orgs = orgs;
-    console.log($scope.orgs);
-
   });
   
   $scope.submitCreateAllocationForm = function() {

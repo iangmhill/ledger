@@ -1,5 +1,5 @@
 /**
- * File: public/js/controllers/AccountController.js
+ * File: public/javascripts/controllers/AccountController.js
  * Description: Controls the user account page which displays user profile
  *     information and allows users to change their account information.
  */
