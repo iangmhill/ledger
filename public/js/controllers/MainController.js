@@ -1,16 +1,17 @@
 app.controller('MainController', function($scope, $location, AuthService) {
-  
-  $scope.user = {
+  var MainCtrl = this;
+
+  this.user = {
     isAuthenticated: false
   };
-  $scope.navRoutes = [];
-  $scope.authRoutes = [{
+  this.navRoutes = [];
+  this.authRoutes = [{
     name: 'Login',
     path: '/login'
   }];
 
   this.onPermissionsUpdate = function(user) {
-    $scope.user = user;
+    MainCtrl.user = user;
     var navRoutes = [];
     var authRoutes = [{
       name: 'Login',
@@ -47,11 +48,11 @@ app.controller('MainController', function($scope, $location, AuthService) {
       }
     }
 
-    $scope.navRoutes = navRoutes;
-    $scope.authRoutes = authRoutes;
+    MainCtrl.navRoutes = navRoutes;
+    MainCtrl.authRoutes = authRoutes;
   };
 
-  $scope.getClass = function(path) {
+  this.getClass = function(path) {
     if ($location.path().substr(0, path.length) === path) {
       return 'active';
     } else {

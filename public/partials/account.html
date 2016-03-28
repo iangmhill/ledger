@@ -6,9 +6,9 @@ Description: Describes the user account page which displays user profile
 
 <!-- Alerts indicating the result of a requested operation appear at the top -->
 <uib-alert 
-    ng-repeat="alert in alerts"
+    ng-repeat="alert in AccCtrl.alerts"
     type="{{alert.type}}"
-    close="dismissAlert($index)">
+    close="AccCtrl.dismissAlert($index)">
   {{alert.msg}}
 </uib-alert>
 
@@ -23,7 +23,7 @@ Description: Describes the user account page which displays user profile
     <div class="row">
       <label class="col-sm-3">Username</label>
       <div class="col-sm-9">
-        <p>{{user.username}}</p>
+        <p>{{MainCtrl.user.username}}</p>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@ Description: Describes the user account page which displays user profile
     <div class="row">
       <label class="col-sm-3">Name</label>
       <div class="col-sm-9">
-        <p>{{user.name}}</p>
+        <p>{{MainCtrl.user.name}}</p>
       </div>
     </div>
   </div>
@@ -44,8 +44,10 @@ Description: Describes the user account page which displays user profile
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="nameEditor.isCollapsed = !nameEditor.isCollapsed"
-        ng-disabled="!nameEditor.isCollapsed">
+        ng-click=
+            "AccCtrl.nameEditor.isCollapsed =
+            !AccCtrl.nameEditor.isCollapsed"
+        ng-disabled="!AccCtrl.nameEditor.isCollapsed">
       Edit
     </button>
   </div>
@@ -53,7 +55,7 @@ Description: Describes the user account page which displays user profile
 
 <!-- Collapsable name editing form -->
 <div
-    uib-collapse="nameEditor.isCollapsed"
+    uib-collapse="AccCtrl.nameEditor.isCollapsed"
     class="panel panel-default margin-top-10">
   <div class="panel-heading">Edit Name</div>
   <div class="panel-body">
@@ -70,7 +72,7 @@ Description: Describes the user account page which displays user profile
               class="form-group"
               ng-class="{valid:'has-success has-feedback',
                   invalid:'has-error has-feedback',
-                  empty:''}[newName.validation.isValid]">
+                  empty:''}[AccCtrl.newName.validation.isValid]">
             <input
                 name="name"
                 id="inputName"
@@ -78,37 +80,39 @@ Description: Describes the user account page which displays user profile
                 class="form-control"
                 placeholder="Joe Student"
                 autocomplete="off"
-                ng-model="newName.value"
-                ng-blur="newName.validate()"
+                ng-model="AccCtrl.newName.value"
+                ng-blur="AccCtrl.newName.validate()"
                 required>
             <span
-                ng-if="newName.validation.isValid == 'valid'"
+                ng-if="AccCtrl.newName.validation.isValid == 'valid'"
                 class="glyphicon glyphicon-ok form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newName.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newName.validation.isValid == 'invalid'"
                 class="glyphicon glyphicon-remove form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newName.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newName.validation.isValid == 'invalid'"
                 class="help-block">
-              {{newName.validation.helpBlock}}
+              {{AccCtrl.newName.validation.helpBlock}}
             </span>
           </div> <!-- .form-group -->
         </div> <!-- .col-sm-10 --> 
       </div> <!-- .form-group .row -->
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="closeEditName()">
-        Cancel
-      </button>
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="saveEditName()">
-        Save
-      </button>
+      <div class="btn-toolbar">
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.closeEditName()">
+          Cancel
+        </button>
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.saveEditName()">
+          Save
+        </button>
+      </div>
     </form>
   </div>
 </div>
@@ -120,7 +124,7 @@ Description: Describes the user account page which displays user profile
     <div class="row">
       <label class="col-sm-3">Email</label>
       <div class="col-sm-9">
-        <p>{{user.email}}</p>
+        <p>{{MainCtrl.user.email}}</p>
       </div>
     </div>
   </div>
@@ -128,8 +132,10 @@ Description: Describes the user account page which displays user profile
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="emailEditor.isCollapsed = !emailEditor.isCollapsed"
-        ng-disabled="!emailEditor.isCollapsed">
+        ng-click=
+            "AccCtrl.emailEditor.isCollapsed =
+            !AccCtrl.emailEditor.isCollapsed"
+        ng-disabled="!AccCtrl.emailEditor.isCollapsed">
       Edit
     </button>
   </div>
@@ -137,11 +143,11 @@ Description: Describes the user account page which displays user profile
 
 <!-- Collapsable email editing form -->
 <div
-    uib-collapse="emailEditor.isCollapsed"
+    uib-collapse="AccCtrl.emailEditor.isCollapsed"
     class="panel panel-default margin-top-10">
   <div class="panel-heading">Edit Email</div>
   <div class="panel-body">
-    <form role="form" autocomplete="off" name="emailForm">
+    <form role="form" autocomplete="off" name="AccCtrl.emailForm">
       <div class="form-group row">
         <label
             for="inputEmail"
@@ -154,7 +160,7 @@ Description: Describes the user account page which displays user profile
               class="form-group"
               ng-class="{valid:'has-success has-feedback',
                   invalid:'has-error has-feedback',
-                  empty:''}[newEmail.validation.isValid]">
+                  empty:''}[AccCtrl.newEmail.validation.isValid]">
             <input
                 name="email"
                 id="inputEmail"
@@ -162,37 +168,39 @@ Description: Describes the user account page which displays user profile
                 class="form-control"
                 placeholder="Joe.Student@students.olin.edu"
                 autocomplete="off"
-                ng-model="newEmail.value"
-                ng-blur="newEmail.validate()"
+                ng-model="AccCtrl.newEmail.value"
+                ng-blur="AccCtrl.newEmail.validate()"
                 required>
             <span
-                ng-if="newEmail.validation.isValid == 'valid'"
+                ng-if="AccCtrl.newEmail.validation.isValid == 'valid'"
                 class="glyphicon glyphicon-ok form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newEmail.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newEmail.validation.isValid == 'invalid'"
                 class="glyphicon glyphicon-remove form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newEmail.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newEmail.validation.isValid == 'invalid'"
                 class="help-block">
-              {{newEmail.validation.helpBlock}}
+              {{AccCtrl.newEmail.validation.helpBlock}}
             </span>
           </div> <!-- .form-group -->
         </div> <!-- .col-sm-10 --> 
       </div> <!-- .form-group .row -->
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="closeEditEmail()">
-        Cancel
-      </button>
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="saveEditEmail()">
-        Save
-      </button>
+      <div class="btn-toolbar">
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.closeEditEmail()">
+          Cancel
+        </button>
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.saveEditEmail()">
+          Save
+        </button>
+      </div>
     </form>
   </div>
 </div>
@@ -212,17 +220,18 @@ Description: Describes the user account page which displays user profile
     <button
         type="button"
         class="btn btn-default pull-right"
-        ng-click="passwordEditor.isCollapsed = !passwordEditor.isCollapsed"
-        ng-disabled="!passwordEditor.isCollapsed">
+        ng-click=
+            "AccCtrl.passwordEditor.isCollapsed =
+            !AccCtrl.passwordEditor.isCollapsed"
+        ng-disabled="!AccCtrl.passwordEditor.isCollapsed">
       Edit
     </button>
   </div>
 </div>
-<hr>
 
 <!-- Collapsable password editing form -->
 <div
-    uib-collapse="passwordEditor.isCollapsed"
+    uib-collapse="AccCtrl.passwordEditor.isCollapsed"
     class="panel panel-default margin-top-10">
   <div class="panel-heading">Edit Password</div>
   <div class="panel-body">
@@ -239,7 +248,7 @@ Description: Describes the user account page which displays user profile
               class="form-group"
               ng-class="{valid:'has-success has-feedback',
                   invalid:'has-error has-feedback',
-                  empty:''}[currentPassword.validation.isValid]">
+                  empty:''}[AccCtrl.currentPassword.validation.isValid]">
             <input
                 name="currentPassword"
                 id="inputCurrentPassword"
@@ -247,21 +256,21 @@ Description: Describes the user account page which displays user profile
                 class="form-control"
                 placeholder="current password"
                 autocomplete="new-password"
-                ng-model="currentPassword.value"
-                ng-blur="currentPassword.clearValidation()"
+                ng-model="AccCtrl.currentPassword.value"
+                ng-blur="AccCtrl.currentPassword.clearValidation()"
                 required>
             <span
-                ng-if="currentPassword.validation.isValid == 'valid'"
+                ng-if="AccCtrl.currentPassword.validation.isValid == 'valid'"
                 class="glyphicon glyphicon-ok form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="currentPassword.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.currentPassword.validation.isValid == 'invalid'"
                 class="glyphicon glyphicon-remove form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="currentPassword.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.currentPassword.validation.isValid == 'invalid'"
                 class="help-block">
-              {{currentPassword.validation.helpBlock}}
+              {{AccCtrl.currentPassword.validation.helpBlock}}
             </span>
           </div> <!-- .form-group -->
         </div> <!-- .col-sm-10 --> 
@@ -279,7 +288,7 @@ Description: Describes the user account page which displays user profile
               class="form-group"
               ng-class="{valid:'has-success has-feedback',
                   invalid:'has-error has-feedback',
-                  empty:''}[newPassword.validation.isValid]">
+                  empty:''}[AccCtrl.newPassword.validation.isValid]">
             <input
                 name="newPassword"
                 id="inputNewPassword"
@@ -287,21 +296,21 @@ Description: Describes the user account page which displays user profile
                 class="form-control"
                 placeholder="new password"
                 autocomplete="new-password"
-                ng-model="newPassword.value"
-                ng-blur="newPassword.validate()"
+                ng-model="AccCtrl.newPassword.value"
+                ng-blur="AccCtrl.newPassword.validate()"
                 required>
             <span
-                ng-if="newPassword.validation.isValid == 'valid'"
+                ng-if="AccCtrl.newPassword.validation.isValid == 'valid'"
                 class="glyphicon glyphicon-ok form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newPassword.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newPassword.validation.isValid == 'invalid'"
                 class="glyphicon glyphicon-remove form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="newPassword.validation.isValid == 'invalid'"
+                ng-if="AccCtrl.newPassword.validation.isValid == 'invalid'"
                 class="help-block">
-              {{newPassword.validation.helpBlock}}
+              {{AccCtrl.newPassword.validation.helpBlock}}
             </span>
           </div> <!-- .form-group -->
         </div> <!-- .col-sm-10 --> 
@@ -319,7 +328,7 @@ Description: Describes the user account page which displays user profile
               class="form-group"
               ng-class="{valid:'has-success has-feedback',
                   invalid:'has-error has-feedback',
-                  empty:''}[confirmNewPassword.validation.isValid]">
+                  empty:''}[AccCtrl.confirmNewPassword.validation.isValid]">
             <input
                 name="confirmNewPassword"
                 id="inputConfirmNewPassword"
@@ -327,37 +336,42 @@ Description: Describes the user account page which displays user profile
                 class="form-control"
                 placeholder="new password"
                 autocomplete="new-password"
-                ng-model="confirmNewPassword.value"
-                ng-blur="confirmNewPassword.validate()"
+                ng-model="AccCtrl.confirmNewPassword.value"
+                ng-blur="AccCtrl.confirmNewPassword.validate()"
                 required>
             <span
-                ng-if="confirmNewPassword.validation.isValid == 'valid'"
+                ng-if="AccCtrl.confirmNewPassword.validation.isValid == 'valid'"
                 class="glyphicon glyphicon-ok form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="confirmNewPassword.validation.isValid == 'invalid'"
+                ng-if=
+                    "AccCtrl.confirmNewPassword.validation.isValid == 'invalid'"
                 class="glyphicon glyphicon-remove form-control-feedback"
                 aria-hidden="true"></span>
             <span
-                ng-if="confirmNewPassword.validation.isValid == 'invalid'"
+                ng-if=
+                    "AccCtrl.confirmNewPassword.validation.isValid == 'invalid'"
                 class="help-block">
-              {{confirmNewPassword.validation.helpBlock}}
+              {{AccCtrl.confirmNewPassword.validation.helpBlock}}
             </span>
           </div> <!-- .form-group -->
         </div> <!-- .col-sm-10 --> 
       </div> <!-- confirmNewPassword .form-group .row -->
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="closeEditPassword()">
-        Cancel
-      </button>
-      <button
-          type="button"
-          class="btn btn-default pull-right"
-          ng-click="saveEditPassword()">
-        Save
-      </button>
+      <div class="btn-toolbar">
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.closeEditPassword()">
+          Cancel
+        </button>
+        <button
+            type="button"
+            class="btn btn-default pull-right"
+            ng-click="AccCtrl.saveEditPassword()">
+          Save
+        </button>
+      </div>
     </form>
   </div>
 </div>
+<hr>

@@ -3,74 +3,75 @@
  * Description: Controls the user account page which displays user profile
  *     information and allows users to change their account information.
  */
-app.controller('AccountController', function($scope, $uibModal, AuthService) {
-  
+app.controller('AccountController', function($uibModal, AuthService) {
+  var AccCtrl = this;
   // List of alerts notifying the user of the result of an operation
-  $scope.alerts = [];
-  $scope.dismissAlert = function(index) {
-    $scope.alerts.splice(index, 1);
+  this.alerts = [];
+  this.dismissAlert = function(index) {
+    this.alerts.splice(index, 1);
   };
 
   // Initialize the state of the nameEditor and its input fields
-  $scope.nameEditor = {
+  this.nameEditor = {
     isCollapsed: true
   };
-  $scope.newName = {
+  this.newName = {
     value: '',
     validation: {
       isValid: 'empty',
       helpBlock: ''
     },
     validate: function() {
-      if (typeof $scope.newName.value != 'string' ||
-          $scope.newName.value.length < 1) {
-        $scope.newName.validation.isValid = 'invalid';
-        $scope.newName.validation.helpBlock = 'Name cannot be empty';
+      console.log(this);
+      if (typeof this.value != 'string' ||
+          this.value.length < 1) {
+        this.validation.isValid = 'invalid';
+        this.validation.helpBlock = 'Name cannot be empty';
       } else {
-        $scope.newName.validation.isValid = 'valid';
+        this.validation.isValid = 'valid';
       }
     }
   }
 
   // Initialize the scope of the emailEditor and its input fields
-  $scope.emailEditor = {
+  this.emailEditor = {
     isCollapsed: true
   };
-  $scope.newEmail = {
+  this.newEmail = {
     value: '',
     validation: {
       isValid: 'empty',
       helpBlock: ''
     },
     validate: function() {
-      console.log($scope.newEmail)
-      if (!$scope.newEmail.value || $scope.emailForm.email.$error.email) {
-        $scope.newEmail.validation.isValid = 'invalid';
-        $scope.newEmail.validation.helpBlock = 'Invalid email address';
+      console.log(AccCtrl.newEmail)
+      if (!this.value || AccCtrl.emailForm.email.$error.email) {
+        this.validation.isValid = 'invalid';
+        this.validation.helpBlock = 'Invalid email address';
       } else {
-        $scope.newEmail.validation.isValid = 'valid';
+        this.validation.isValid = 'valid';
       }
     }
   }
 
   // Initialize the scope of the passwordEditor and its input fields
-  $scope.passwordEditor = {
+  this.passwordEditor = {
     isCollapsed: true
   };
-  $scope.currentPassword = {
+  this.currentPassword = {
     value: '',
     validation: {
       isValid: 'empty',
       helpBlock: ''
     },
     clearValidation: function() {
-      $scope.currentPassword.validation = {
+      this.validation = {
         isValid: 'empty',
         helpBlock: ''
       };
     }
   }
-  $scope.newPassword = {
+  this.newPassword = {
     value: '',
     validation: {
       isValid: 'empty',
@@ -78,120 +79,117 @@ app.controller('AccountController', function($scope, $uibModal, AuthService) {
     },
     validate: function() {
       var regex = new RegExp("^[a-zA-Z0-9]+$");
-      if (typeof $scope.newPassword.value !== 'string' ||
-          !regex.test($scope.newPassword.value)) {
-        $scope.newPassword.validation.isValid = 'invalid';
-        $scope.newPassword.validation.helpBlock = 
+      if (typeof this.value !== 'string' ||
+          !regex.test(this.value)) {
+        this.validation.isValid = 'invalid';
+        this.validation.helpBlock = 
             'Password must only use letters and numbers';
       } else {
-        $scope.newPassword.validation.isValid = 'valid';
+        this.validation.isValid = 'valid';
       }
     }
   }
-  $scope.confirmNewPassword = {
+  this.confirmNewPassword = {
     value: '',
     validation: {
       isValid: 'empty',
       helpBlock: ''
     },
     validate: function() {
-      console.log($scope.newPassword);
-      console.log($scope.confirmNewPassword);
-      if ($scope.newPassword.value !== $scope.confirmNewPassword.value) {
-        $scope.confirmNewPassword.validation.isValid = 'invalid';
-        $scope.confirmNewPassword.validation.helpBlock = 
-            'Passwords to not match';
+      if (AccCtrl.newPassword.value !== this.value) {
+        this.validation.isValid = 'invalid';
+        this.validation.helpBlock = 'Passwords to not match';
       } else {
-        $scope.confirmNewPassword.validation.isValid = 'valid';
+        this.validation.isValid = 'valid';
       }
     }
   }
 
   // Collapsable form to edit a user's name
-  $scope.saveEditName = function() {
-    if ($scope.newName.validation.isValid == 'valid') {
-      AuthService.changeName($scope.newName.value)
+  this.saveEditName = function() {
+    if (this.newName.validation.isValid == 'valid') {
+      AuthService.changeName(this.newName.value)
       .then(function(success) {
-        $scope.alerts.push({
+        AccCtrl.alerts.push({
           type: success ? 'success' : 'danger',
           msg: success ? 'Name changed successfully' : 'Name change failed'
         });
         if (success) {
-          $scope.closeEditName();
+          AccCtrl.closeEditName();
         }
       });
     }
   };
-  $scope.closeEditName = function() {
-    $scope.nameEditor.isCollapsed = true;
-    $scope.newName.validation = {
+  this.closeEditName = function() {
+    this.nameEditor.isCollapsed = true;
+    this.newName.validation = {
       isValid: 'empty',
       helpBlock: ''
     };
-    $scope.newName.value = '';
+    this.newName.value = '';
   };
 
   // Collapsable form to edit a user's email
-  $scope.saveEditEmail = function() {
-    if ($scope.newEmail.validation.isValid == 'valid') {
-      AuthService.changeEmail($scope.newEmail.value)
+  this.saveEditEmail = function() {
+    if (this.newEmail.validation.isValid == 'valid') {
+      AuthService.changeEmail(this.newEmail.value)
       .then(function(success) {
-        $scope.alerts.push({
+        AccCtrl.alerts.push({
           type: success ? 'success' : 'danger',
           msg: success ? 'Email changed successfully' : 'Email change failed'
         });
         if (success) {
-          $scope.closeEditEmail();
+          AccCtrl.closeEditEmail();
         }
       });
     }
   };
-  $scope.closeEditEmail = function() {
-    $scope.emailEditor.isCollapsed = true;
-    $scope.newEmail.validation = {
+  this.closeEditEmail = function() {
+    this.emailEditor.isCollapsed = true;
+    this.newEmail.validation = {
       isValid: 'empty',
       helpBlock: ''
     };
-    $scope.newEmail.value = '';
+    this.newEmail.value = '';
   };
 
   // Collapsable form to edit a user's password
-  $scope.saveEditPassword = function() {
-    if ($scope.newPassword.validation.isValid == 'valid' &&
-        $scope.confirmNewPassword.validation.isValid == 'valid') {
+  this.saveEditPassword = function() {
+    if (this.newPassword.validation.isValid == 'valid' &&
+        this.confirmNewPassword.validation.isValid == 'valid') {
       AuthService.changePassword(
-          $scope.currentPassword.value, $scope.newPassword.value)
+          this.currentPassword.value, this.newPassword.value)
       .then(function(res) {
         if (res.isAuthenticated) {
-          $scope.alerts.push({
+          AccCtrl.alerts.push({
             type: res.success ? 'success' : 'danger',
             msg: res.success ? 'Password changed successfully' : res.error
           });
         } else {
-          $scope.currentPassword.validation.isValid = 'invalid';
-          $scope.currentPassword.validation.helpBlock = 
+          AccCtrl.currentPassword.validation.isValid = 'invalid';
+          AccCtrl.currentPassword.validation.helpBlock = 
             'Incorrect password';
         }
-        if (res.success) { $scope.closeEditPassword(); }
+        if (res.success) { AccCtrl.closeEditPassword(); }
       });
     }
   };
-  $scope.closeEditPassword = function() {
-    $scope.passwordEditor.isCollapsed = true;
-    $scope.currentPassword.validation = {
+  this.closeEditPassword = function() {
+    this.passwordEditor.isCollapsed = true;
+    this.currentPassword.validation = {
       isValid: 'empty',
       helpBlock: ''
     };
-    $scope.currentPassword.value = '';
-    $scope.newPassword.validation = {
+    this.currentPassword.value = '';
+    this.newPassword.validation = {
       isValid: 'empty',
       helpBlock: ''
     };
-    $scope.newPassword.value = '';
-    $scope.confirmNewPassword.validation = {
+    this.newPassword.value = '';
+    this.confirmNewPassword.validation = {
       isValid: 'empty',
       helpBlock: ''
     };
-    $scope.confirmNewPassword.value = '';
+    this.confirmNewPassword.value = '';
   };
 });

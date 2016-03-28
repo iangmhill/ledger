@@ -78,6 +78,7 @@ var app = angular.module('ledger', [
       .when('/account', {
         templateUrl: 'partials/account.html',
         controller: 'AccountController',
+        controllerAs: 'AccCtrl',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);
