@@ -83,6 +83,13 @@ var authentication = {
       failureRedirect: '/signup'
     })(req, res, next);
   },
+  checkUniqueUsername: function(req, res) {
+    User.find({username: req.body.username}, function(err, users) {
+      res.json({
+        isUnique: (users.length == 0)
+      });
+    })
+  },
   login: function(req, res, next) {
     passport.authenticate('local-login', {
       successRedirect: '/',

@@ -35,17 +35,26 @@ var MongoStore     = require('connect-mongo')(session);
 // startup modules
 var startup        = require('./startup');
 
+// less transpiler
+var lessMiddleware = require('less-middleware');
+
 // CONFIGURATION ===============================================================
 
 // load environment variables from .env file
 dotenv.config();
 
 // configure middleware
+var pathRoot = path.join(__dirname, 'public');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(lessMiddleware('/less', {
+  compress: true,
+  dest: '/css',
+  pathRoot: pathRoot
+}));
+app.use(express.static(pathRoot));
 
 // CONNECT TO DATABASE =========================================================
 mongoose.connect(process.env.MONGODB);
@@ -94,6 +103,7 @@ app.get('/api/getUserRecords',
 // POST requests
 // authentication GET requests
 app.post('/login', authentication.login);
+app.post('/checkUniqueUsername', authentication.checkUniqueUsername);
 app.post('/signup', authentication.signup);
 app.post('/changeEmail',
     authentication.authenticateUser, authentication.changeEmail);

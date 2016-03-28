@@ -1,9 +1,10 @@
 // public/js/services/AuthService.js
 
 var roles = {
-  USER: 0,
-  OWNER: 1,
-  ADMIN: 2
+  UNAUTH: 0,
+  USER: 1,
+  OWNER: 2,
+  ADMIN: 3
 };
 
 var routeForUnauthorizedAccess = '/login';
@@ -68,11 +69,6 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
         }
       });
     });
-  };
-
-  this.createAccount = function(credentials) {
-    var confirmation = $q.defer();
-    $http.post('/signup', credentials);
   };
 
   this.permissionCheck = function(validRoles) {
@@ -165,6 +161,21 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
       service.user = response.data;
       service.broadcastPermissionsChange();
       deferred.resolve(service.user.name == newName);
+    });
+    return deferred.promise;
+  };
+
+  this.signup = function(credentials) {
+    var confirmation = $q.defer();
+    $http.post('/signup', credentials);
+  };
+
+  this.checkUniqueUsername = function(username) {
+    var deferred = $q.defer();
+    $http.post('/checkUniqueUsername', {
+      username: username
+    }).then(function success(response) {
+      deferred.resolve(response.data.isUnique);
     });
     return deferred.promise;
   };

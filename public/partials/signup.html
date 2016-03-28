@@ -1,0 +1,126 @@
+<div class="container container-login">
+  <uib-alert 
+      ng-repeat="alert in SgnpCtrl.alerts"
+      type="{{alert.type}}"
+      close="SgnpCtrl.dismissAlert($index)">
+    {{alert.msg}}
+  </uib-alert>
+
+  <h1>Signup</h1>
+  <form
+      name="SgnpCtrl.signupForm"
+      role="form"
+      ng-submit="SgnpCtrl.signupForm()"
+      autocomplete="off">
+    <div
+        class="form-group"
+        ng-switch="SgnpCtrl.username.validation.isValid"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[SgnpCtrl.username.validation.isValid]">
+      <label>Username</label>
+      <input
+          type="text"
+          class="form-control"
+          autocomplete="off"
+          ng-model="SgnpCtrl.username.value"
+          ng-blur="SgnpCtrl.username.validate()">
+      <span
+          ng-switch-when="valid"
+          class="glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="help-block">
+        {{SgnpCtrl.username.validation.helpBlock}}
+      </span>
+    </div>
+    <div
+        class="form-group"
+        ng-switch="SgnpCtrl.name.validation.isValid"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[SgnpCtrl.name.validation.isValid]">
+      <label>Name</label>
+      <input
+          type="text"
+          class="form-control"
+          autocomplete="off"
+          ng-model="SgnpCtrl.name.value"
+          ng-blur="SgnpCtrl.name.validate()">
+      <span
+          ng-switch-when="valid"
+          class="glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="help-block">
+        {{SgnpCtrl.name.validation.helpBlock}}
+      </span>
+    </div>
+    <div
+        class="form-group"
+        ng-switch="SgnpCtrl.email.validation.isValid"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[SgnpCtrl.email.validation.isValid]">
+      <label>Email</label>
+      <input
+          name="email"
+          type="email"
+          class="form-control"
+          autocomplete="off"
+          ng-model="SgnpCtrl.email.value"
+          ng-blur="SgnpCtrl.email.validate()">
+      <span
+          ng-switch-when="valid"
+          class="glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="help-block">
+        {{SgnpCtrl.email.validation.helpBlock}}
+      </span>
+    </div>
+    <div
+        class="form-group"
+        ng-switch="SgnpCtrl.password.validation.isValid"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[SgnpCtrl.password.validation.isValid]">
+      <label>Password</label>
+      <input
+          type="password"
+          class="form-control"
+          autocomplete="new-password"
+          ng-model="SgnpCtrl.password.value"
+          ng-blur="SgnpCtrl.password.validate()">
+      <span
+          ng-switch-when="valid"
+          class="glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-switch-when="invalid"
+          class="help-block">
+        {{SgnpCtrl.password.validation.helpBlock}}
+      </span>
+    </div>
+    <button class="btn btn-primary pull-right">Submit</button>
+  </form>
+</div>

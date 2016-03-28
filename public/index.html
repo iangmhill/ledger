@@ -8,15 +8,15 @@
 
   <title>Ledger</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/ledger.css">
-
   <!-- FONTS -->
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link rel="icon" type="image/png" href="images/favicon.png?v=5">
 
   <!-- BOOTSTRAP CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- CUSTOME CSS -->
+  <link rel="stylesheet" href="stylesheets/override.css">
 
   <!-- ANGULAR -->
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
@@ -30,24 +30,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.min.js"></script>
 
   <!-- ANGULAR CUSTOM -->
-  <script src="js/client.js"></script>
+  <script src="javascripts/client.js"></script>
   
-  <script src="js/services/AllocationService.js"></script>
-  <script src="js/services/AuthService.js"></script>
-  <script src="js/services/OrgService.js"></script>
-  <script src="js/services/SummaryService.js"></script>
+  <script src="javascripts/services/AllocationService.js"></script>
+  <script src="javascripts/services/AuthService.js"></script>
+  <script src="javascripts/services/OrgService.js"></script>
+  <script src="javascripts/services/SummaryService.js"></script>
 
-  <script src="js/controllers/AccountController.js"></script>
-  <script src="js/controllers/AllocateController.js"></script>
-  <script src="js/controllers/LoginController.js"></script>
-  <script src="js/controllers/MainController.js"></script>
-  <script src="js/controllers/ManageController.js"></script>
-  <script src="js/controllers/RecordController.js"></script>
-  <script src="js/controllers/RequestController.js"></script>
-  <script src="js/controllers/SummaryController.js"></script>
-  <script src="js/controllers/AdminController.js"></script>
+  <script src="javascripts/controllers/AccountController.js"></script>
+  <script src="javascripts/controllers/AllocateController.js"></script>
+  <script src="javascripts/controllers/LoginController.js"></script>
+  <script src="javascripts/controllers/MainController.js"></script>
+  <script src="javascripts/controllers/ManageController.js"></script>
+  <script src="javascripts/controllers/RecordController.js"></script>
+  <script src="javascripts/controllers/RequestController.js"></script>
+  <script src="javascripts/controllers/SignupController.js"></script>
+  <script src="javascripts/controllers/SummaryController.js"></script>
 </head>
-<body ng-app="ledger" ng-controller="MainController as MainCtrl">
+<body
+    ng-app="ledger"
+    ng-controller="MainController as MainCtrl"
+    ng-class="{'body-auth': !MainCtrl.user.isAuthenticated}">
 
   <!-- HEADER -->
 <nav class="navbar navbar-inverse navbar-static-top">
@@ -85,9 +88,7 @@
 
   <!-- ANGULAR DYNAMIC CONTENT -->
   <div id="section-content" class="container-body">
-    <div class="container">
-      <div ng-view></div>
-    </div>
+    <div ng-view></div>
   </div>
 
 </body>

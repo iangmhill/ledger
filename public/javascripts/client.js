@@ -9,7 +9,19 @@ var app = angular.module('ledger', [
   function($routeProvider, $locationProvider) {
 
     $routeProvider
-      // summary landing page
+
+      .when('/login', {
+        templateUrl: 'partials/login.html',
+        controller: 'LoginController',
+        controllerAs: 'LgnCtrl'
+      })
+
+      .when('/signup', {
+        templateUrl: 'partials/signup.html',
+        controller: 'SignupController',
+        controllerAs: 'SgnpCtrl'
+      })
+
       .when('/', {
         templateUrl: 'partials/summary.html',
         controller: 'SummaryController',
@@ -18,11 +30,6 @@ var app = angular.module('ledger', [
             return AuthService.permissionCheck([roles.USER]);
           }
         }
-      })
-
-      .when('/login', {
-        templateUrl: 'partials/login.html',
-        controller: 'LoginController'
       })
 
       .when('/request', {

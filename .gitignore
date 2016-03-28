@@ -34,3 +34,6 @@ pids
 
 # Environment variables
 **/.env
+
+# Transpiled LESS code
+public/*.css

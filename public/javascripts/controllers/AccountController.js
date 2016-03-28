@@ -22,7 +22,6 @@ app.controller('AccountController', function($uibModal, AuthService) {
       helpBlock: ''
     },
     validate: function() {
-      console.log(this);
       if (typeof this.value != 'string' ||
           this.value.length < 1) {
         this.validation.isValid = 'invalid';
@@ -44,7 +43,6 @@ app.controller('AccountController', function($uibModal, AuthService) {
       helpBlock: ''
     },
     validate: function() {
-      console.log(AccCtrl.newEmail)
       if (!this.value || AccCtrl.emailForm.email.$error.email) {
         this.validation.isValid = 'invalid';
         this.validation.helpBlock = 'Invalid email address';
