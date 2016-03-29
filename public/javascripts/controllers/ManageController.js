@@ -1,4 +1,4 @@
-// public/js/controllers/ManageController.js
+// public/javascripts/controllers/ManageController.js
 app.controller('ManageController', function($scope) {
   $scope.accounts = [{
     _id: 'asdlfasdfasdhgashdgh',

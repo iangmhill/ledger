@@ -1,4 +1,4 @@
-// public/js/services/OrgService.js
+// public/javascripts/services/OrgService.js
 app.service('OrgService', function($http) {
 
   this.get = function() {

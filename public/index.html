@@ -3,73 +3,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <base href="/">
 
   <title>Ledger</title>
-
-  
-  <!-- Angular Material style sheet -->
-  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css">
 
   <!-- FONTS -->
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link rel="icon" type="image/png" href="images/favicon.png?v=5">
 
+  <!-- BOOTSTRAP CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- CUSTOME CSS -->
+  <link rel="stylesheet" href="stylesheets/override.css">
+
   <!-- ANGULAR -->
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-route.min.js"></script>
 
-  <!-- ANGULAR MATERIAL DEPENDENCIES -->
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+  <!-- UI BOOTSTRAP DEPENDENCIES -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-touch.min.js"></script>
 
-  <!-- ANGULAR MATERIAL -->
-  <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- UI BOOTSTRAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.min.js"></script>
 
   <!-- ANGULAR CUSTOM -->
-  <script src="js/client.js"></script>
+  <script src="javascripts/client.js"></script>
   
-  <script src="js/services/AllocationService.js"></script>
-  <script src="js/services/AuthService.js"></script>
-  <script src="js/services/OrgService.js"></script>
-  <script src="js/services/SummaryService.js"></script>
+  <script src="javascripts/services/AllocationService.js"></script>
+  <script src="javascripts/services/AuthService.js"></script>
+  <script src="javascripts/services/OrgService.js"></script>
 
-  <script src="js/controllers/AllocateController.js"></script>
-  <script src="js/controllers/LoginController.js"></script>
-  <script src="js/controllers/MainController.js"></script>
-  <script src="js/controllers/ManageController.js"></script>
-  <script src="js/controllers/RecordController.js"></script>
-  <script src="js/controllers/RequestController.js"></script>
-  <script src="js/controllers/SearchController.js"></script>
-  <script src="js/controllers/SummaryController.js"></script>
-  <script src="js/controllers/UserController.js"></script>
+  <script src="javascripts/controllers/AccountController.js"></script>
+  <script src="javascripts/controllers/DashboardController.js"></script>
+  <script src="javascripts/controllers/LoginController.js"></script>
+  <script src="javascripts/controllers/MainController.js"></script>
+  <script src="javascripts/controllers/ManageController.js"></script>
+  <script src="javascripts/controllers/RecordController.js"></script>
+  <script src="javascripts/controllers/RequestController.js"></script>
+  <script src="javascripts/controllers/SearchController.js"></script>
+  <script src="javascripts/controllers/SignupController.js"></script>
 </head>
-<body ng-app="ledger" ng-controller="MainController">
+<body
+    ng-app="ledger"
+    ng-controller="MainController as MainCtrl"
+    ng-class="{'body-auth': !MainCtrl.user.isAuthenticated}">
 
   <!-- HEADER -->
-  <header id="section-header" class="container-body">
-    <a href="/" class="logo"><span>Ledger</span></a>
-    <nav role="navigation" class="navigation">
-        <a ng-class="getClass('{{route.path}}')" class="navigation-item" href="{{route.path}}" ng-repeat="route in headerRoutes"><span>{{route.name}}</span></a>
-    </nav>
-  </header>
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid" ng-controller="NavigationCtrl as NavCtrl">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" ng-click="NavCtrl.toggleCollapse()">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Ledger</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="navbar-collapse" style="overflow:hidden;" uib-collapse="NavCtrl.isCollapsed">
+      <ul class="nav navbar-nav">
+        <li ng-repeat="route in MainCtrl.navRoutes" ng-class="{ active: isActive(route.path)}" ng-click="NavCtrl.hideMenu()"><a href="{{route.path}}">{{route.name}}</a></li>     
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li uib-dropdown class="dropdown" ng-if="MainCtrl.user.isAuthenticated">
+          <a href="#" uib-dropdown-toggle>{{MainCtrl.user.username}} <b class="caret"></b></a>
+          <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            <li ng-repeat="route in MainCtrl.authRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}" ng-click="NavCtrl.hideMenu()">{{route.name}}</a></li>
+            <li class="divider"></li>
+            <li role="menuitem" ng-click="NavCtrl.hideMenu()"><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
   <!-- ANGULAR DYNAMIC CONTENT -->
   <div id="section-content" class="container-body">
-    <div class="container-limiting">
-      <div ng-view></div>
-    </div>
+    <div ng-view></div>
   </div>
-
-  <footer id="section-footer" class="container-body">
-    <nav role="navigation" class="navigation">
-        <a class="navigation-item" href="{{route.path}}" ng-repeat="route in footerRoutes"><span>{{route.name}}</span></a>
-    </nav>
-  </footer>
 
 </body>
 </html>
