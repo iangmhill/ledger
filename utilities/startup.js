@@ -1,5 +1,5 @@
-var User = require('./models/userModel');
-var Org  = require('./models/orgModel');
+var User = require('../models/userModel');
+var Org  = require('../models/orgModel');
 var q    = require('q');
 
 var errors = {
@@ -45,7 +45,8 @@ var startup = {
                 name: 'Frank Olin',
                 email: 'core@students.olin.edu',
                 orgs: [systemOrgId],
-                isAdmin: true
+                isAdmin: true,
+                isApproved: true
               }, function (err, admin) {
                 if (err) { return deferred.resolve(errors.ADMIN_SAVE) };
                 deferred.resolve();

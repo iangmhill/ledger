@@ -81,7 +81,7 @@ app.controller('AccountController', function($uibModal, AuthService) {
           !regex.test(this.value)) {
         this.validation.isValid = 'invalid';
         this.validation.helpBlock = 
-            'Password must only use letters and numbers';
+            'Password must only use letters and numbers and cannot be empty';
       } else {
         this.validation.isValid = 'valid';
       }
@@ -94,17 +94,20 @@ app.controller('AccountController', function($uibModal, AuthService) {
       helpBlock: ''
     },
     validate: function() {
-      if (AccCtrl.newPassword.value !== this.value) {
-        this.validation.isValid = 'invalid';
-        this.validation.helpBlock = 'Passwords to not match';
-      } else {
-        this.validation.isValid = 'valid';
+      if (AccCtrl.newPassword.validation.isValid == 'valid') {
+        if (AccCtrl.newPassword.value !== this.value) {
+          this.validation.isValid = 'invalid';
+          this.validation.helpBlock = 'Passwords to not match';
+        } else {
+          this.validation.isValid = 'valid';
+        }
       }
     }
   }
 
   // Collapsable form to edit a user's name
   this.saveEditName = function() {
+    this.newName.validate();
     if (this.newName.validation.isValid == 'valid') {
       AuthService.changeName(this.newName.value)
       .then(function(success) {
@@ -129,6 +132,7 @@ app.controller('AccountController', function($uibModal, AuthService) {
 
   // Collapsable form to edit a user's email
   this.saveEditEmail = function() {
+    this.newEmail.validate();
     if (this.newEmail.validation.isValid == 'valid') {
       AuthService.changeEmail(this.newEmail.value)
       .then(function(success) {
@@ -153,6 +157,8 @@ app.controller('AccountController', function($uibModal, AuthService) {
 
   // Collapsable form to edit a user's password
   this.saveEditPassword = function() {
+    this.newPassword.validate();
+    this.confirmNewPassword.validate();
     if (this.newPassword.validation.isValid == 'valid' &&
         this.confirmNewPassword.validation.isValid == 'valid') {
       AuthService.changePassword(
@@ -160,15 +166,15 @@ app.controller('AccountController', function($uibModal, AuthService) {
       .then(function(res) {
         if (res.isAuthenticated) {
           AccCtrl.alerts.push({
-            type: res.success ? 'success' : 'danger',
-            msg: res.success ? 'Password changed successfully' : res.error
+            type: res.isSuccessful ? 'success' : 'danger',
+            msg: res.isSuccessful ? 'Password changed successfully' : res.error
           });
         } else {
           AccCtrl.currentPassword.validation.isValid = 'invalid';
           AccCtrl.currentPassword.validation.helpBlock = 
             'Incorrect password';
         }
-        if (res.success) { AccCtrl.closeEditPassword(); }
+        if (res.isSuccessful) { AccCtrl.closeEditPassword(); }
       });
     }
   };
