@@ -4,15 +4,19 @@
     <form role="form" ng-submit="submitCreateRecordForm()">
 
     <div class="form-group">
-	    Are you doing making a reimbursement? <br /><input type="radio" ng-model="reim" value="ryes" />Yes<br />
-	    <input type="radio" ng-model="reim" value="rno" />no<br />
-    </div><br />
+    Are you doing making a reimbursement? <br /><select name="reim" id="reim" ng-model="data.singleSelect">
+      <option value="">---Please select---</option> <!-- not selected / blank option -->
+      <option value="ryes">Yes</option> <!-- interpolation -->
+      <option value="rno">No</option>
+    </select></div><br>
 
     <div class="form-group">
-	    Which P-Card did you use? <br /><input type="radio" ng-model="pcard" value="p1" />1<br />
-	    <input type="radio" ng-model="pcard" value="p2" />2<br />
-	    <input type="radio" ng-model="pcard" value="dn" />I don't remember.<br />
-    </div><br />
+	  	Which P-Card did you use? <br /><select name="pcard" id="pcard" ng-model="data.singleSelect">
+      	<option value="">---Please select---</option> <!-- not selected / blank option -->
+      	<option value="p1">1</option> <!-- interpolation -->
+      	<option value="p2">2</option>
+    	<option value="pna">I don't remember.</option>	
+    </select></div><br />
 
     <div class="form-group">
 	    <label for="description">Date of Purchase <br /></label>
@@ -25,22 +29,28 @@
     </div><br />
 
     <div class="form-group">
-	    Was this purchase made for SAC? <br /><input type="radio" ng-model="sac" value="yes" />Yes<br />
-	    <input type="radio" ng-model="sac" value="no" />No<br />
-    </div><br />
+	    Was this purchase made for SAC? <br /><select name="sac" id="sac" ng-model="data.singleSelect">
+      	<option value="">---Please select---</option> <!-- not selected / blank option -->
+      	<option value="sacy">Yes</option> <!-- interpolation -->
+      	<option value="sacn">No</option>
+    </select></div><br />
 
     <div class="form-group">
-	    What was the money spent on? <br /><input type="radio" ng-model="use" value="u1" />Food<br />
-	    <input type="radio" ng-model="use" value="u2" />Outing/ trip<br />
-	    <input type="radio" ng-model="use" value="u3" />Consumable supplies<br />
-	    <input type="radio" ng-model="use" value="u4" />Longterm supplies<br />
-	    <input type="radio" ng-model="use" value="u3" />Other<br />
-    </div><br />
+	    What was the money spent on? <br /><select name="purpose" id="purpose" ng-model="data.singleSelect">
+      	<option value="">---Please select---</option> <!-- not selected / blank option -->
+      	<option value="pur1">Food</option> <!-- interpolation -->
+      	<option value="pur2">Outing</option>
+    	<option value="pur3">Consumable supplies</option>
+    	<option value="pur4">Longterm supplies</option>
+    	<option value="pur5">Other</option>				
+    </select></div><br />
 
     <div class="form-group">
 	    Did you return and sign in the p-card and put your paper form and receipt in the correct spot? <br />
-	    If not, please return it now.<br/><input type="radio" ng-model="pcard" value="return1" />Yes<br />
-	    </div><br />
+	    If not, please return it now.<br/><select name="ret" id="ret" ng-model="data.singleSelect">
+      	<option value="">---Make sure you return the card!---</option> <!-- not selected / blank option -->
+      	<option value="ret1">Yes</option> <!-- interpolation -->
+    </select></div><br />
 
 	<button class="right">Submit</button>
     </form>
