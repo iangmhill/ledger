@@ -33,7 +33,7 @@ var session        = require('express-session');
 var MongoStore     = require('connect-mongo')(session);
 
 // startup modules
-var startup        = require('./startup');
+var startup        = require('./utilities/startup');
 
 // less transpiler
 var lessMiddleware = require('less-middleware');
@@ -49,9 +49,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(lessMiddleware('/less', {
+app.use(lessMiddleware('/stylesheets', {
   compress: true,
-  dest: '/css',
   pathRoot: pathRoot
 }));
 app.use(express.static(pathRoot));
@@ -104,7 +103,7 @@ app.get('/api/getUserRecords',
 // authentication GET requests
 app.post('/login', authentication.login);
 app.post('/checkUniqueUsername', authentication.checkUniqueUsername);
-app.post('/signup', authentication.signup);
+app.post('/register', authentication.register);
 app.post('/changeEmail',
     authentication.authenticateUser, authentication.changeEmail);
 app.post('/changeName',

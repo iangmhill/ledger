@@ -29,10 +29,15 @@ var User = mongoose.Schema({
   },
   orgs: {
     type: [ObjectId],
-    required: true,
+    required: false,
     default: []
   },
   isAdmin: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isApproved: {
     type: Boolean,
     required: true,
     default: false

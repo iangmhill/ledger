@@ -8,6 +8,7 @@ var roles = {
 };
 
 var routeForUnauthorizedAccess = '/login';
+var routeDashboard             = '/';
 
 app.service('AuthService', function($http, $q, $rootScope, $location) {
 
@@ -98,6 +99,16 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
 
     angular.forEach(validRoles, function (role) {
       switch (role) {
+        case roles.UNAUTH:
+          if (!user.isAuthenticated) {
+            ifPermissionPassed = true;
+          }
+          break;
+        case roles.USER:
+          if (user.isAuthenticated) {
+            ifPermissionPassed = true;
+          }
+          break;
         case roles.OWNER:
           if (user.orgs.length > 0) {
             ifPermissionPassed = true;
@@ -108,17 +119,16 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
             ifPermissionPassed = true;
           }
           break;
-        case roles.USER:
-          if (user.isAuthenticated) {
-            ifPermissionPassed = true;
-          }
-          break;
         default:
           ifPermissionPassed = false;
       }
     });
     if (!ifPermissionPassed) {
-      $location.path(routeForUnauthorizedAccess);
+      if (user.isAuthenticated) {
+        $location.path(routeDashboard);
+      } else {
+        $location.path(routeForUnauthorizedAccess);
+      }
       $rootScope.$on('$locationChangeSuccess', function (next, current) {
           deferred.resolve();
       });
@@ -164,9 +174,12 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
-  this.signup = function(credentials) {
-    var confirmation = $q.defer();
-    $http.post('/signup', credentials);
+  this.register = function(user) {
+    var deferred = $q.defer();
+    $http.post('/register', user).then(function(response) {
+      deferred.resolve(response.data);
+    });
+    return deferred.promise;
   };
 
   this.checkUniqueUsername = function(username) {

@@ -13,13 +13,23 @@ var app = angular.module('ledger', [
       .when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginController',
-        controllerAs: 'LgnCtrl'
+        controllerAs: 'LgnCtrl',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.UNAUTH]);
+          }
+        }
       })
 
-      .when('/signup', {
-        templateUrl: 'partials/signup.html',
-        controller: 'SignupController',
-        controllerAs: 'SgnpCtrl'
+      .when('/register', {
+        templateUrl: 'partials/register.html',
+        controller: 'RegisterController',
+        controllerAs: 'RegCtrl',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.UNAUTH]);
+          }
+        }
       })
 
       .when('/', {
