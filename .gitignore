@@ -36,4 +36,4 @@ pids
 **/.env
 
 # Transpiled LESS code
-public/*.css
+public/**/*.css
