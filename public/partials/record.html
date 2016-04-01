@@ -1,5 +1,47 @@
 <!-- public/partials/record.html -->
 <div class="container-card">
   <h1>Record a Purchase</h1>
-  <p>This is a placeholder for the record purchase page of Karabraxos.</p>
+    <form role="form" ng-submit="submitCreateRecordForm()">
+
+    <div class="form-group">
+	    Are you doing making a reimbursement? <br /><input type="radio" ng-model="reim" value="ryes" />Yes<br />
+	    <input type="radio" ng-model="reim" value="rno" />no<br />
+    </div><br />
+
+    <div class="form-group">
+	    Which P-Card did you use? <br /><input type="radio" ng-model="pcard" value="p1" />1<br />
+	    <input type="radio" ng-model="pcard" value="p2" />2<br />
+	    <input type="radio" ng-model="pcard" value="dn" />I don't remember.<br />
+    </div><br />
+
+    <div class="form-group">
+	    <label for="description">Date of Purchase <br /></label>
+	    <input class="form-control" type="text" ng-model="date" placeholder="dd/mm/yyyy">
+    </div><br />
+
+    <div class="form-group">
+	    <label for="description">Purchase Amount<br /></label>
+	    <input class="form-control" type="text" ng-model="amount" placeholder="999.99">
+    </div><br />
+
+    <div class="form-group">
+	    Was this purchase made for SAC? <br /><input type="radio" ng-model="sac" value="yes" />Yes<br />
+	    <input type="radio" ng-model="sac" value="no" />No<br />
+    </div><br />
+
+    <div class="form-group">
+	    What was the money spent on? <br /><input type="radio" ng-model="use" value="u1" />Food<br />
+	    <input type="radio" ng-model="use" value="u2" />Outing/ trip<br />
+	    <input type="radio" ng-model="use" value="u3" />Consumable supplies<br />
+	    <input type="radio" ng-model="use" value="u4" />Longterm supplies<br />
+	    <input type="radio" ng-model="use" value="u3" />Other<br />
+    </div><br />
+
+    <div class="form-group">
+	    Did you return and sign in the p-card and put your paper form and receipt in the correct spot? <br />
+	    If not, please return it now.<br/><input type="radio" ng-model="pcard" value="return1" />Yes<br />
+	    </div><br />
+
+	<button class="right">Submit</button>
+    </form>
 </div>
