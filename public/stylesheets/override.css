@@ -1,1 +1,12 @@
-.container-login{max-width:390px}.panel-form{margin-top:10px}.body-auth{background-color:#f9f9f9}
+.container-login {
+  max-width: 390px;
+}
+.panel-form {
+  margin-top: 10px;
+}
+.body-auth {
+  background-color: #f9f9f9;
+}
+.row {
+  padding: 10px;
+}
