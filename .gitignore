@@ -37,3 +37,6 @@ pids
 
 # Transpiled LESS code
 public/**/*.css
+
+# JSDoc generated documentation
+**/docs
