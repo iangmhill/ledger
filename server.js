@@ -81,6 +81,8 @@ app.get('/api/getUserPermissions', authentication.getUserPermissions)
 // user GET requests
 app.get('/api/getUserList',
     authentication.authenticateAdmin, routes.getUserList);
+app.get('/auth/getPendingUsers',
+    authentication.authenticateAdmin, authentication.getPendingUsers);
 app.get('/api/getUserOrgs',
     authentication.authenticateUser, routes.getUserOrgs);
 // org GET requests
@@ -100,7 +102,7 @@ app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 
 // POST requests
-// authentication GET requests
+// authentication POST requests
 app.post('/login', authentication.login);
 app.post('/checkUniqueUsername', authentication.checkUniqueUsername);
 app.post('/register', authentication.register);
@@ -115,6 +117,8 @@ app.post('/changePassword',
 // user POST requests
 app.post('/api/changeOwnership',
     authentication.authenticateAdmin, routes.changeOwnership);
+app.post('/auth/resolveUser',
+    authentication.authenticateAdmin, authentication.resolveUser);
 // org POST requests
 app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
