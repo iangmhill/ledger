@@ -319,6 +319,45 @@ module.exports = {
         });
       });
     })
+  },
+  getPendingUsers: function(req, res) {
+    var errorResponse = {
+      pendingUsers: []
+    };
+    User.find({isApproved: false},{
+      password: 0,
+      orgs: 0,
+      isAdmin: 0,
+      isApproved: 0
+    }, function(err, users) {
+      if (err || !users) { return res.json(errorResponse); }
+      res.json({pendingUsers: users});
+    });
+  },
+  resolveUser: function(req, res) {
+    var errorResponse = {
+      isSuccessful: false,
+      username: 'UNKNOWN'
+    };
+    User.findById(req.body.userId, function(err, user) {
+      if (err || !user) { return res.json(errorResponse); }
+      if (req.body.isApproved) {
+        user.isApproved = true;
+        user.save(function(err, user) {
+          res.json({
+            isSuccessful: !!user && !err,
+            username: user.username
+          });
+        });
+      } else {
+        user.remove(function(err, user) {
+          res.json({
+            isSuccessful: !!user && !err,
+            username: user.username
+          });
+        });
+      }
+    });
   }
 };
 

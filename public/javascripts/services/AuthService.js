@@ -192,4 +192,23 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
+  this.getPendingUsers = function() {
+    var deferred = $q.defer();
+    $http.get('/auth/getPendingUsers').then(function success(response) {
+      deferred.resolve(response.data.pendingUsers);
+    });
+    return deferred.promise;
+  };
+
+  this.resolveUser = function(userId, isApproved) {
+    var deferred = $q.defer();
+    $http.post('/auth/resolveUser', {
+      userId: userId,
+      isApproved: isApproved
+    }).then(function success(response) {
+      deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
+
 });

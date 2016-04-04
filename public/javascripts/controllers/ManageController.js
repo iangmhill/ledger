@@ -1,42 +1,28 @@
 // public/javascripts/controllers/ManageController.js
-app.controller('ManageController', function($scope) {
-  $scope.accounts = [{
-    _id: 'asdlfasdfasdhgashdgh',
-    name: 'CORe',
-    value: '100.00',
-    allocated: '100.00',
-    unallocated: '50.00',
-    virtualFunds: [{
-      _id: 'asdlfgasdfgasd',
-      name: 'CORe',
-      value: '60.00',
-      allocated: '20.00',
-      unallocated: '30.00'
-    },{
-      _id: 'asdlfgasdfgasd',
-      name: 'SAC',
-      value: '60.00',
-      allocated: '20.00',
-      unallocated: '30.00'
-    }]
-  },{
-    _id: 'asdlfasdfasdhgashdgh',
-    name: 'CORe',
-    value: '100.00',
-    allocated: '100.00',
-    unallocated: '50.00',
-    virtualFunds: [{
-      _id: 'asdlfgasdfgasd',
-      name: 'CORe',
-      value: '60.00',
-      allocated: '20.00',
-      unallocated: '30.00'
-    },{
-      _id: 'asdlfgasdfgasd',
-      name: 'SAC',
-      value: '60.00',
-      allocated: '20.00',
-      unallocated: '30.00'
-    }]
-  }];
+app.controller('ManageController', function(AuthService) {
+  var MngCtrl = this;
+  this.pendingUsers = [];
+  this.alert = {
+    isActive: false,
+    type:'',
+    msg:''
+  };
+
+  AuthService.getPendingUsers().then(function(pendingUsers) {
+    MngCtrl.pendingUsers = pendingUsers || [];
+    console.log(MngCtrl.pendingUsers);
+  });
+
+  this.resolveUser = function(index, isApproved) {
+    console.log(this.pendingUsers[index]);
+    AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
+      MngCtrl.alert.isActive = true;
+      MngCtrl.alert.type = response.isSuccessful ? 'success' : 'danger';
+      MngCtrl.alert.msg = (response.isSuccessful ? 'SUCCESS' : 'FAILURE') +
+          ' ' + MngCtrl.pendingUsers[index].username + (isApproved ? ' approved' : ' rejected');
+      if (response.isSuccessful) {
+        MngCtrl.pendingUsers.splice(index, 1);
+      }
+    });
+  };
 });

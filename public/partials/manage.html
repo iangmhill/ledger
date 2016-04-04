@@ -1,83 +1,87 @@
-<!-- public/partials/manage.html -->
-<div class="container-card">
-  <h1>Manage Accounts and Virtual Funds</h1>
-  <form role="form" ng-submit="submitManageChanges()">
-    <div class="manage-two-column">
-      <div class="manage-column">
-        <h3>Accounts</h3>
-      </div>
-      <div class="manage-column">
-        <h3>Virtual Funds</h3>
-      </div>
-    </div>
-    <div class="manage-two-column" ng-repeat="account in accounts">
+<!--
+File: public/partials/manage.html
+Description: Allows the users to manage all types of requests and the funds of
+    the organizations they own.
+-->
+<div class="container">
+  <uib-alert
+      ng-if="MngCtrl.alert.isActive"
+      type="{{MngCtrl.alert.type}}"
+      close="MngCtrl.alert.isActive = false">
+    {{MngCtrl.alert.msg}}
+  </uib-alert>
 
-      <div class="manage-column">
-        <div class="form-group">
-          <label>{{account.name}}</label>
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Allocated</label>
-            </div>
-            <div class="finance-column">
-              <label class="accounting">{{account.allocated}}</label>
-            </div>
+  <h1>Manage</h1>
+  <hr>
+  <div
+      ng-if="MainCtrl.user.isAdmin"
+      ng-switch="MngCtrl.pendingUsers.length > 0">
+    <h4>Account Creation Requests</h4>
+    <div
+        class="row vertical-align"
+        ng-repeat="user in MngCtrl.pendingUsers"
+        ng-switch-when="true">
+      <div class="col-xs-8">
+        <div class="row vertical-align">
+          <div class="col-sm-2">
+          <div>{{user.name}}</div>
           </div>
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Unallocated</label>
-            </div>
-            <div class="finance-column">
-              <label class="accounting">{{account.unallocated}}</label>
-            </div>
+
+          <div class="col-sm-2 subtext indent">
+          <div>{{user.username}}</div>
           </div>
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Total</label>
-            </div>
-            <div class="finance-column">
-              <input class="form-control accounting" type="number" min="0" step=".01" ng-model="account.newValue" value="{{account.value}}">
-            </div>
+
+          <div class="col-sm-4 subtext indent">
+          <div>{{user.email}}</div>
           </div>
         </div>
       </div>
 
-      <div class="manage-column">
-        <div class="form-group" ng-repeat="virtualFund in account.virtualFunds">
-          <label>{{virtualFund.name}}</label>
-
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Allocated</label>
-            </div>
-            <div class="finance-column">
-              <label class="accounting">{{virtualFund.allocated}}</label>
-            </div>
-          </div>
-
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Unallocated</label>
-            </div>
-            <div class="finance-column">
-              <label class="accounting">{{virtualFund.unallocated}}</label>
-            </div>
-          </div>
-
-          <div class="finance-two-column">
-            <div class="finance-column">
-              <label>Total</label>
-            </div>
-            <div class="finance-column">
-              <input class="form-control accounting" type="number" min="0" step=".01" ng-model="virtualFund.newValue" value="{{virtualFund.value}}">
-            </div>
-          </div>
-
-          
+      <div class="col-xs-4 push-right">
+        <div class="btn-toolbar">
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveUser($index, true)">
+            <span>Approve</span>
+            <span class="glyphicon glyphicon-ok"></span>
+          </button>
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveUser($index, false)">
+            <span>Reject</span>
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
         </div>
       </div>
-
     </div>
-    <button class="right">Submit</button>
-  </form>
+
+    <div ng-switch-when="false">
+      <span class="subtext">No approvals pending</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div>
+    <h4>Organization Budget Requests</h4>
+  </div>
+
+  <hr>
+
+  <div>
+    <h4>Funding Requests</h4>
+  </div>
+
+  <hr>
+
+  <div>
+    <h4>Your Organizations</h4>
+  </div>
+
+
+
+
+
 </div>
