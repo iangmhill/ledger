@@ -4,7 +4,8 @@
   "description": "A web application for tracking funds and transactions",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "author": "Zhecan Wang, Ziyi Lan, Ian Hill",
   "license": "UNLICENSED",
@@ -27,5 +28,9 @@
     "passport-local": "^1.0.0",
     "q": "^1.4.1",
     "validator": "^5.1.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.4.0",
+    "minami": "^1.1.1"
   }
 }
