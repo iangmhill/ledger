@@ -1,4 +1,5 @@
 // public/javascripts/services/OrgService.js
+<<<<<<< HEAD
 app.service('RequestService', function($http, $q) {
   this.createRequest = function(requestData) {
   	var deferred = $q.defer();
@@ -13,6 +14,8 @@ app.service('RequestService', function($http, $q) {
     	}
       });
     return deferred.promise;
+
+>>>>>>> debugging
   };
 
 });
