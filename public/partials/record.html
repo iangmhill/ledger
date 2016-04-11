@@ -1,57 +1,93 @@
 <!-- public/partials/record.html -->
-<div class="container-card">
-  <h1>Record a Purchase</h1>
-    <form role="form" ng-submit="submitCreateRecordForm()">
+<html ng-app="recordpage">
+
+  <uib-alert 
+      ng-if="rec.alert.isActive"
+      type="{{rec.alert.type}}"
+      close="rec.alert.isActive = false">
+    {{rec.alert.msg}}
+  </uib-alert>
+<div class="container">
+
+  <center><h1>Record a Purchase</h1></center>
+  <br /> <br />
+    <form class="col-md-6 col-md-offset-3" role="form" ng-submit="submitCreateRecordForm()">
+
+  <div class="form-group">
+      <label>Are you making a reimbursement?</label>
+        <select class="form-control" ng-model= "rec.reimburse.value" >
+        <option value="n">---Please select---</option> <!-- not selected / blank option -->
+        <option value="r1">Yes</option> 
+        <option value="r2">No</option>
+      </select>
+    </div><br />
 
     <div class="form-group">
-    Are you doing making a reimbursement? <br /><select name="reim" id="reim" ng-model="data.singleSelect">
-      <option value="">---Please select---</option> <!-- not selected / blank option -->
-      <option value="ryes">Yes</option> <!-- interpolation -->
-      <option value="rno">No</option>
-    </select></div><br>
+      <label>Is this a revenue or expense?</label>
+      <select class="form-control" ng-model= "rec.typeChoice.value" >
+        <option value="n">---Please select---</option>
+        <option value="expense">Expense</option>
+        <option value="revenue">Revenue</option>
+      </select>
+    </div>
 
     <div class="form-group">
-	  	Which P-Card did you use? <br /><select name="pcard" id="pcard" ng-model="data.singleSelect">
-      	<option value="">---Please select---</option> <!-- not selected / blank option -->
-      	<option value="p1">1</option> <!-- interpolation -->
-      	<option value="p2">2</option>
-    	<option value="pna">I don't remember.</option>	
-    </select></div><br />
+      <label>Orgnization Name?</label>
+      <select class="form-control" ng-model= "rec.org.value" >
+        <option value="n">---Please select---</option> <!-- not selected / blank option -->
+        <option value="SAO">SAO</option>
+        <option value="SERV">SERV</option>
+        <option value="SG">SG</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Which P-Card did you use?</label>
+      <select class="form-control" ng-model="rec.pcard.value">
+        <option value="n">---Please select---</option> <!-- not selected / blank option -->
+        <option value="p1">1</option> 
+        <option value="p2">2</option>
+      <option value="p3">I don't remember.</option>  
+      </select>
+    </div><br />
 
     <div class="form-group">
 	    <label for="description">Date of Purchase <br /></label>
-	    <input class="form-control" type="text" ng-model="date" placeholder="dd/mm/yyyy">
+	    <input class="form-control" type="text" ng-model="rec.date.value" placeholder="dd/mm/yyyy">
     </div><br />
 
-    <div class="form-group">
-	    <label for="description">Purchase Amount<br /></label>
-	    <input class="form-control" type="text" ng-model="amount" placeholder="999.99">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="" ng-model="dt" is-open="opened" min="minDate" max="'2019-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+
+
+            
+
+    
+
+    <label >Purchase Amount</label><br /> 
+    <div class="form-group input-group">
+      <span class="input-group-addon">$</span>
+      <input type="number" class="form-control" placeholder="< 200 $" aria-label="Amount (to the nearest dollar)" ng-model = "rec.price.value">
+      <span class="input-group-addon">.00</span>
+    </div>
+
+  <div class="form-group">
+      <label>Was this purchase for SAC?</label>
+      <select class="form-control" ng-model="rec.sac.value">
+        <option value="n">---Please select---</option> <!-- not selected / blank option -->
+        <option value="sac1">Yes</option> 
+        <option value="sac2">No</option>
+      </select>
     </div><br />
 
-    <div class="form-group">
-	    Was this purchase made for SAC? <br /><select name="sac" id="sac" ng-model="data.singleSelect">
-      	<option value="">---Please select---</option> <!-- not selected / blank option -->
-      	<option value="sacy">Yes</option> <!-- interpolation -->
-      	<option value="sacn">No</option>
-    </select></div><br />
 
-    <div class="form-group">
-	    What was the money spent on? <br /><select name="purpose" id="purpose" ng-model="data.singleSelect">
-      	<option value="">---Please select---</option> <!-- not selected / blank option -->
-      	<option value="pur1">Food</option> <!-- interpolation -->
-      	<option value="pur2">Outing</option>
-    	<option value="pur3">Consumable supplies</option>
-    	<option value="pur4">Longterm supplies</option>
-    	<option value="pur5">Other</option>				
-    </select></div><br />
+    <div class = "row">
+      <button type="submit" class='btn btn-success btn-lg btn-block' >Submit</button> 
+    </div></form>
 
-    <div class="form-group">
-	    Did you return and sign in the p-card and put your paper form and receipt in the correct spot? <br />
-	    If not, please return it now.<br/><select name="ret" id="ret" ng-model="data.singleSelect">
-      	<option value="">---Make sure you return the card!---</option> <!-- not selected / blank option -->
-      	<option value="ret1">Yes</option> <!-- interpolation -->
-    </select></div><br />
-
-	<button class="right">Submit</button>
-    </form>
 </div>
+</html>

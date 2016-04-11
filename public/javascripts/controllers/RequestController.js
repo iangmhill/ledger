@@ -1,8 +1,10 @@
+<<<<<<< HEAD
 // public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope, RequestService) {
 	$scope.submitStatus = 0;	
 	$scope.alerts = [];
 
+>>>>>>> debugging
 	$scope.items = [];
 	$scope.links = [];
 
@@ -16,6 +18,7 @@ app.controller('RequestController', function($scope, RequestService) {
 	$scope.specificationCheck = false;
 	$scope.onlineCheck = false;
 
+<<<<<<< HEAD
 
 	var clearAlerts = function(){
 		$scope.organization.validation.isValid = 'empty';
@@ -313,3 +316,5 @@ app.controller('RequestController', function($scope, RequestService) {
 	};
 	
 });
+
+>>>>>>> debugging
