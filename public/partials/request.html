@@ -4,67 +4,137 @@
 
 
 <div class=".container-fluid">
-  <form class="col-md-6 col-md-offset-3" ng-submit="processForm()">  
+  <form name="requestForm" class="col-md-6 col-md-offset-3" ng-submit="processForm()">  
 
     <div class="col-md-4">
       <label >Type</label>
     </div>
   
-    <div class="form-group">
-      <!-- <span class="input-group-addon">Organization</span> -->
-      <select class="form-control" ng-model= typeChoice >
+    <div 
+        class="form-group"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[type.validation.isValid]">
+  <!-- <span class="input-group-addon">Organization</span> -->
+      <select class="form-control" name="type" ng-model= "type.value" ng-click="type.validate()" required>
         <option value="expense">Expense</option>
         <option value="transfer">Transfer</option>
         <option value="revenue">Revenue</option>
       </select>
+      <span
+          ng-if="type.validation.isValid == 'invalid'"
+          class="help-block">
+        {{type.validation.helpBlock}}
+      </span>
     </div>
 
     <div class="col-md-4">
       <label >Organization</label>
     </div>
   
-    <div class="form-group">
+    <div 
+        class="form-group"
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[organization.validation.isValid]">
+
       <!-- <span class="input-group-addon">Organization</span> -->
-      <select class="form-control" ng-model= organizationChoice >
+      <select class="form-control" name="organization" ng-model= "organization.value" ng-click="organization.validate()" required>
         <option value="SAO">SAO</option>
         <option value="SERV">SERV</option>
         <option value="SG">SG</option>
       </select>
+      <span
+          ng-if="organization.validation.isValid == 'invalid'"
+          class="help-block">
+        {{organization.validation.helpBlock}}
+      </span>
     </div>
 
     <div class="col-md-4">
       <label >Description</label>
     </div>
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="< 100 words" aria-describedby="basic-addon1" ng-model = description>
+    <div 
+        class="form-group" 
+        ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[description.validation.isValid]">
+      <!-- ng-click = "validate()" -->
+
+      <!-- <input type="text" class="form-control" placeholder="< 100 words" aria-describedby="basic-addon1" ng-model = description> -->
+      <input type="text" name="description" class="form-control" placeholder="< 100 words" aria-describedby="basic-addon1" ng-model = "description.value"  ng-blur="description.validate()" required>
+      <span
+          ng-if="description.validation.isValid == 'valid'"
+          class="requestGlyphicon glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-if="description.validation.isValid == 'invalid'"
+          class="requestGlyphicon glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <!-- </input> -->
+      <span
+          ng-if="description.validation.isValid == 'invalid'"
+          class="help-block">
+        {{description.validation.helpBlock}}
+      </span>
+<!--       <div ng-messages="requestForm.description.$error">
+        <div class = "help-block" ng-message="required">This field is required</div>
+      </div> -->
     </div>
 
     <div class="col-md-4">
       <label >Details</label>
     </div>
 
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="< 200 words" aria-describedby="basic-addon1" ng-model = details>
+    <div 
+      class="form-group"
+      ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[details.validation.isValid]">
+
+      <input type="text" name="details" class="form-control" placeholder="< 200 words" aria-describedby="basic-addon1" ng-model = "details.value" 
+      ng-blur="details.validate()" required/>
+      <span
+          ng-if="details.validation.isValid == 'valid'"
+          class="requestGlyphicon glyphicon glyphicon-ok form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-if="details.validation.isValid == 'invalid'"
+          class="requestGlyphicon glyphicon glyphicon-remove form-control-feedback"
+          aria-hidden="true"></span>
+      <span
+          ng-if="details.validation.isValid == 'invalid'"
+          class="help-block">
+        {{details.validation.helpBlock}}
+      </span>
     </div>
 
-<!--     <div class="col-md-4">
-      <label >Email</label>
+    <div ng-class="{valid:'has-success has-feedback',
+            invalid:'has-error has-feedback',
+            empty:''}[amount.validation.isValid]">
+
+      <div class="col-md-4">
+        <label >Amount</label>
+      </div>
+
+      <div class="form-group input-group">
+        <span class="input-group-addon">$</span>
+        <input type="number" name = "amount" class="form-control" placeholder="< 200 $" aria-label="Amount (to the nearest dollar)" ng-model = "amount.value" ng-blur="amount.validate()" required/>
+        <span
+          <span class="input-group-addon">.00</span>
+      </div>
+      <span
+          ng-if="amount.validation.isValid == 'invalid'"
+          class="col-md-8 col-md-offset-4 help-block">
+        {{amount.validation.helpBlock}}
+      </span>
+<!--       
+      <div class="col-md-8 col-md-offset-4 help-block" ng-messages="requestForm.amount.$error">
+        <div ng-message="required">This field is required</div>
+        <div ng-message="number">Your amount is invalid</div>
+      </div> -->
     </div>
 
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="for Notification" aria-describedby="basic-addon2" ng-model = email>
-      <! <span class="input-group-addon" id="basic-addon2">@example.com</span> -->
-    <!-- </div> -->
- <!-- --> 
-    <div class="col-md-4">
-      <label >Amount</label>
-    </div>
-
-    <div class="form-group input-group">
-      <span class="input-group-addon">$</span>
-      <input type="number" class="form-control" placeholder="< 200 $" aria-label="Amount (to the nearest dollar)" ng-model = totalPrice>
-      <span class="input-group-addon">.00</span>
-    </div>
 
     <div class = "row">
       <label class="col-md-4">Specification</label>
@@ -146,6 +216,43 @@
     </div>
     
   </form>
+
+<!-- <form name="exampleForm" class="elegant-aero">
+    <label>First Name:</label>
+    <input type="text" name="userFirstName" ng-model="firstName" required />
+    <div ng-messages="exampleForm.userFirstName.$error">
+      <div ng-message="required">This field is required</div>
+    </div>
+
+    <label>Last Name:</label>
+    <input type="text" name="userLastName" ng-model="lastName" required />
+    <div ng-messages="exampleForm.userLastName.$error">
+      <div ng-message="required">This field is required</div>
+    </div>
+
+    <label>Email Address:</label>
+    <input type="email" name="userEmail" ng-model="email" required />
+    <div ng-messages="exampleForm.userEmail.$error">
+      <div ng-message="required">This field is required</div>
+      <div ng-message="email">Your email address is invalid</div>
+    </div>
+
+    <label>Phone Number:</label>
+    <input type="email" name="userPhoneNumber" ng-model="phoneNumber" ng-pattern="/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/" required/>
+    <div ng-messages="exampleForm.userPhoneNumber.$error">
+      <div ng-message="required">This field is required</div>
+      <div ng-message="pattern">Must be a valid 10 digit phone number</div>
+    </div>
+
+    <label>User Message:</label>
+    <textarea type="text" name="userMessage" class="form-control" rows="4" ng-model="message" ng-minlength="10" ng-maxlength="100" required></textarea>
+    <div ng-messages="exampleForm.userMessage.$error">
+      <div ng-message="required">This field is required</div>
+      <div ng-message="minlength">Message must be over 10 characters</div>
+      <div ng-message="maxlength">Message must not exceed 100 characters</div>
+    </div>
+  </form> -->
+
 </div>
 
 

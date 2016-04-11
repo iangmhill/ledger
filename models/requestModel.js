@@ -6,7 +6,7 @@ var Mixed    = mongoose.Schema.Types.Mixed;
 var Request = mongoose.Schema({
   user: {
     type: ObjectId,
-    // required: true
+    required: true
   },
   created: {
     type: Date,
@@ -16,28 +16,28 @@ var Request = mongoose.Schema({
   description: {
     type: String,
     required: true,
-    default: "test"
+    // default: "test"
   },
   type: {
     type: String,
     required: true,
     enum: ['expense', 'transfer', 'revenue'],
-    default: "expense"
+    // default: "expense"
   },
   value: {
     type: Number,
     required: true,
-    default: 100
+    // default: 100
   },
   org: {
     type: String,
     // type: ObjectId,
-    // required: true
-    default: "SAO"
+    required: true
+    // default: "SAO"
   },
   details: {
     type: String, 
-    // type: Mixed,
+    type: Mixed,
     required: true,
     // default: {}
     default: ""
@@ -48,15 +48,15 @@ var Request = mongoose.Schema({
   specification: {
     type: Array,
     required: true,
-    default: ["test"]
+    // default: ["test"]
   },
   isActive: {
     type: Boolean,
-    // required: true
+    required: true
   },
   approvals: {
     type: [ObjectId],
-    required: true,
+    // required: true,
     default: []
   },
   isApproved: {

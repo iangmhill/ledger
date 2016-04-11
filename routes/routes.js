@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var Org = require('../models/orgModel');
 var User = require('../models/userModel');
 var Request = require('../models/requestModel');
+var validation    = require('../utilities/validation');
 
 var routes = {
   getUserList: function(req, res) {
@@ -46,6 +47,7 @@ var routes = {
   createRequest: function(req, res) {
     function confirm(err, request) {
       if (err) {
+        console.log("I failrew" + err)
         return res.send({
           success: false,
           message: 'ERROR: Could not create topic'
@@ -55,37 +57,37 @@ var routes = {
         success: true,
       });
     }
-    Request.create({
-      user: req.user._id
-    }, confirm);
-
+    // console.log("req.body: " + req.body);
+    // console.log("user id: " + req.user._id);
+    
+    var data = {
+              user: req.user._id,
+              description: req.body.description,
+              type: req.body.type,
+              value: req.body.amount,
+              org: req.body.organization,
+              details: req.body.details,
+              online: req.body.online,
+              specification: req.body.specification,
+              isActive: false,
+              isApproved: false
+            }
+    var errorResponse = { isSuccessful: false, isValid: false };
+    console.log("server request ");
+    validation.request(
+      data.description, 
+      data.type, 
+      data.value, 
+      data.org, 
+      data.details, 
+      data.online, 
+      data.specification
+    ).then(function(isValid) {
+      console.log("request then function");
+      if (!isValid) { return res.json(errorResponse); }
+      Request.create(data, confirm);
+    })
   },
-  // createRequest: function(req, res) {
-  //   function confirm(err, request) {
-  //     console.log("confirm: " + request);
-  //     if (err) {
-  //       return res.send({
-  //         success: false,
-  //         message: 'ERROR: Could not create request'
-  //       });
-  //     }
-  //     return res.send({
-  //       success: true,
-  //     });
-  //   }
-  //   var data = {
-  //           user: req.user._id,
-  //           description: req.body.description,
-  //           type: req.body.type,
-  //           value: req.body.amount,
-  //           org: req.body.organization,
-  //           details: req.body.details,
-  //           online: req.body.online,
-  //           specification: req.body.specification
-  //         }
-  //   console.log("routes data: " + JSON.stringify(data, null, 4));
-  //   Request.create(data, confirm);
-  // },
   approveRequest: function(req, res) {
 
   },
