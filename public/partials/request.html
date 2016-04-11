@@ -1,146 +1,146 @@
-
 <!-- public/partials/request.html -->
 
 
 
 <div class=".container-fluid">
-  <form class="col-md-6 col-md-offset-3" ng-submit="processForm()">    
-    <div class="row">
-      <div class="input-group">
-        <span class="input-group-addon">Organization</span>
-        <div class="btn-group" uib-dropdown >
-          <button id="single-button" type="button" class="btn btn-pull" uib-dropdown-toggle >
-            Select <span class="caret"></span>
-          </button>
-          <ul uib-dropdown-menu role="menu" aria-labelledby="single-button">
-            <li ><a href="#" ng-model = "organization">SAO</a></li>
-            <li ><a href="#" ng-model = "organization">SERV</a></li>
-            <li ><a href="#" ng-model = "organization">SG</a></li>
-          </ul>
-        </div>  
-      </div>
+  <form class="col-md-6 col-md-offset-3" ng-submit="processForm()">  
+
+    <div class="col-md-4">
+      <label >Type</label>
+    </div>
+  
+    <div class="form-group">
+      <!-- <span class="input-group-addon">Organization</span> -->
+      <select class="form-control" ng-model= typeChoice >
+        <option value="expense">Expense</option>
+        <option value="transfer">Transfer</option>
+        <option value="revenue">Revenue</option>
+      </select>
     </div>
 
-    <div class="row">
-      <div class="input-group">
-        <span class="input-group-addon" id="basic-addon1">Description</span>
-        <input type="text" class="form-control" placeholder="< 100 words" aria-describedby="basic-addon1">
-      </div>
+    <div class="col-md-4">
+      <label >Organization</label>
+    </div>
+  
+    <div class="form-group">
+      <!-- <span class="input-group-addon">Organization</span> -->
+      <select class="form-control" ng-model= organizationChoice >
+        <option value="SAO">SAO</option>
+        <option value="SERV">SERV</option>
+        <option value="SG">SG</option>
+      </select>
     </div>
 
-    <div class="row">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Notification email" aria-describedby="basic-addon2">
-        <span class="input-group-addon" id="basic-addon2">@example.com</span>
-      </div>
-    </div>    
-
-    <div class="row">
-      <div class="input-group">
-        <span class="input-group-addon">$</span>
-        <input type="number" class="form-control" placeholder="< 200 $" aria-label="Amount (to the nearest dollar)">
-        <span class="input-group-addon">.00</span>
-      </div>
+    <div class="col-md-4">
+      <label >Description</label>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="< 100 words" aria-describedby="basic-addon1" ng-model = description>
     </div>
 
-  <!-- 
-    <label for="basic-url">Your vanity URL</label>
-    <div class="input-group">
-      <span class="input-group-addon" id="basic-addon3">https://example.com/users/</span>
-      <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+    <div class="col-md-4">
+      <label >Details</label>
     </div>
-   -->
 
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="< 200 words" aria-describedby="basic-addon1" ng-model = details>
+    </div>
 
-    <div class="row">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" ng-model="onlineCheck">
-          If Online
-        </label>
-      </div>
+<!--     <div class="col-md-4">
+      <label >Email</label>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="for Notification" aria-describedby="basic-addon2" ng-model = email>
+      <! <span class="input-group-addon" id="basic-addon2">@example.com</span> -->
+    <!-- </div> -->
+ <!-- --> 
+    <div class="col-md-4">
+      <label >Amount</label>
+    </div>
+
+    <div class="form-group input-group">
+      <span class="input-group-addon">$</span>
+      <input type="number" class="form-control" placeholder="< 200 $" aria-label="Amount (to the nearest dollar)" ng-model = totalPrice>
+      <span class="input-group-addon">.00</span>
+    </div>
+
+    <div class = "row">
+      <label class="col-md-4">Specification</label>
+    </div>
+
+    <div class = "specification" >
+        <div  class = "form-group row" ng-repeat="item in items">
+                <div class="col-md-4" >
+                  <div class="input-group">
+                        <span class="input-group-addon">Item</span>
+                        <input type="text" class="form-control"  ng-model = item.name >
+                  </div>
+                </div>
+
+                <div class="col-md-5">
+                  <div class="input-group">
+                    <span class="input-group-addon">Price</span>
+                    <input type="number" class="form-control" ng-model = item.price>
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <select class="form-control" ng-model= item.category >
+                      <option value="Food">Food</option>
+                      <option value="Equipment">Equipment</option>
+                      <option value="Stationary">Stationary</option>
+                      <option value="Dangerous Stuff">Dangerous Stuff</option>
+                    </select>
+                  </div>
+                </div>
+                <div class = "col-md-1 vcenter">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delItem(item.index)"></span>
+                </div>
+        </div>
+        <div class="btn-toolbar">
+          <button type="button" class='btn btn-default' ng-click="addItem()">Add Item</button>
+          <!-- <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button>  -->
+        </div>
+    </div>
+
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ng-model="onlineCheck">
+        <Strong>If Online</Strong>
+      </label>
     </div>
     
     <div class = "onlineSpecification" ng-show = "onlineCheck"> 
       
-      <div class="row">
-        <button type="button" class='btn btn-default' ng-click="addLink()">Add Item</button>
-        <button type="button" class='btn btn-default' ng-click="delLink()">Delete Item</button> 
-      </div>
-
-      <div ng-repeat="link in links">
-        <div class = "row" >
-          <div class="col-md-6" >
+      <div ng-repeat="link in links" class = "form-group row">
+          <div class="col-md-5" >
             <div class="input-group">
                   <span class="input-group-addon">Link</span>
-                  <input type="text" class="form-control" >
+                  <input type="text" class="form-control" ng-model = link.url>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="input-group">
               <span class="input-group-addon">Description</span>
-              <input type="number" class="form-control" >
+              <input type="text" class="form-control" ng-model = link.description>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="row">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" ng-model="spcificationCheck">
-          Specification
-        </label>
-      </div>
-    </div>
-
-    <div class = "specification" ng-show = "spcificationCheck" >
-      <div class="row">
-        <button type="button" class='btn btn-default' ng-click="addItem()">Add Item</button>
-        <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button> 
-      </div>
-
-      <div  ng-repeat="item in items">
-          <div class="row">
-              <div class="col-md-5" >
-                <div class="input-group">
-                      <span class="input-group-addon">Item</span>
-                      <input type="text" class="form-control" >
-                </div>
-              </div>
-
-              <div class="col-md-5">
-                <div class="input-group">
-                  <span class="input-group-addon">Price</span>
-                  <input type="text" class="form-control" >
-                </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="input-group">
-
-                  <div class="btn-group" uib-dropdown>
-                    <button id="btn-append-to-single-button" type="button" class="btn btn-secondary" uib-dropdown-toggle>
-                      Category <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-single-button">
-                      <li role="menuitem"><a href="#">Food</a></li>
-                      <li role="menuitem"><a href="#">Equipment</a></li>
-                      <li role="menuitem"><a href="#">Stationary</a></li>
-                      <li role="menuitem"><a href="#">Dangerous Stuff</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+          <div class = "col-md-1 vcenter">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delLink(link.index)"></span>
           </div>
-      </div>      
+      </div>
+
+    <div class="btn-toolbar">
+      <button type="button" class='btn btn-default' ng-click="addLink()">Add Item</button>
+      <!-- <button type="button" class='btn btn-default' ng-click="delLink()">Delete Item</button>  -->
     </div>
 
-    <div class = "row">
-      <button type="submit" class='btn btn-success btn-lg btn-block' >Sumit</button> 
+    </div>
+
+    <div class="request-form-submit">
+      <button type="submit" class='btn btn-success btn-lg btn-block' >Submit</button> 
     </div>
     
   </form>

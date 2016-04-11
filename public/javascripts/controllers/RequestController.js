@@ -1,35 +1,26 @@
-// public/javascripts/controllers/RequestController.js
-app.controller('RequestController', function($scope) {
-	$scope.specificationCheck = false;
-	$scope.onlineCheck = false;
-	$scope.organization = "";
-
+/ public/javascripts/controllers/RequestController.js
+app.controller('RequestController', function($scope, RequestService) {
 	$scope.items = [];
 	$scope.links = [];
-	var item = 1;
-	var link = 1;
+
+	var item = {name: "", price: 0, category: "", index: 0};
+	var link = {url: "", description: "", index: 0};
+
 	$scope.items.push(item);
 	$scope.links.push(link);
 
-	$scope.processForm = function(){
-		console.log("submit the form");
-		console.log($scope.organization);
-	};
 
-	$scope.addItem = function(){
-		item += 1;
-		$scope.items.push(item);
-	};
-	$scope.delItem = function(){
-		$scope.items.pop();
-	};
+	$scope.specificationCheck = false;
+	$scope.onlineCheck = false;
 
-	$scope.addLink = function(){
-		link += 1;
-		$scope.links.push(link);
-	};
-	$scope.delLink = function(){
-		$scope.links.pop();
-	};
-	
-});
+	$scope.organizationChoice
+	$scope.categoryChoice;
+	$scope.description = "";
+	$scope.totalPrice = 0;
+	$scope.typeChoice = "";
+	$scope.details = "";
+
+
+
+
+	$scope.processFor
