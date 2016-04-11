@@ -56,6 +56,7 @@ var app = angular.module('ledger', [
       .when('/record', {
         templateUrl: 'partials/record.html',
         controller: 'RecordController',
+        controllerAs: 'rec',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);

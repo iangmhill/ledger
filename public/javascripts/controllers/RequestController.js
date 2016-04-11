@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 // public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope, RequestService) {
 	$scope.submitStatus = 0;	
@@ -233,6 +234,7 @@ app.controller('RequestController', function($scope, RequestService) {
 		}	
 	}
 
+<<<<<<< HEAD
 	$scope.specification = {
 		// name: "", 
 		// price: 0, 
@@ -317,4 +319,4 @@ app.controller('RequestController', function($scope, RequestService) {
 	
 });
 
->>>>>>> debugging
+>>>>>>> debuggin
