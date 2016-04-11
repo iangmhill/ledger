@@ -12,7 +12,7 @@ app.service('RecordService', function($http, $q, $rootScope, $location) {
 
   this.UpdateCallbacks = [];
 
-  this.UpdateCallback = function(callback) {
+  this.saveRecord = function(callback) {
     var service = this;
     this.UpdateCallbacks.push(callback);
       this.fetchPermissions().then(function success(response) {

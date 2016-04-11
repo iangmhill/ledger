@@ -1,4 +1,4 @@
-/ public/javascripts/controllers/RequestController.js
+// public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope, RequestService) {
 	$scope.items = [];
 	$scope.links = [];
@@ -20,7 +20,4 @@ app.controller('RequestController', function($scope, RequestService) {
 	$scope.typeChoice = "";
 	$scope.details = "";
 
-
-
-
-	$scope.processFor
+});
