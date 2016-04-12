@@ -1,3 +1,13 @@
+/**
+ * Startup function
+ * @module utilities/startup
+ * @requires NPM:q
+ * @requires models/userModel
+ * @requires models/orgModel
+ */
+
+'use strict';
+
 var User = require('../models/userModel');
 var Org  = require('../models/orgModel');
 var q    = require('q');
@@ -11,7 +21,11 @@ var errors = {
   SYSTEM_SAVE: 'Could not save system organization'
 };
 
-var startup = {
+module.exports = {
+  /**
+   * Initializes the database with an admin user and a system org if they do not
+   * already exist.
+   */
   initialize: function() {
     var deferred = q.defer();
     var systemOrgId;
@@ -22,7 +36,7 @@ var startup = {
           Org.create({
             name: 'system',
             budgeted: false,
-            terminal: false
+            nonterminal: true
           }, function (err, system) {
             if (err) { return deferred.resolve(errors.SYSTEM_SAVE) };
             systemOrgId = system._id;
@@ -64,6 +78,4 @@ var startup = {
     
     return deferred.promise;    
   }
-}
-
-module.exports = startup;
+};

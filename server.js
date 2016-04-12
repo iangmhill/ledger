@@ -1,9 +1,28 @@
-/*
-  Ledger: A web application for tracking the funds and transactions of the Olin
-  College Student Government.
-
-  Authors: Zhecan "James" Wang, Ziyi "Jason" Lan, Ian Hill
-*/ 
+/**
+ * @fileOverview Server.js defines the external modules used server-side for
+ * Ledger, defines server routes, and initializes Express and MongoDB.
+ *
+ * @version    0.0.1
+ *
+ * @author     Zhecan "James" Wang
+ * @author     Ziyi "Jason" Lan
+ * @author     Ian Hill
+ *
+ * @requires   NPM:dotenv
+ * @requires   NPM:path
+ * @requires   NPM:morgan
+ * @requires   NPM:cookie-parser
+ * @requires   NPM:q
+ * @requires   NPM:express
+ * @requires   NPM:body-parser
+ * @requires   NPM:mongoose
+ * @requires   NPM:express-session
+ * @requires   NPM:connect-mongo
+ * @requires   NPM:less-middleware
+ * @requires   routes/routes
+ * @requires   ultilities/startup
+ * @requires   authentication
+ */ 
 
 // MODULE IMPORTS ==============================================================
 
@@ -81,6 +100,8 @@ app.get('/api/getUserPermissions', authentication.getUserPermissions)
 // user GET requests
 app.get('/api/getUserList',
     authentication.authenticateAdmin, routes.getUserList);
+app.get('/auth/getPendingUsers',
+    authentication.authenticateAdmin, authentication.getPendingUsers);
 app.get('/api/getUserOrgs',
     authentication.authenticateUser, routes.getUserOrgs);
 // org GET requests
@@ -100,7 +121,7 @@ app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 
 // POST requests
-// authentication GET requests
+// authentication POST requests
 app.post('/login', authentication.login);
 app.post('/checkUniqueUsername', authentication.checkUniqueUsername);
 app.post('/register', authentication.register);
@@ -115,6 +136,8 @@ app.post('/changePassword',
 // user POST requests
 app.post('/api/changeOwnership',
     authentication.authenticateAdmin, routes.changeOwnership);
+app.post('/auth/resolveUser',
+    authentication.authenticateAdmin, authentication.resolveUser);
 // org POST requests
 app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
