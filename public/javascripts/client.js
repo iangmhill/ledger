@@ -2,7 +2,8 @@ var app = angular.module('ledger', [
     'ngRoute',
     'ngAnimate',
     'ngTouch',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'ngMessages'
   ]).config([
     '$routeProvider',
     '$locationProvider',

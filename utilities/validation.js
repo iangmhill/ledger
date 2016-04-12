@@ -12,10 +12,25 @@
 var validator = require('validator');
 var Org       = require('../models/orgModel');
 var User      = require('../models/userModel');
+var Org       = require('../models/orgModel');
 var q         = require('q');
 var constants = require('./constants');
 
+function emailCheck(email) {
+  return typeof email === 'string' && validator.isEmail(email);
+}
+function stringCheck(content) {
+  return typeof content === 'string' && content.trim().length > 0;
+}
+function numberCheck(content) {
+  content = String(content);
+  return(validator.isIn(content) || validator.isFloat(content));
+}
+
 module.exports = {
+  emailCheck: emailCheck,
+  stringCheck: stringCheck,
+  numberCheck: numberCheck,
   user: {
     /**
      * Validates the four important properties of a user.
@@ -62,16 +77,48 @@ module.exports = {
      * @param {string} username The real name to be validated.
      * @return {boolean} Whether the real name is valid.
      */
-    name: function(name) {
-      return typeof name === 'string' && name.trim().length > 0;
-    },
+    name: stringCheck,
     /**
      * Validates an email.
      * @param {string} username The email to be validated.
      * @return {boolean} Whether the email is valid.
      */
-    email: function(email) {
-      return typeof email === 'string' && validator.isEmail(email);
+    email: emailCheck
+  },
+  request: {
+    specification: function(content){
+      // var validation = this;
+      // if(content.length == 0){
+      //   return false;
+      // }
+      // content.forEach(function(entry){
+      //   if(!this.stringCheck(Object.keys(entry)[0]) || !this.numberCheck(Object.values(entry)[0])){
+      //     return false;
+      //   }
+      // })
+      return true;
+    },
+    online: function(content){
+      // var validation = this;
+      // content.forEach(function(entry){
+      //   if(!validation.stringCheck(Object.keys(entry)[0]) || !validation.numberCheck(Object.values(entry)[0])){
+      //     return false;
+      //   }
+      // })
+      return true;
+    },
+    request:function(description, type, value, org, details, online, specification){
+      var deferred = q.defer();
+      var validation = this;
+      this.org(org).then(function(isRequestValid) {
+        deferred.resolve(
+          isRequestValid &&
+          validation.stringCheck(description) && validation.stringCheck(type) && 
+          validation.numberCheck(value) && validation.stringCheck(details) && 
+          validation.online(online) && validation.specification(specification));
+      });
+      console.log("validation after then function");  
+      return deferred.promise;
     }
   },
   org: {
