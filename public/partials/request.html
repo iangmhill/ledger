@@ -4,7 +4,14 @@
 
 
 <div class=".container-fluid">
-  <form name="requestForm" class="col-md-6 col-md-offset-3" ng-submit="processForm()">  
+  <form name="requestForm" class="col-md-8 col-md-offset-2" ng-submit="processForm()">  
+      <!-- Alerts indicating the result of a requested operation -->
+    <uib-alert 
+        ng-repeat="alert in alerts"
+        type="{{alert.type}}"
+        close="dismissAlert($index)">
+      {{alert.msg}}
+    </uib-alert>
 
     <div class="col-md-4">
       <label >Type</label>
@@ -16,7 +23,7 @@
             invalid:'has-error has-feedback',
             empty:''}[type.validation.isValid]">
   <!-- <span class="input-group-addon">Organization</span> -->
-      <select class="form-control" name="type" ng-model= "type.value" ng-click="type.validate()" required>
+      <select class="form-control" name="type" ng-model= "type.value" ng-focus="type.validate()" ng-blur="type.validate()" ng-click="type.validate()" required>
         <option value="expense">Expense</option>
         <option value="transfer">Transfer</option>
         <option value="revenue">Revenue</option>
@@ -39,7 +46,7 @@
             empty:''}[organization.validation.isValid]">
 
       <!-- <span class="input-group-addon">Organization</span> -->
-      <select class="form-control" name="organization" ng-model= "organization.value" ng-click="organization.validate()" required>
+      <select class="form-control" name="organization" ng-model= "organization.value" ng-focus="organization.validate()" ng-blur="organization.validate()" ng-click="organization.validate()" required>
         <option value="SAO">SAO</option>
         <option value="SERV">SERV</option>
         <option value="SG">SG</option>
@@ -128,11 +135,6 @@
           class="col-md-8 col-md-offset-4 help-block">
         {{amount.validation.helpBlock}}
       </span>
-<!--       
-      <div class="col-md-8 col-md-offset-4 help-block" ng-messages="requestForm.amount.$error">
-        <div ng-message="required">This field is required</div>
-        <div ng-message="number">Your amount is invalid</div>
-      </div> -->
     </div>
 
 
@@ -140,25 +142,30 @@
       <label class="col-md-4">Specification</label>
     </div>
 
-    <div class = "specification" >
+    <div 
+      class = "specification" 
+      ng-class="{valid:'has-success has-feedback',
+              invalid:'has-error has-feedback',
+              empty:''}[specification.validation.isValid]">
         <div  class = "form-group row" ng-repeat="item in items">
                 <div class="col-md-4" >
                   <div class="input-group">
                         <span class="input-group-addon">Item</span>
-                        <input type="text" class="form-control"  ng-model = item.name >
+                        <input name = "specificationName" type="text" class="form-control"  ng-model = item.name ng-blur="specification.validateName()" required/>
                   </div>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                   <div class="input-group">
                     <span class="input-group-addon">Price</span>
-                    <input type="number" class="form-control" ng-model = item.price>
+                    <input name = "specificationPrice" type="number" class="form-control" ng-model = item.price ng-blur="specification.validatePrice()" required>
                   </div>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <div class="input-group">
-                    <select class="form-control" ng-model= item.category >
+                    <select name = "specificationItemCategory" class="form-control" ng-focus="specification.validateItemCategory()" ng-blur="specification.validateItemCategory()" ng-click="specification.validateItemCategory()" ng-model= item.category required>
+
                       <option value="Food">Food</option>
                       <option value="Equipment">Equipment</option>
                       <option value="Stationary">Stationary</option>
@@ -170,6 +177,11 @@
                   <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delItem(item.index)"></span>
                 </div>
         </div>
+         <span
+            ng-if="specification.validation.isValid == 'invalid'"
+            class="col-md-8 col-md-offset-4 help-block">
+          {{specification.validation.helpBlock}}
+        </span>
         <div class="btn-toolbar">
           <button type="button" class='btn btn-default' ng-click="addItem()">Add Item</button>
           <!-- <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button>  -->

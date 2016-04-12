@@ -84,7 +84,10 @@ var routes = {
       data.specification
     ).then(function(isValid) {
       console.log("request then function");
-      if (!isValid) { return res.json(errorResponse); }
+      if (!isValid) { 
+        console.log("request data is InValid");
+        return res.json(errorResponse); }
+      console.log("request data is valid");
       Request.create(data, confirm);
     })
   },

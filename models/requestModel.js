@@ -22,7 +22,7 @@ var Request = mongoose.Schema({
     type: String,
     required: true,
     enum: ['expense', 'transfer', 'revenue'],
-    // default: "expense"
+    default: "expense"
   },
   value: {
     type: Number,
@@ -37,7 +37,7 @@ var Request = mongoose.Schema({
   },
   details: {
     type: String, 
-    type: Mixed,
+    // type: Mixed,
     required: true,
     // default: {}
     default: ""
