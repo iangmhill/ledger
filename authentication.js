@@ -98,7 +98,7 @@ module.exports = {
     if (req.user) {
       return res.json(errorResponse);
     }
-    validation.user(
+    validation.user.user(
       req.body.username,
       req.body.password,
       req.body.name,
@@ -129,7 +129,7 @@ module.exports = {
    * @param {object} res The HTTP response to be sent.
    */
   checkUniqueUsername: function(req, res) {
-    validation.username(req.body.username).then(function(isValid) {
+    validation.user.username(req.body.username).then(function(isValid) {
       res.json({ isUnique: isValid });
     })
   },
@@ -200,7 +200,7 @@ module.exports = {
       isAuthenticated: false,
       error: 'Invalid password.'
     };
-    if (!validation.password(password)) { return res.json(errorResponse); }
+    if (!validation.user.password(password)) { return res.json(errorResponse); }
     User.findById({_id: req.user._id}, function(err, user) {
       if (err) { return next(err); };
       if (!user) { return res.json(errorResponse); }
@@ -234,7 +234,7 @@ module.exports = {
       orgs: req.user.orgs,
       isAdmin: req.user.isAdmin
     };
-    if (!validation.email(newEmail)) { return res.json(errorResponse); }
+    if (!validation.user.email(newEmail)) { return res.json(errorResponse); }
     User.findById({_id: req.user._id}, function(err, user) {
       if (err || !user) { return res.json(errorResponse); }
       user.email = req.body.newEmail;
@@ -275,7 +275,7 @@ module.exports = {
       orgs: req.user.orgs,
       isAdmin: req.user.isAdmin
     };
-    if (!validation.name(newName)) { return res.json(errorResponse); }
+    if (!validation.user.name(newName)) { return res.json(errorResponse); }
     User.findById({_id: req.user._id}, function(err, user) {
       if (err || !user) { return res.json(errorResponse); }
       user.name = req.body.newName.trim();
@@ -308,7 +308,9 @@ module.exports = {
       isAuthenticated: true,
       error: 'Invalid new password.'
     };
-    if (!validation.password(newPassword)) { return res.json(errorResponse); }
+    if (!validation.user.password(newPassword)) {
+      return res.json(errorResponse);
+    }
     User.findById({_id: req.user._id}, function(err, user) {
       if (err || !user) { return res.json(errorResponse); }
       User.generateHash(newPassword).then(function(hash) {
