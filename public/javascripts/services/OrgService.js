@@ -1,11 +1,21 @@
 // public/javascripts/services/OrgService.js
-app.service('OrgService', function($http) {
+app.service('OrgService', function($http, $q) {
 
-  this.get = function() {
-    var orgs = $http.get('/api/getOrgs').then(function (response) {
-        return response.data;
-      });
-    return orgs;
+  this.getUserOrgs = function() {
+    var deferred = $q.defer();
+    $http.get('/api/getUserOrgs').then(function (response) {
+      console.log(response.data);
+      return deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
+
+  this.createOrg = function(orgData) {
+    var deferred = $q.defer();
+    $http.post('/api/createOrg', orgData).then(function (response) {
+      return deferred.resolve(response.data);
+    });
+    return deferred.promise;
   };
 
 });

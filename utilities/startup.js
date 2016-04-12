@@ -36,7 +36,7 @@ module.exports = {
           Org.create({
             name: 'system',
             budgeted: false,
-            terminal: false
+            nonterminal: true
           }, function (err, system) {
             if (err) { return deferred.resolve(errors.SYSTEM_SAVE) };
             systemOrgId = system._id;

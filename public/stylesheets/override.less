@@ -19,6 +19,7 @@
 
 @grid-gutter-width: 30px;
 @container-login: (360px + @grid-gutter-width);
+@row-height: 50px;
 
 .container-login {
   max-width: @container-login;
@@ -32,7 +33,74 @@
   background-color: #f9f9f9;
 }
 
-.row{
-	padding:10px;
+// .row {
+// 	padding:10px;
+// }
+
+@media (min-width: 768px) {
+  .vertical-align {
+    
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+  }
+  .vertical-align > [class^="col-"], .vertical-align > [class*=" col-"] {
+    display: flex;
+    align-items: center;
+  }
 }
 
+.push-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bold {
+  font-weight: 700;
+}
+.subtext {
+  color: #888888;
+  font-size: .9em;
+}
+// .indent {
+//   padding-left: 30px;
+// }
+.btn-link:hover {
+  text-decoration: none;
+}
+body {
+  font-family: 'Montserrat';
+  font-weight: 400;
+}
+.org {
+  padding: 0px 0px 4px 20px;
+  margin: 0px 0px 0px 0px;
+}
+.org-header {
+  &:hover {
+    background-color: #ddd;
+  }
+  border: solid #eee;
+  border-width: 0px 0px 1px 0px;
+  display: flex;
+  padding: 4px;
+}
+.org-name {
+  flex: 1;
+}
+.org-highlights {
+  display: flex;
+  width: 300px;
+}
+.org-highlight {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+}
+#root-org {
+  padding-left: 0px;
+}
