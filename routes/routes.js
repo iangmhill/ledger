@@ -152,7 +152,7 @@ var routes = {
             }
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
-    validation.request(
+    if (!validation.request.request(
       data.description, 
       data.type, 
       data.value, 
@@ -160,14 +160,12 @@ var routes = {
       data.details, 
       data.online, 
       data.specification
-    ).then(function(isValid) {
-      console.log("request then function");
-      if (!isValid) { 
-        console.log("request data is InValid");
-        return res.json(errorResponse); }
-      console.log("request data is valid");
-      Request.create(data, confirm);
-    })
+    )) { 
+      console.log("request data is InValid");
+      return res.json(errorResponse);
+    }
+    console.log("request data is valid");
+    Request.create(data, confirm);
   },
   approveRequest: function(req, res) {
 

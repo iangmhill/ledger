@@ -108,17 +108,9 @@ module.exports = {
       return true;
     },
     request:function(description, type, value, org, details, online, specification){
-      var deferred = q.defer();
-      var validation = this;
-      this.org(org).then(function(isRequestValid) {
-        deferred.resolve(
-          isRequestValid &&
-          validation.stringCheck(description) && validation.stringCheck(type) && 
-          validation.numberCheck(value) && validation.stringCheck(details) && 
-          validation.online(online) && validation.specification(specification));
-      });
-      console.log("validation after then function");  
-      return deferred.promise;
+      return stringCheck(description) && stringCheck(type) && 
+          numberCheck(value) && stringCheck(details) && 
+          this.online(online) && this.specification(specification);
     }
   },
   org: {
