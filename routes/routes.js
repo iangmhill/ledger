@@ -99,7 +99,8 @@ var routes = {
           nonterminal: req.body.nonterminal,
           approvalProcess: req.body.approvalProcess
         }, function (err, org) {
-          console.log(err);
+          var org = org.toObject();
+          org.owners = [];
           res.json({
             isSuccessful: !!org && !err,
             org: org

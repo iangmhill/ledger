@@ -34,7 +34,6 @@ app.controller('ManageController', function(AuthService, OrgService) {
   };
   this.updateOrgs = function() {
     for (id in this.orgs) {
-      console.log(this.orgs[id].owners);
       this.orgs[id].ownersList = this.orgs[id].owners.map(function(owner) {
         return owner.name
       }).join(", ");
@@ -132,7 +131,6 @@ app.controller('ManageController', function(AuthService, OrgService) {
         approvalProcess: this.approvalProcess.value
       }).then(function(response) {
         if (response.isSuccessful) {
-          console.log(response);
           createOrg.closeCreateOrg();
           MngCtrl.orgs[response.org._id] = response.org;
           MngCtrl.updateOrgs();
@@ -173,7 +171,6 @@ app.controller('ManageController', function(AuthService, OrgService) {
   });
 
   this.resolveUser = function(index, isApproved) {
-    console.log(this.pendingUsers[index]);
     AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
       MngCtrl.alert.isActive = true;
       MngCtrl.alert.type = response.isSuccessful ? 'success' : 'danger';
