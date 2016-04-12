@@ -1,11 +1,16 @@
 // models/orgModel.js
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Schema.Types.ObjectId;
+var mongoose  = require('mongoose');
+var ObjectId  = mongoose.Schema.Types.ObjectId;
+var constants = require('../utilities/constants');
 
 var Org = mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  shortName: {
+    type: String,
+    required: false
   },
   budgeted: {
     type: Boolean,
@@ -15,18 +20,14 @@ var Org = mongoose.Schema({
     type: Number,
     required: false
   },
-  terminal: {
+  nonterminal: {
     type: Boolean,
     required: true
   },
   parent: {
     type: ObjectId,
+    ref: 'Org',
     required: false
-  },
-  children: {
-    type: [ObjectId],
-    required: false,
-    default: []
   },
   isActive: {
     type: Boolean,
@@ -41,14 +42,14 @@ var Org = mongoose.Schema({
   approvalProcess: {
     type: String,
     required: true,
-    enum: ['strict', 'onlyone', 'automatic'],
+    enum: constants.approvalProcessOptions,
     default: 'strict'
   }
 });
 
 // Some org fields are conditionally required
 Org.pre('save', function(next) {
-  if (this.budgeted && !this.budget) {
+  if (this.budgeted && !typeof this.budget === 'number') {
     return next(new Error("Budgeted orgs must have a budget"));
   }
   if (this.terminal && this.children.length > 0) {

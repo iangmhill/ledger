@@ -1,7 +1,10 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var Org = require('../models/orgModel');
-var User = require('../models/userModel');
+var express    = require('express');
+var mongoose   = require('mongoose');
+var Org        = require('../models/orgModel');
+var User       = require('../models/userModel');
+var Request    = require('../models/requestModel');
+var q          = require('q');
+var validation = require('../utilities/validation');
 
 var routes = {
   getUserList: function(req, res) {
@@ -10,7 +13,56 @@ var routes = {
     })
   },
   getUserOrgs: function(req, res) {
-
+    function mergeArray(array1, array2) {
+      for(item in array1) {
+        array2[item] = array1[item];
+      }
+      return array2;
+    };
+    function recursiveFind(ids) {
+      var deferred = q.defer();
+      var children = {};
+      var nextIds = [];
+      Org.find({parent:ids[0]}, function(err, orgs) {
+        
+        if (orgs.length > 0) {
+          for (index in orgs) {
+            children[orgs[index]._id] = orgs[index].toObject();
+            children[orgs[index]._id].owners = [];
+            nextIds.push(orgs[index]._id);
+          }
+        }
+        if (nextIds.length > 0) {
+          recursiveFind(nextIds).then(function(childrensChildren) {
+            deferred.resolve(mergeArray(children,childrensChildren));
+          })
+        } else {
+          deferred.resolve(children);
+        }
+      })
+      return deferred.promise;
+    };
+    Org.find({_id:{ $in: req.user.orgs}}, function(err, rootOrgs) {
+      var roots = {};
+      for (index in rootOrgs) {
+        roots[rootOrgs[index]._id] = rootOrgs[index].toObject();
+        roots[rootOrgs[index]._id].owners = [];
+      }
+      recursiveFind(req.user.orgs).then(function(children) {
+        var allOrgs = mergeArray(children, roots);
+        User.find({orgs:{ $in: Object.keys(allOrgs)}}, function(err, users) {          
+          for (userIndex in users) {
+            for (idIndex in users[userIndex].orgs) {
+              allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
+            }
+          }
+          res.json({
+            roots: req.user.orgs,
+            orgs: allOrgs
+          });
+        });
+      })
+    })
   },
   getListedOrgs: function(req, res) {
 
@@ -34,6 +86,34 @@ var routes = {
 
   },
   createOrg: function(req, res) {
+    validation.org.org(req.body.name, req.body.shortName, req.body.org,
+        req.body.budgeted, req.body.budget, req.body.nonterminal,
+        req.body.approvalProcess).then(function(isValid) {
+
+      if (isValid) {
+        Org.create({
+          name: req.body.name,
+          shortName: req.body.shortName,
+          parent: req.body.org,
+          budgeted: req.body.budgeted,
+          budget: req.body.budget,
+          nonterminal: req.body.nonterminal,
+          approvalProcess: req.body.approvalProcess
+        }, function (err, org) {
+          var org = org.toObject();
+          org.owners = [];
+          res.json({
+            isSuccessful: !!org && !err,
+            org: org
+          });
+        });
+      } else {
+        res.json({
+          isSuccessful: false
+        });
+      }
+    })
+    
 
   },
   editOrg: function(req, res) {
@@ -43,7 +123,49 @@ var routes = {
 
   },
   createRequest: function(req, res) {
-
+    function confirm(err, request) {
+      if (err) {
+        console.log("I failrew" + err)
+        return res.send({
+          success: false,
+          message: 'ERROR: Could not create topic'
+        });
+      }
+      return res.send({
+        success: true,
+      });
+    }
+    // console.log("req.body: " + req.body);
+    // console.log("user id: " + req.user._id);
+    
+    var data = {
+              user: req.user._id,
+              description: req.body.description,
+              type: req.body.type,
+              value: req.body.amount,
+              org: req.body.organization,
+              details: req.body.details,
+              online: req.body.online,
+              specification: req.body.specification,
+              isActive: false,
+              isApproved: false
+            }
+    var errorResponse = { isSuccessful: false, isValid: false };
+    console.log("server request ");
+    if (!validation.request.request(
+      data.description, 
+      data.type, 
+      data.value, 
+      data.org, 
+      data.details, 
+      data.online, 
+      data.specification
+    )) { 
+      console.log("request data is InValid");
+      return res.json(errorResponse);
+    }
+    console.log("request data is valid");
+    Request.create(data, confirm);
   },
   approveRequest: function(req, res) {
 

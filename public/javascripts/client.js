@@ -2,7 +2,8 @@ var app = angular.module('ledger', [
     'ngRoute',
     'ngAnimate',
     'ngTouch',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'ngMessages'
   ]).config([
     '$routeProvider',
     '$locationProvider',
@@ -75,6 +76,7 @@ var app = angular.module('ledger', [
       .when('/manage', {
         templateUrl: 'partials/manage.html',
         controller: 'ManageController',
+        controllerAs: 'MngCtrl',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.OWNER, roles.ADMIN]);

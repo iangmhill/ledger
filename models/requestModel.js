@@ -4,6 +4,10 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var Mixed    = mongoose.Schema.Types.Mixed;
 
 var Request = mongoose.Schema({
+  user: {
+    type: ObjectId,
+    required: true
+  },
   created: {
     type: Date,
     required: true,
@@ -11,25 +15,40 @@ var Request = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true
+    required: true,
+    // default: "test"
   },
   type: {
     type: String,
     required: true,
-    enum: ['expense', 'transfer', 'revenue']
+    enum: ['expense', 'transfer', 'revenue'],
+    default: "expense"
   },
   value: {
     type: Number,
-    required: true
+    required: true,
+    // default: 100
   },
   org: {
-    type: ObjectId,
+    type: String,
+    // type: ObjectId,
     required: true
+    // default: "SAO"
   },
   details: {
-    type: Mixed,
+    type: String, 
+    // type: Mixed,
     required: true,
-    default: {}
+    // default: {}
+    default: ""
+  },
+  online: {
+    type: Array
+  },
+  specification: {
+    type: Array,
+    required: true,
+    // default: ["test"]
   },
   isActive: {
     type: Boolean,
@@ -37,7 +56,7 @@ var Request = mongoose.Schema({
   },
   approvals: {
     type: [ObjectId],
-    required: true,
+    // required: true,
     default: []
   },
   isApproved: {
@@ -48,3 +67,4 @@ var Request = mongoose.Schema({
 });
 
 module.exports = mongoose.model("requests", Request);
+
