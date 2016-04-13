@@ -2,7 +2,7 @@
 <!-- public/partials/request.html -->
 
 <div class=".container-fluid">
-  <form name="requestForm" class="col-md-8 col-md-offset-2" ng-submit="processForm()">  
+  <form name="requestForm" class="col-md-8 col-md-offset-2" ng-submit="processForm()" novalidate>  
       <!-- Alerts indicating the result of a requested operation -->
     <uib-alert 
         ng-repeat="alert in alerts"
@@ -150,20 +150,20 @@
                 <div class="col-md-4" >
                   <div class="input-group">
                         <span class="input-group-addon">Item</span>
-                        <input type="text" class="form-control"  ng-model = item.name ng-blur="validateItem (item.index)" required/>
+                        <input name = "itemName" type="text" class="form-control"  ng-model = item.name ng-blur="validateItem (item.index)" required/>
                   </div>
                 </div>
 
                 <div class="col-md-4">
                   <div class="input-group">
                     <span class="input-group-addon">Price</span>
-                    <input type="number" class="form-control" ng-model = item.price ng-blur="validateItem (item.index)" required>
+                    <input name = "itemPrice" type="number" class="form-control" ng-model = item.price ng-blur="validateItem (item.index)" required>
                   </div>
                 </div>
 
                 <div class="col-md-3">
                   <div class="input-group">
-                    <select class="form-control" ng-focus="validateItem(item.index)" ng-blur="validateItem (item.index)" ng-click="validateItem (item.index)" ng-model= item.category required>
+                    <select name = "itemCategory" class="form-control" ng-focus="validateItem(item.index)" ng-blur="validateItem (item.index)" ng-click="validateItem (item.index)" ng-model= item.category required>
 
                       <option value="Food">Food</option>
                       <option value="Equipment">Equipment</option>
@@ -207,14 +207,14 @@
           <div class="col-md-5" >
             <div class="input-group">
                   <span class="input-group-addon">Link</span>
-                  <input type="text" class="form-control" ng-model = link.url ng-blur="validateLink (link.index)" ng-focus="validateLink (link.index)" ng-click="validateLink (link.index)" required>
+                  <input name = "linkURL" type="text" class="form-control" ng-model = link.url ng-blur="validateLink (link.index)" required>
             </div>
           </div>
 
           <div class="col-md-6">
             <div class="input-group">
               <span class="input-group-addon">Description</span>
-              <input type="text" class="form-control" ng-model = link.description ng-blur="validateLink (link.index)" ng-focus="validateLink (link.index)" ng-click="validateLink (link.index)" required>
+              <input name = "linkDsp" type="text" class="form-control" ng-model = link.description ng-blur="validateLink (link.index)" required>
             </div>
           </div>
           <div class = "col-md-1 vcenter">

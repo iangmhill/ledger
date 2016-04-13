@@ -74,6 +74,17 @@ app.controller('RequestController', function($scope, RequestService) {
 		    item.validation.priceHelpBlock = "";
 		    item.validation.categoryHelpBlock = "";
 		})
+
+		linkNum = 1;
+		$scope.links = $scope.links.splice(0, 1)
+		$scope.links.forEach(function(link){
+			link.url = "";
+			link.description = "";
+			link.validation.isValid = "empty";
+			link.validation.urlHelpBlock = "";
+			link.validation.dspHelpBlock = "";
+		})
+
 	};
 
 	$scope.dismissAlert = function(index) {
@@ -387,7 +398,7 @@ app.controller('RequestController', function($scope, RequestService) {
 			category: "", 
 			index: itemNum,
 		    validation: {
-		      isValid: 'empty',
+		      isValid:  'empty',
 		      nameHelpBlock: '',
 		      priceHelpBlock: '',
 		      categoryHelpBlock: ''
