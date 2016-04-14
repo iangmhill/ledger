@@ -165,6 +165,16 @@ var routes = {
       return res.json(errorResponse);
     }
     console.log("request data is valid");
+
+    validation.org.getInfo(data.org).then(function (approvalProcess){
+      if(approvalProcess){
+        data.isApproved = true;
+      }
+      else{
+        data.isApproved = false;
+      }
+    });
+
     Request.create(data, confirm);
   },
   approveRequest: function(req, res) {

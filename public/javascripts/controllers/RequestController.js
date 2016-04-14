@@ -122,14 +122,21 @@ app.controller('RequestController', function($scope, RequestService) {
 		console.log("after items");
 		console.log("$scope.submitStatus: " + $scope.submitStatus);
 		
-		$scope.links.forEach(function(link){
-			console.log("for each link")
-			$scope.validateLink(link.index);
-		})
-		console.log("after links");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
 		
-		if($scope.submitStatus !== 5 + itemNum*3 + linkNum*2){
+		if ($scope.onlineCheck){
+			$scope.links.forEach(function(link){
+				console.log("for each link")
+				$scope.validateLink(link.index);
+			})
+			console.log("after links");
+			console.log("$scope.submitStatus: " + $scope.submitStatus);
+			var targetSubmitStatus = 5 + itemNum*3 + linkNum*2;
+		}
+		else{
+			var targetSubmitStatus = 5 + itemNum*3;
+		}
+
+		if($scope.submitStatus !== targetSubmitStatus){
 			$scope.alerts.push({
 	          type: 'danger',
 	          msg: 'Something wrong with the form'
