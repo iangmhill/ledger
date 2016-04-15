@@ -147,13 +147,10 @@ module.exports = {
       return this
         .name(name)
           .then(function(isValid) {
-            console.log("name " + isValid);
             return isValid && orgValidator.shortName(shortName);
         }).then(function(isValid) {
-            console.log("shortName " + isValid);
             return isValid && orgValidator.parent(parent);
         }).then(function(isValid) {
-            console.log("parent " + isValid);
             return isValid &&
                 orgValidator.budgeted(budgeted, budget) &&
                 orgValidator.nonterminal(nonterminal) &&

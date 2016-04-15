@@ -35,6 +35,8 @@ module.exports = {
         case 0:
           Org.create({
             name: 'system',
+            shortName: 'system',
+            url: 'system',
             budgeted: false,
             nonterminal: true
           }, function (err, system) {
@@ -75,7 +77,7 @@ module.exports = {
         }
       });
     });
-    
-    return deferred.promise;    
+
+    return deferred.promise;
   }
 };

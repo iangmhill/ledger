@@ -221,4 +221,12 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
+  this.getUserList = function() {
+    var deferred = $q.defer();
+    $http.get('/api/getUserList').then(function success(response) {
+      deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
+
 });

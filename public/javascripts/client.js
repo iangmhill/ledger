@@ -85,6 +85,17 @@ var app = angular.module('ledger', [
         }
       })
 
+      .when('/manage/:org/:tab?', {
+        templateUrl: 'partials/org.html',
+        controller: 'OrgController',
+        controllerAs: 'OrgCtrl',
+        resolve: {
+          permission: function(AuthService, $route) {
+            return AuthService.permissionCheck([roles.OWNER, roles.ADMIN]);
+          }
+        }
+      })
+
       .when('/account', {
         templateUrl: 'partials/account.html',
         controller: 'AccountController',
@@ -107,7 +118,7 @@ var app = angular.module('ledger', [
     $locationProvider.html5Mode(true);
 
 }]).controller('NavigationCtrl', function($scope, $location) {
-  $scope.isActive = function (viewLocation) { 
+  $scope.isActive = function (viewLocation) {
     return viewLocation === $location.path();
   };
   var vm = this;
