@@ -59,7 +59,7 @@
         <select class="form-control" name="org" ng-model= "org.value" 
                 ng-click="org.validate()" required>
           <option value="">---Please select---</option> <!-- not selected / blank option -->
-          <option ng-repeat="org in orgs" value = "{{org.name}}">{{org.name}}</option>
+          <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
         </select>
         <span
             ng-if="org.validation.isValid == 'invalid'"

@@ -206,7 +206,7 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
       type: $scope.type.value,
       occurred: new Date($scope.date.value),
       paymentMethod: $scope.pcard.value,
-      request: "testrequest",
+      request: $scope.requests.value,
       value: $scope.price.value,
       details: "test",
       org: $scope.org.value,
