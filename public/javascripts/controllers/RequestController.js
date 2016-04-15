@@ -1,3 +1,5 @@
+
+
 // public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope, RequestService) {
 	$scope.submitStatus = 0;	
@@ -15,6 +17,7 @@ app.controller('RequestController', function($scope, RequestService) {
 
 	$scope.specificationCheck = false;
 	$scope.onlineCheck = false;
+
 
 
 	var clearAlerts = function(){
@@ -230,6 +233,7 @@ app.controller('RequestController', function($scope, RequestService) {
 		}	
 	}
 
+
 	$scope.specification = {
 		// name: "", 
 		// price: 0, 
@@ -313,3 +317,4 @@ app.controller('RequestController', function($scope, RequestService) {
 	};
 	
 });
+

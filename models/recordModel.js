@@ -36,7 +36,7 @@ var Record = mongoose.Schema({
   details: {
     type: Mixed,
     required: true,
-    default: {}
+    default: "test"
   },
   org: {
     type: ObjectId,
