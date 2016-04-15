@@ -18,4 +18,13 @@ app.service('OrgService', function($http, $q) {
     return deferred.promise;
   };
 
+  this.getOrgList = function() {
+    var deferred = $q.defer();
+    $http.get('/api/getListedOrgs').then(function (response) {
+      console.log("response.data: " + response.data);
+      return deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
+
 });

@@ -30,8 +30,8 @@ var Request = mongoose.Schema({
     // default: 100
   },
   org: {
-    type: String,
-    // type: ObjectId,
+    // type: String,
+    type: ObjectId,
     required: true
     // default: "SAO"
   },

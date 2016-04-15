@@ -22,6 +22,7 @@ app.controller('ManageController', function(AuthService, OrgService) {
     });
     this.children = children;
   };
+
   this.updateTypeaheadOptions = function() {
     this.typeaheadOptions = {};
     angular.forEach(this.orgs, function(org, id) {

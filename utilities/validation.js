@@ -26,11 +26,23 @@ function numberCheck(content) {
   content = String(content);
   return(validator.isIn(content) || validator.isFloat(content));
 }
+function getObjKeys(obj){
+  var keys = [];
+  for(var k in obj) keys.push(k);
+  return keys
+}
+function getObjValues(obj){
+  var values = [];
+  for(var k in obj) values.push(obj[k]);
+  return values
+}
 
 module.exports = {
   emailCheck: emailCheck,
   stringCheck: stringCheck,
   numberCheck: numberCheck,
+  getObjKeys: getObjKeys,
+  getObjValues: getObjValues,
   user: {
     /**
      * Validates the four important properties of a user.
@@ -87,24 +99,39 @@ module.exports = {
   },
   request: {
     specification: function(content){
-      // var validation = this;
-      // if(content.length == 0){
-      //   return false;
-      // }
-      // content.forEach(function(entry){
-      //   if(!this.stringCheck(Object.keys(entry)[0]) || !this.numberCheck(Object.values(entry)[0])){
-      //     return false;
-      //   }
-      // })
+      var validation = this;
+      console.log("specification check");
+
+      if(content.length == 0){
+        return false;
+      }
+      content.forEach(function(entry){
+        var key = getObjKeys(entry)[0];
+        var value = getObjValues(entry)[0];
+        console.log(key);
+        console.log(value);
+        if(!stringCheck(key) || !numberCheck(value)){
+          return false;
+        }
+      })
+      console.log("valid");
       return true;
     },
     online: function(content){
-      // var validation = this;
-      // content.forEach(function(entry){
-      //   if(!validation.stringCheck(Object.keys(entry)[0]) || !validation.numberCheck(Object.values(entry)[0])){
-      //     return false;
-      //   }
-      // })
+      console.log("online check");
+
+      var validation = this;
+      content.forEach(function(entry){
+        var key = getObjKeys(entry)[0];
+        var value = getObjValues(entry)[0];
+        console.log(key);
+        console.log(value);
+
+        if(!stringCheck(key) || !stringCheck(value)){
+          return false;
+        }
+      })
+      console.log("valid");
       return true;
     },
     request:function(description, type, value, org, details, online, specification){
@@ -113,7 +140,6 @@ module.exports = {
           this.online(online) && this.specification(specification);
     }
   },
-
   org: {
     org: function(name, shortName, parent, budgeted, budget, nonterminal,
         approvalProcess) {
@@ -133,6 +159,19 @@ module.exports = {
                 orgValidator.nonterminal(nonterminal) &&
                 orgValidator.approvalProcess(approvalProcess);
         })
+    },
+    getInfo: function(name){
+      var deferred = q.defer();
+      Org.find({name: name}, function(err, orgs) {
+        console.log("find the org: " + orgs);
+        if (orgs[0].approvalProcess == 'none'){
+          console.log("find it none");
+          return deferred.resolve({approval: true, id: orgs[0]._id});          
+        }
+        console.log("find it not none");  
+        return deferred.resolve({approval: false, id: orgs[0]._id});
+      })
+      return deferred.promise;
     },
     name: function(name) {
       var deferred = q.defer();
@@ -172,50 +211,6 @@ module.exports = {
       return constants.approvalProcessOptions.indexOf(approvalProcess) > -1;
     }
 
-  },
-  // return deferred.promise;
-  // return typeof org === 'string' && org.trim().length > 0;
-  
-  specification: function(content){
-    // var validation = this;
-    // if(content.length == 0){
-    //   return false;
-    // }
-    // content.forEach(function(entry){
-    //   if(!this.stringCheck(Object.keys(entry)[0]) || !this.numberCheck(Object.values(entry)[0])){
-    //     return false;
-    //   }
-    // })
-    return true;
-  },
-  online: function(content){
-    // var validation = this;
-    // content.forEach(function(entry){
-    //   if(!validation.stringCheck(Object.keys(entry)[0]) || !validation.numberCheck(Object.values(entry)[0])){
-    //     return false;
-    //   }
-    // })
-    return true;
-  },
-  request:function(description, type, value, org, details, online, specification){
-    var deferred = q.defer();
-    var validation = this;
-    this.org(org).then(function(isRequestValid) {
-      deferred.resolve(
-        isRequestValid &&
-        validation.stringCheck(description) && validation.stringCheck(type) && 
-        validation.numberCheck(value) && validation.stringCheck(details) && 
-        validation.online(online) && validation.specification(specification));
-    });
-    console.log("validation after then function");  
-    return deferred.promise;
-    // var deferred = q.defer();
-    // var validation = this;
-    // deferred.resolve(this.stringCheck(description) && this.stringCheck(type) && this.numberCheck(value) && this.org(org) && this.stringCheck(details) && this.online(online) && this.specification(specification));
-    // console.log("validation after then function");  
-    // return deferred.promise;
-
-    // return (stringCheck(description) && stringCheck(type) && numberCheck(value) && this.org(org) && stringCheck(details) && this.online(online) && this.specification(specification));
   },
   record:function(type, paymentMethod, value, details, org){
     var deferred = q.defer();

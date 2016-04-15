@@ -67,7 +67,16 @@ var routes = {
     })
   },
   getListedOrgs: function(req, res) {
-
+    // Request.find().remove().exec();
+    var clean_orgs = []
+    Org.find(function(err, orgs) {
+      // console.log(orgs);
+      orgs.forEach(function(org){
+        clean_orgs.push({name: org.name, id: org._id});
+      })
+      console.log(clean_orgs);
+      res.status(200).json(orgs);
+    })
   },
   getOrgFinances: function(req, res) {
 
@@ -154,6 +163,7 @@ var routes = {
             }
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
+    console.log(validation);
     if (!validation.request.request(
       data.description, 
       data.type, 
@@ -163,11 +173,22 @@ var routes = {
       data.online, 
       data.specification
     )) { 
-      console.log("request data is InValid");
+      // console.log("request data is InValid");
       return res.json(errorResponse);
     }
-    console.log("request data is valid");
-    Request.create(data, confirm);
+    console.log("request org: " +  data.org);
+    validation.org.getInfo(data.org).then(function (orgData){
+      data.org = orgData.id;
+      console.log("request org: " +  orgData.id);  
+      if(orgData.approval){
+        data.isApproved = true;
+      }
+      else{
+        data.isApproved = false;
+      }
+      console.log("data.isApproved: " + data.isApproved);
+      Request.create(data, confirm);
+    });
   },
   approveRequest: function(req, res) {
 

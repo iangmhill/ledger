@@ -10,8 +10,10 @@ var roles = {
 var routeForUnauthorizedAccess = '/login';
 var routeDashboard             = '/';
 
+
 app.service('AuthService', function($http, $q, $rootScope, $location) {
 
+  this.currentUser;
   this.user = {
     isAuthenticated: false
   };
@@ -195,6 +197,14 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   this.getPendingUsers = function() {
     var deferred = $q.defer();
     $http.get('/auth/getPendingUsers').then(function success(response) {
+      deferred.resolve(response.data.pendingUsers);
+    });
+    return deferred.promise;
+  };
+
+  this.getFunRequests = function() {
+    var deferred = $q.defer();
+    $http.get(this.currentUser, '/auth/getPendingUsers').then(function success(response) {
       deferred.resolve(response.data.pendingUsers);
     });
     return deferred.promise;
