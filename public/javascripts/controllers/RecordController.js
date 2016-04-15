@@ -1,11 +1,7 @@
 // public/javascripts/controllers/RecordController.js
 app.controller('RecordController', function($scope, RecordService) {
 	
-  var rec = this;
-
-  $scope.alerts = [];
-  $scope.submitStatus = 0;  
-
+  var RecCtrl = this;
 
   $scope.reim = {
     value: '',
