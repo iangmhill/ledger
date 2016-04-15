@@ -69,8 +69,53 @@ Description: Allows the users to manage all types of requests and the funds of
 
   <hr>
 
-  <div>
+    
+  <div
+      ng-switch="MngCtrl.pendingFundRequests.length > 0">
     <h4>Funding Requests</h4>
+    <div
+        class="row vertical-align"
+        ng-repeat="request in MngCtrl.pendingFundRequests"
+        ng-switch-when="true">
+      <div class="col-xs-8">
+        <div class="row vertical-align">
+          <div class="col-sm-2">
+          <div>{{request.user}}</div>
+          </div>
+
+          <div class="col-sm-2 subtext indent">
+          <div>{{user.description}}</div>
+          </div>
+
+          <div class="col-sm-4 subtext indent">
+          <div>{{user.value}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-4 push-right">
+        <div class="btn-toolbar">
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveFunRequest($index, true)">
+            <span>Approve</span>
+            <span class="glyphicon glyphicon-ok"></span>
+          </button>
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveFunRequest($index, false)">
+            <span>Reject</span>
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div ng-switch-when="false">
+      <span class="subtext">No approvals pending</span>
+    </div>
   </div>
 
   <hr>

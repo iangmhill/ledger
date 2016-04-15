@@ -164,10 +164,13 @@ module.exports = {
     getInfo: function(name){
       var deferred = q.defer();
       Org.find({name: name}, function(err, orgs) {
-        if (orgs.approvalProcess == 'none'){
-          return deferred.resolve(!err);          
+        console.log("find the org: " + orgs);
+        if (orgs[0].approvalProcess == 'none'){
+          console.log("find it none");
+          return deferred.resolve({approval: true, id: orgs[0]._id});          
         }
-        return deferred.resolve(false);
+        console.log("find it not none");  
+        return deferred.resolve({approval: false, id: orgs[0]._id});
       })
       return deferred.promise;
     },

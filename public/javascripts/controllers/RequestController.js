@@ -1,5 +1,5 @@
 // public/javascripts/controllers/RequestController.js
-app.controller('RequestController', function($scope, RequestService) {
+app.controller('RequestController', function($scope, RequestService, OrgService) {
 	$scope.submitStatus = 0;	
 	$scope.alerts = [];
 
@@ -40,6 +40,11 @@ app.controller('RequestController', function($scope, RequestService) {
 	$scope.specificationCheck = false;
 	$scope.onlineCheck = false;
 
+	OrgService.getOrgList().then(function(data) {
+		if (data){
+			$scope.orgs = data;
+		}
+	});
 
 	var clearAlerts = function(){
 		$scope.organization.validation.isValid = 'empty';
@@ -93,6 +98,7 @@ app.controller('RequestController', function($scope, RequestService) {
 
 
 	$scope.processForm = function(){
+		console.log("organization.value: " + $scope.organization.value);
 		$scope.submitStatus = 0;
 		$scope.alerts = [];
 		console.log("$scope.submitStatus: " + $scope.submitStatus);
@@ -203,6 +209,7 @@ app.controller('RequestController', function($scope, RequestService) {
 	      helpBlock: ''
 	    },
 		validate: function(){
+			console.log("organization.value: " + this.value);
 			console.log("triggered");
 			if($scope.requestForm.organization.$valid){
 				this.validation.isValid = "valid";
