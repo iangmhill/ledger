@@ -59,9 +59,7 @@
         <select class="form-control" name="org" ng-model= "org.value" 
                 ng-click="org.validate()" required>
           <option value="">---Please select---</option> <!-- not selected / blank option -->
-          <option value="SAO">SAO</option>
-          <option value="SERV">SERV</option>
-          <option value="SG">SG</option>
+          <option ng-repeat="org in orgs" value = "{{org.name}}">{{org.name}}</option>
         </select>
         <span
             ng-if="org.validation.isValid == 'invalid'"
@@ -75,7 +73,9 @@
         <label>Request</label>
         <select class="form-control" name="requests" id="requests" ng-model= "requests.value" >
           <option value="">---Please select the request you submitted---</option> <!-- not selected / blank option -->
-          <option ng-repeat="option in reqdata.availableOptions" value="{{option.id}}">{{option.name}}</option>
+          <option ng-repeat="option in reqdata.availableOptions" value="{{option._id}}">
+          {{option.created.slice(5,10)}} {{option.description}} : {{option.specification[0].name}} 
+          ${{option.specification[0].price}}</option>
         </select>
       </div><br />
 
