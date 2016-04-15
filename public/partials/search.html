@@ -1,0 +1,31 @@
+<!-- public/views/search.html -->
+<div class="container-card">
+  <h1>Allocate</h1>
+
+  <form role="form" ng-submit="submitCreateAllocationForm()">
+    <div class="form-group">
+      <label for="sel1">Organization</label>
+      <select class="form-control" ng-model="org" ng-options="org._id as org.name for org in orgs">
+        <option value="" disabled>-- select org --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="value">Value:</label>
+      <input class="form-control" type="number" min="0" step=".01" ng-model="value" placeholder="0.00">
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <input class="form-control" type="text" ng-model="description" placeholder="What was this for?">
+    </div>
+    <button class="right">Submit</button>
+  </form>
+</div>
+
+<div class="container-card red-edging" ng-repeat="error in errors">
+  <div>{{error.message}}</div>
+</div>
+
+<div class="container-card green-edging" ng-repeat="allocation in allocations">
+  <div><b>{{allocation.value}}</b> allocated to <b>{{allocation.org}}</b> for <b>{{allocation.description}}</b></div>
+  <div class="subtext">SUCCESS: {{allocation.date}}</div>
+</div>

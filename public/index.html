@@ -1,0 +1,100 @@
+<!-- public/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+
+  <title>Ledger</title>
+
+  <!-- FONTS -->
+  <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <link rel="icon" type="image/png" href="images/favicon.png?v=5">
+
+  <!-- BOOTSTRAP CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- CUSTOME CSS -->
+  <link rel="stylesheet" href="stylesheets/override.css">
+
+  <!-- ANGULAR -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-route.min.js"></script>
+
+  <!-- UI BOOTSTRAP DEPENDENCIES -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-touch.min.js"></script>
+
+  <!-- UI BOOTSTRAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.2.5/ui-bootstrap-tpls.min.js"></script>
+
+  <!-- load ANGULAR ngmessages -->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-messages.js"></script>
+
+  <!-- ANGULAR CUSTOM -->
+  <script src="javascripts/client.js"></script>
+  
+  <script src="javascripts/services/AllocationService.js"></script>
+  <script src="javascripts/services/AuthService.js"></script>
+  <script src="javascripts/services/OrgService.js"></script>
+  <script src="javascripts/services/RequestService.js"></script>
+  <script src="javascripts/services/RecordService.js"></script>
+
+
+  <script src="javascripts/controllers/AccountController.js"></script>
+  <script src="javascripts/controllers/DashboardController.js"></script>
+  <script src="javascripts/controllers/LoginController.js"></script>
+  <script src="javascripts/controllers/MainController.js"></script>
+  <script src="javascripts/controllers/ManageController.js"></script>
+  <script src="javascripts/controllers/RecordController.js"></script>
+  <script src="javascripts/controllers/RegisterController.js"></script>
+  <script src="javascripts/controllers/RequestController.js"></script>
+  <script src="javascripts/controllers/SearchController.js"></script>
+</head>
+<body
+    ng-app="ledger"
+    ng-controller="MainController as MainCtrl"
+    ng-class="{'body-auth': !MainCtrl.user.isAuthenticated}">
+
+  <!-- HEADER -->
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid" ng-controller="NavigationCtrl as NavCtrl">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" ng-click="NavCtrl.toggleCollapse()">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Ledger</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="navbar-collapse" style="overflow:hidden;" uib-collapse="NavCtrl.isCollapsed">
+      <ul class="nav navbar-nav">
+        <li ng-repeat="route in MainCtrl.navRoutes" ng-class="{ active: isActive(route.path)}" ng-click="NavCtrl.hideMenu()"><a href="{{route.path}}">{{route.name}}</a></li>     
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li uib-dropdown class="dropdown" ng-if="MainCtrl.user.isAuthenticated">
+          <a href="#" uib-dropdown-toggle>{{MainCtrl.user.username}} <b class="caret"></b></a>
+          <ul uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            <li ng-repeat="route in MainCtrl.authRoutes" ng-class="{ active: isActive(route.path)}"><a href="{{route.path}}" ng-click="NavCtrl.hideMenu()">{{route.name}}</a></li>
+            <li class="divider"></li>
+            <li role="menuitem" ng-click="NavCtrl.hideMenu()"><a href="/logout">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+  <!-- ANGULAR DYNAMIC CONTENT -->
+  <div id="section-content" class="container-body">
+    <div ng-view></div>
+  </div>
+
+</body>
+</html>

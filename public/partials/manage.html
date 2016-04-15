@@ -1,0 +1,83 @@
+<!-- public/partials/manage.html -->
+<div class="container-card">
+  <h1>Manage Accounts and Virtual Funds</h1>
+  <form role="form" ng-submit="submitManageChanges()">
+    <div class="manage-two-column">
+      <div class="manage-column">
+        <h3>Accounts</h3>
+      </div>
+      <div class="manage-column">
+        <h3>Virtual Funds</h3>
+      </div>
+    </div>
+    <div class="manage-two-column" ng-repeat="account in accounts">
+
+      <div class="manage-column">
+        <div class="form-group">
+          <label>{{account.name}}</label>
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Allocated</label>
+            </div>
+            <div class="finance-column">
+              <label class="accounting">{{account.allocated}}</label>
+            </div>
+          </div>
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Unallocated</label>
+            </div>
+            <div class="finance-column">
+              <label class="accounting">{{account.unallocated}}</label>
+            </div>
+          </div>
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Total</label>
+            </div>
+            <div class="finance-column">
+              <input class="form-control accounting" type="number" min="0" step=".01" ng-model="account.newValue" value="{{account.value}}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="manage-column">
+        <div class="form-group" ng-repeat="virtualFund in account.virtualFunds">
+          <label>{{virtualFund.name}}</label>
+
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Allocated</label>
+            </div>
+            <div class="finance-column">
+              <label class="accounting">{{virtualFund.allocated}}</label>
+            </div>
+          </div>
+
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Unallocated</label>
+            </div>
+            <div class="finance-column">
+              <label class="accounting">{{virtualFund.unallocated}}</label>
+            </div>
+          </div>
+
+          <div class="finance-two-column">
+            <div class="finance-column">
+              <label>Total</label>
+            </div>
+            <div class="finance-column">
+              <input class="form-control accounting" type="number" min="0" step=".01" ng-model="virtualFund.newValue" value="{{virtualFund.value}}">
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+
+    </div>
+    <button class="right">Submit</button>
+  </form>
+</div>
