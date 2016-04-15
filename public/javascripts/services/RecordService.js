@@ -1,23 +1,11 @@
 // public/javascripts/services/RecordService.js
-app.service('RecordService', function($http, $q, $rootScope, $location) {
+app.service('RecordService', function($http) {
 
-	this.records = {}
-
-	this.get = function() {
-	var records = $http.get('/api/createRecord').then(function (response) {
-	    return response.data;
-	  });
-	return records;
-	};
-
-  this.UpdateCallbacks = [];
-
-  this.saveRecord = function(callback) {
-    var service = this;
-    this.UpdateCallbacks.push(callback);
-      this.fetchPermissions().then(function success(response) {
-        service.user = response.data;
-        callback(service.user);
-      })
+    this.createRecord = function(recordData) {
+    console.log("recordService: " + recordData);
+    $http.post('/api/createRecord', recordData).then(function (response) {
+      console.log("response.data: " + response.data.success);
+      });
   };
+
 });
