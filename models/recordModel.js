@@ -26,7 +26,7 @@ var Record = mongoose.Schema({
     required: false
   },
   request: {
-    type: ObjectId,
+    type: String,
     required: true
   },
   value: {
@@ -34,12 +34,12 @@ var Record = mongoose.Schema({
     required: true
   },
   details: {
-    type: Mixed,
+    type: String,
     required: true,
-    default: {}
+    default: "test"
   },
   org: {
-    type: ObjectId,
+    type: String,
     required: true
   },
   void: {

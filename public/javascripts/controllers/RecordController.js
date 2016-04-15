@@ -1,54 +1,216 @@
 // public/javascripts/controllers/RecordController.js
 app.controller('RecordController', function($scope, RecordService) {
-	var rec = this;
-	var alertMessages = {
-	SUBMIT_SUCCESSFUL:
-	  ', your purchase has been recorded',
-	INFO_INVALID:
-	  'Please answer to all the questions'
-	};
+	
+  var rec = this;
+
+  $scope.alerts = [];
+  $scope.submitStatus = 0;  
+
+
+  $scope.reim = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.reim.$valid){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.reim.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "This field must be string";
+        }
+      }
+    } 
+  }
+
+
+  $scope.type = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.type.$valid){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.type.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "This field must be string";
+        }
+      }
+    } 
+  }
+
+  $scope.org = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.org.$valid){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.org.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "This field must be string";
+        }
+      }
+    } 
+  }
+
+  $scope.pcard = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.pcard.$valid){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.pcard.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "This field must be string";
+        }
+      }
+    } 
+  }
+
+
+  $scope.price = {
+    value: 0,
+      validation: {
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.price.$valid && this.value > 0){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.price.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "The amount must be larger than zero";
+        }
+      }
+    } 
+  }
+
+  $scope.sac = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.sac.$valid){
+        this.validation.isValid = "valid";
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.sac.$error.required){
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else{
+          this.validation.helpBlock = "This field must be string";
+        }
+      }
+    } 
+  }
+
+  $scope.date = {
+    value: '',
+      validation: {
+        // isValid: 'valid',
+        isValid: 'empty',
+        helpBlock: ''
+      },
+    validate: function(){
+      if($scope.recordForm.date.$valid){
+        this.validation.isValid = "valid";
+        console.log("got through");
+      }
+      else{
+        this.validation.isValid = "invalid";
+        if($scope.recordForm.date.$error.required){
+          console.log("no input");
+          this.validation.helpBlock = "This field cannot be empty";
+        }
+        else if ($scope.recordForm.date.$error.pattern){
+          console.log("wrong pattern");
+          this.validation.helpBlock = "Please enter a valid date in the format MM/DD/YYYY";
+        }
+      }
+    } 
+  }
+
+  this.clear = function(field) {
+    field.value = '';
+    field.validation.isValid = 'empty';
+    field.validation.helpBlock = '';
+  };
+
 
 	this.submitCreateRecordForm = function() {
-		var RegCtrl = this;
 
-			// this.reimburse.value != 'n' &&
-		//       this.typeChoice.value != 'n' &&
-		//       this.org.value != 'n' &&
-		//       this.pcard.value != 'n' &&
-		//       rec.price.value > 0 &&
-		//       rec.sac.value != 'n'
-		this.typeChoiceValue = "testing"
-		this.priceValue = 100
-		this.pcardValue = 1
-		this.dateValue = 04102016
-		this.orgValue = "testing"
-		user = "testVoiderUser"
+    $scope.reim.validate();
+    $scope.type.validate();
+    $scope.org.validate();
+    $scope.pcard.validate();
+    $scope.price.validate();
+    $scope.sac.validate();
 
-		console.log("triggered");
-		if (1)
-		{
-			console.log("right before sending at client");
-			RecordService.saveRecord({
-				type: this.typeChoiceValue,
-				value: this.priceValue,
-				paymentMethod: this.pcardValue,
-				occured: this.dateValue,
-				org: this.orgValue,
-				user: "testUser",
-				request: "testRequest",
-				details: "for test",
-				voider: user,
-		  }
-	  ).then(function(response) {
-	      if (response.isSuccessful) {
-	        rec.alert.msg = alertMessages.SUBMIT_SUCCESSFUL;
-	      } 
-	  })
-	} 
-	else{
-	  rec.alert.msg = alertMessages.INFO_INVALID;
-	}
-	}
+    var data = {
+      type: $scope.type.value,
+      occurred: new Date($scope.date.value),
+      paymentMethod: $scope.pcard.value,
+      request: "testrequest",
+      value: $scope.price.value,
+      details: "test",
+      org: $scope.org.value,
+      void: false
+    }
+    console.log(data);
+    RecordService.createRecord(data);
+      
+    this.clear($scope.org);
+    this.clear($scope.type);
+    this.clear($scope.pcard);
+    this.clear($scope.price);
+    this.clear($scope.reim);
+    this.clear($scope.date);
+    this.clear($scope.sac);
+  
+	};  
+
 });
 
 
