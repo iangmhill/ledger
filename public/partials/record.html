@@ -9,7 +9,7 @@
     <br /> <br />
     <form 
         name="recordForm" class="col-md-6 col-md-offset-3" role="form" 
-        ng-submit="rec.submitCreateRecordForm()">
+        ng-submit="RecCtrl.submitCreateRecordForm()">
 
       <div 
           class="form-group"
@@ -59,9 +59,7 @@
         <select class="form-control" name="org" ng-model= "org.value" 
                 ng-click="org.validate()" required>
           <option value="">---Please select---</option> <!-- not selected / blank option -->
-          <option value="SAO">SAO</option>
-          <option value="SERV">SERV</option>
-          <option value="SG">SG</option>
+          <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
         </select>
         <span
             ng-if="org.validation.isValid == 'invalid'"
@@ -69,6 +67,19 @@
           {{org.validation.helpBlock}}
         </span>
       </div><br />
+
+
+      <div class="form-group">
+        <label>Request</label>
+        <select class="form-control" name="requests" id="requests" ng-model= "requests.value" >
+          <option value="">---Please select the request you submitted---</option> <!-- not selected / blank option -->
+          <option ng-repeat="option in reqdata.availableOptions" value="{{option._id}}">
+          {{option.created.slice(5,10)}} {{option.description}} : {{option.specification[0].name}} 
+          ${{option.specification[0].price}}</option>
+        </select>
+      </div><br />
+
+
 
       <div 
           class="form-group"
@@ -98,8 +109,8 @@
           invalid:'has-error has-feedback',
           empty:''}[date.validation.isValid]">
         <input type="text" class="form-control" name="date" placeholder="MM/DD/YYYY" 
-        ng-model = "date.value" ng-pattern='/^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\
-        /(199\d)|([2-9]\d{3})$/' ng-blur="date.validate()" required/>
+        ng-model = "date.value" ng-pattern='/^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/(199\d)|([2-9]\d{3})$/' 
+        ng-blur="date.validate()" required/>
       <span
         ng-if="date.validation.isValid == 'invalid'"
         class="col-md-8 col-md-offset-4 help-block" layout="row" layout-align="start center">

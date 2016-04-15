@@ -212,18 +212,15 @@ module.exports = {
     }
 
   },
-  record:function(type, paymentMethod, value, details, org){
+  record:function(type, paymentMethod, value, details){
     var deferred = q.defer();
     var validation = this;
-    this.org(org).then(function(isRecordValid){
       deferred.resolve(
-        isRecordValid &&
-        validation.stringCheck(details) && validation.stringCheck(type) &&
+        validation.stringCheck(type) &&
         validation.numberCheck(value) && validation.stringCheck(details) &&
         validation.stringCheck(paymentMethod));
     },function(err){
       console.log("request validation err");
-    });
     console.log("server validation done");  
     return deferred.promise;
   }
