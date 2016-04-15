@@ -3,7 +3,6 @@
 
 
 <div class=".container-fluid">
-<<<<<<< HEAD
   <form name="requestForm" class="col-md-8 col-md-offset-2" ng-submit="processForm()">  
       <!-- Alerts indicating the result of a requested operation -->
     <uib-alert 
@@ -13,13 +12,11 @@
       {{alert.msg}}
     </uib-alert>
 
->>>>>>> debugging
 
     <div class="col-md-4">
       <label >Type</label>
     </div>
-  
-<<<<<<< HEAD
+
     <div 
         class="form-group"
         ng-class="{valid:'has-success has-feedback',
@@ -27,29 +24,23 @@
             empty:''}[type.validation.isValid]">
   <!-- <span class="input-group-addon">Organization</span> -->
       <select class="form-control" name="type" ng-model= "type.value" ng-focus="type.validate()" ng-blur="type.validate()" ng-click="type.validate()" required>
-
-
->>>>>>> debugging
         <option value="expense">Expense</option>
         <option value="transfer">Transfer</option>
         <option value="revenue">Revenue</option>
       </select>
-<<<<<<< HEAD
       <span
           ng-if="type.validation.isValid == 'invalid'"
           class="help-block">
         {{type.validation.helpBlock}}
       </span>
 
->>>>>>> debugging
+
     </div>
 
     <div class="col-md-4">
       <label >Organization</label>
     </div>
-  
-<<<<<<< HEAD
-    <div 
+      <div 
         class="form-group"
         ng-class="{valid:'has-success has-feedback',
             invalid:'has-error has-feedback',
@@ -59,12 +50,10 @@
       <select class="form-control" name="organization" ng-model= "organization.value" ng-focus="organization.validate()" ng-blur="organization.validate()" ng-click="organization.validate()" required>
 
 
->>>>>>> debugging
         <option value="SAO">SAO</option>
         <option value="SERV">SERV</option>
         <option value="SG">SG</option>
       </select>
-<<<<<<< HEAD
       <span
           ng-if="organization.validation.isValid == 'invalid'"
           class="help-block">
@@ -179,9 +168,6 @@
                 <div class="col-md-3">
                   <div class="input-group">
                     <select name = "specificationItemCategory" class="form-control" ng-focus="specification.validateItemCategory()" ng-blur="specification.validateItemCategory()" ng-click="specification.validateItemCategory()" ng-model= item.category required>
-
-
->>>>>>> debugging
                       <option value="Food">Food</option>
                       <option value="Equipment">Equipment</option>
                       <option value="Stationary">Stationary</option>
@@ -193,14 +179,12 @@
                   <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delItem(item.index)"></span>
                 </div>
         </div>
-<<<<<<< HEAD
          <span
             ng-if="specification.validation.isValid == 'invalid'"
             class="col-md-8 col-md-offset-4 help-block">
           {{specification.validation.helpBlock}}
         </span>
 
->>>>>>> debugging
         <div class="btn-toolbar">
           <button type="button" class='btn btn-default' ng-click="addItem()">Add Item</button>
           <!-- <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button>  -->
@@ -234,7 +218,6 @@
             <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delLink(link.index)"></span>
           </div>
       </div>
-<<<<<<< HEAD
 
     <div class="btn-toolbar">
       <button type="button" class='btn btn-default' ng-click="addLink()">Add Item</button>
@@ -246,7 +229,6 @@
     <div class="request-form-submit">
       <button type="submit" class='btn btn-success btn-lg btn-block' >Submit</button> 
 
->>>>>>> debugging
     </div>
     
   </form>

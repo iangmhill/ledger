@@ -172,10 +172,10 @@ module.exports = {
       return constants.approvalProcessOptions.indexOf(approvalProcess) > -1;
     }
 
-  }
-  return deferred.promise;
-  // return typeof org === 'string' && org.trim().length > 0;
   },
+  // return deferred.promise;
+  // return typeof org === 'string' && org.trim().length > 0;
+  
   specification: function(content){
     // var validation = this;
     // if(content.length == 0){
