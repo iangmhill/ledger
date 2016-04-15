@@ -4,6 +4,7 @@ var mongoose   = require('mongoose');
 var Org        = require('../models/orgModel');
 var User       = require('../models/userModel');
 var Request    = require('../models/requestModel');
+var Record     = require('../models/recordModel');
 var q          = require('q');
 var validation = require('../utilities/validation');
 
@@ -73,7 +74,11 @@ var routes = {
 
   },
   getOrgRequests: function(req, res) {
-
+    var requestlist = [];
+    Request.find({},function (err, requestlist) {
+    if (err) return console.error(err);
+      res.json(requestlist);
+    })
   },
   getUserRequests: function(req, res) {
 
@@ -176,7 +181,7 @@ var routes = {
 
   },
   createRecord: function(req, res) {
-    function confirm(err, request) {
+    function confirm(err, record) {
       if (err) {
         console.log("fail recording" + err)
         return res.send({

@@ -1,6 +1,7 @@
 // models/recordModel.js
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
+var Mixed = mongoose.Schema.Types.Mixed;
 
 var Record = mongoose.Schema({
   created: {

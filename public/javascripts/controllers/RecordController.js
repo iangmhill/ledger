@@ -3,6 +3,25 @@ app.controller('RecordController', function($scope, RecordService) {
 	
   var RecCtrl = this;
 
+
+  $scope.reqdata = {
+    requests: null,
+    availableOptions: [
+      {id: '1', name: 'Option A'},
+      {id: '2', name: 'Option B'},
+      {id: '3', name: 'Option C'}
+    ],
+  };
+
+
+
+  $scope.reqs = function(){
+    console.log("got reqs");
+    RecordService.getRequests().then(function(response) {
+    console.log(response);  
+    });
+  }
+
   $scope.reim = {
     value: '',
       validation: {
@@ -177,33 +196,35 @@ app.controller('RecordController', function($scope, RecordService) {
 
 	this.submitCreateRecordForm = function() {
 
-    $scope.reim.validate();
-    $scope.type.validate();
-    $scope.org.validate();
-    $scope.pcard.validate();
-    $scope.price.validate();
-    $scope.sac.validate();
+    
+    $scope.reqs();
+    // $scope.reim.validate();
+    // $scope.type.validate();
+    // $scope.org.validate();
+    // $scope.pcard.validate();
+    // $scope.price.validate();
+    // $scope.sac.validate();
 
-    var data = {
-      type: $scope.type.value,
-      occurred: new Date($scope.date.value),
-      paymentMethod: $scope.pcard.value,
-      request: "testrequest",
-      value: $scope.price.value,
-      details: "test",
-      org: $scope.org.value,
-      void: false
-    }
-    console.log(data);
-    RecordService.createRecord(data);
+    // var data = {
+    //   type: $scope.type.value,
+    //   occurred: new Date($scope.date.value),
+    //   paymentMethod: $scope.pcard.value,
+    //   request: "testrequest",
+    //   value: $scope.price.value,
+    //   details: "test",
+    //   org: $scope.org.value,
+    //   void: false
+    // }
+    // console.log(data);
+    // RecordService.createRecord(data);
       
-    this.clear($scope.org);
-    this.clear($scope.type);
-    this.clear($scope.pcard);
-    this.clear($scope.price);
-    this.clear($scope.reim);
-    this.clear($scope.date);
-    this.clear($scope.sac);
+    // this.clear($scope.org);
+    // this.clear($scope.type);
+    // this.clear($scope.pcard);
+    // this.clear($scope.price);
+    // this.clear($scope.reim);
+    // this.clear($scope.date);
+    // this.clear($scope.sac);
   
 	};  
 
