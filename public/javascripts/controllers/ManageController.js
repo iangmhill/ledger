@@ -1,6 +1,16 @@
 // public/javascripts/controllers/ManageController.js
 app.controller('ManageController', function(AuthService, OrgService) {
   var MngCtrl = this;
+  // Initialization
+  this.roots = [];
+  this.orgs = {};
+  this.pendingUsers = [];
+  this.approvalProcessOptions = ['strict','onlyone','none'];
+  this.alert = {
+    isActive: false,
+    type:'',
+    msg:''
+  };
 
   this.updateChildren = function() {
     var children = {};
@@ -166,16 +176,7 @@ app.controller('ManageController', function(AuthService, OrgService) {
     });
   };
 
-  // Initialization
-  this.roots = [];
-  this.orgs = {};
-  this.pendingUsers = [];
-  this.approvalProcessOptions = ['strict','onlyone','none'];
-  this.alert = {
-    isActive: false,
-    type:'',
-    msg:''
-  };
+
   AuthService.getPendingUsers().then(function(pendingUsers) {
     MngCtrl.pendingUsers = pendingUsers || [];
   });

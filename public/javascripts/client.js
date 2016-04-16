@@ -91,7 +91,7 @@ var app = angular.module('ledger', [
         controllerAs: 'OrgCtrl',
         resolve: {
           permission: function(AuthService, $route) {
-            return AuthService.permissionCheck([roles.OWNER, roles.ADMIN]);
+            return AuthService.orgOwnerOnly($route.current.params.org);
           }
         }
       })

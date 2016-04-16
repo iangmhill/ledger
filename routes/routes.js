@@ -87,8 +87,11 @@ var routes = {
         org.owners = users;
         res.json({
           isSuccessful: !err && !!org,
-          isAuthorized: (req.user.orgs.indexOf(org._id) > -1),
-          org: (req.user.orgs.indexOf(org._id) > -1) ? org : undefined
+          isAuthorized:
+              (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+          org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+              ? org
+              : undefined
         });
       });
 

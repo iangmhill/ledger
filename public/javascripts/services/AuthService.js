@@ -24,8 +24,7 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     var service = this;
     this.permissionsUpdateCallbacks.push(callback);
     if (!this.user.isAuthenticated) {
-      this.fetchPermissions().then(function success(response) {
-        service.user = response.data;
+      this.updatePermissions().then(function success(response) {
         callback(service.user);
       })
     } else {
@@ -40,20 +39,30 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     });
   };
 
-  this.fetchPermissions = function() {
-    return $http.get('/api/getUserPermissions');
+  this.updatePermissions = function() {
+    var service = this;
+    var deferred = $q.defer();
+    $http.get('/api/getUserPermissions').then(function success(response) {
+      service.user = response.data;
+      service.broadcastPermissionsChange();
+      deferred.resolve();
+    }, function error(response) {
+      $location.path(routeForUnauthorizedAccess);
+      $rootScope.$on('$locationChangeSuccess', function (next, current) {
+          deferred.resolve();
+      });
+    });
+    return deferred.promise;
   };
 
   this.login = function(credentials) {
     var service = this;
     var deferred = $q.defer();
     $http.post('/login', credentials).then(function success(response) {
-      service.fetchPermissions().then(function success(response) {
-        service.user = response.data;
-        service.broadcastPermissionsChange();
-        if (service.user.isAuthenticated) {
-          $location.path('/');
-        }
+      service.updatePermissions().then(function() {
+        $location.path(service.user.isAuthenticated
+            ? '/'
+            : routeForUnauthorizedAccess);
         deferred.resolve(service.user.isAuthenticated);
       });
     });
@@ -63,12 +72,11 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   this.logout = function() {
     var service = this;
     $http.get('/logout').then(function success(response) {
-      service.fetchPermissions().then(function success(response) {
-        service.user = response.data;
-        service.broadcastPermissionsChange();
-        if (!service.user.isAuthenticated) {
-          $location.path(routeForUnauthorizedAccess);
-        }
+      service.updatePermissions().then(function() {
+        $location.path(service.user.isAuthenticated
+            ? '/'
+            : routeForUnauthorizedAccess);
+        deferred.resolve(service.user.isAuthenticated);
       });
     });
   };
@@ -76,21 +84,11 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   this.permissionCheck = function(validRoles) {
     var deferred = $q.defer();
     var service = this;
-
     if (this.user.isAuthenticated) {
       this.evaluatePermissions(this.user, validRoles, deferred);
     } else {
-      this.fetchPermissions().then(function success(response) {
-        service.user = response.data;
+      this.updatePermissions().then(function() {
         service.evaluatePermissions(service.user, validRoles, deferred);
-        service.broadcastPermissionsChange();
-      }, function error(response) {
-        if (response.status == 401) {
-          $location.path(routeForUnauthorizedAccess);
-          $rootScope.$on('$locationChangeSuccess', function (next, current) {
-              deferred.resolve();
-          });
-        }
       });
     }
     return deferred.promise;
@@ -137,6 +135,16 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     } else {
       deferred.resolve();
     }
+  };
+
+  this.orgOwnerOnly = function(orgUrl) {
+
+    var service = this;
+    var deferred = $q.defer();
+    this.updatePermissions().then(function() {
+      return deferred.resolve(service.user.isAdmin);
+    })
+    return deferred.promise;
   };
 
   this.changeEmail = function(newEmail) {
