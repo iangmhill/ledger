@@ -80,21 +80,49 @@ var routes = {
   },
   getOrgByUrl: function(req, res) {
     if (!typeof req.params.url === 'string') { res.json({isSuccessful: false}); }
+    // var org = {};
+    // var owners = [];
+    // var children = [];
+    //   Org.findOne({url: req.params.url})
+    //     .then(function(err, foundOrg) {
+    //       if (err || !foundOrg) { return res.json({isSuccessful: false}); }
+    //       org = foundOrg;
+    //       return User.find({orgs: org._id}, 'name username');
+    //     })
+    //     .then(function(err, users) {
+    //       if (err || !users) { return res.json({isSuccessful: false}); }
+    //       owners = users;
+    //       return User.find({orgs: org._id}, 'name username');
+    //     })
+
+
     Org.findOne({url: req.params.url}, function(err, org) {
       User.find({orgs: org._id}, 'name username', function(err, users) {
         if (err || !users || !org) { res.json({isSuccessful: false}); }
         Org.find({parent: org._id}, function(err, children) {
-          org = org.toObject();
-          org.children = !err && children ? children : [];
-          org.owners = users;
-          res.json({
-            isSuccessful: !err && !!org,
-            isAuthorized:
-                (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
-            org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
-                ? org
-                : undefined
-          });
+          Request.find({ $and: [{org: org._id},{isActive: true}]},
+              function(err, requests) {
+            var allocated = 0;
+            for (index in requests) {
+              allocated += requests[index].value;
+            }
+            for (index in children) {
+              allocated += children[index].budget;
+            }
+            org = org.toObject();
+            org.children = !err && children ? children : [];
+            org.owners = users;
+            org.allocated = allocated;
+            res.json({
+              isSuccessful: !err && !!org,
+              isAuthorized:
+                  (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+              org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+                  ? org
+                  : undefined
+            });
+          })
+
         })
       });
 

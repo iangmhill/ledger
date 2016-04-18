@@ -6,11 +6,10 @@ app.controller('OrgController', function($routeParams, AuthService,
 
   this.updateChartWidth = function() {
 
-    if (angular.element(document.querySelector('.tab-content'))[0]) {
-      // var width = document.getElementById('budget-chart').parentNode.clientWidth;
-      var width = angular.element(document.querySelector('.tab-content'))[0]
-          .clientWidth * (2/3);
-      console.log(width);
+    if (document.getElementById('budget-chart').parentNode) {
+      var width = document.getElementById('budget-chart').parentNode.clientWidth;
+      // var width = angular.element(document.querySelector('.tab-content'))[0]
+      //     .clientWidth * (2/3);
       OrgCtrl.options = {
         chart: {
           type: 'pieChart',
@@ -43,7 +42,6 @@ app.controller('OrgController', function($routeParams, AuthService,
           }
         }
       };
-      console.log(OrgCtrl.options);
     }
   };
   this.updateChartWidthAndReload = function() {

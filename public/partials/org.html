@@ -4,92 +4,127 @@ Description: Displays detailed information about one organization.
 -->
 <div class="container">
   <h1>{{ OrgCtrl.org.name }}</h1>
+
+  <hr>
+  <h4>Overview</h4>
+
   <p><b>Description:</b>{{ OrgCtrl.org.description }}</p>
   <p><b>Owners: </b>{{ OrgCtrl.org.ownersList }}</p>
-  <uib-tabset active="active">
-    <uib-tab id="budget-tab" index="0" heading="Budget" select="OrgCtrl.updateChartWidth()">
-      <div class="row">
-        <div class="col-xs-8">
-          <nvd3 id="budget-chart" options="OrgCtrl.options" data="OrgCtrl.data"></nvd3>
-        </div>
-        <div class="col-xs-4">
-          <h4>Orgs</h4>
-          <hr>
-          <div class="form-group" ng-repeat="child in OrgCtrl.org.children">
-            <label>{{child.name}}</label>
-            <div class="input-group">
-              <span class="input-group-addon">$</span>
-              <input
-                  type="number"
-                  class="form-control currency"
-                  name="price"
-                  min="0"
-                  aria-label="Budget"
-                  ng-init="child.newBudget = child.budget"
-                  ng-model="child.newBudget"
-                  ng-blur=""
-                  required/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button
-          type="button"
-          class="btn btn-default"
-          ng-click="OrgCtrl.changeData()">
-        Change</button>
-    </uib-tab>
-    <uib-tab index="1" heading="Owners" active="OrgCtrl.tabActivity[0]">
-      <div ng-switch="OrgCtrl.org.owners.length > 0">
-        <ul
-            ng-switch-when="true"
-            class="list-group">
-          <li class="list-group-item center-row" ng-repeat="owner in OrgCtrl.org.owners">
-            <span class="center">{{ owner.name }}</span>
-            <span class="center pull-right ">
-              <button
-                  type="button"
-                  class="btn btn-link btn-sm"
-                  ng-click="OrgCtrl.removeOwner($index)">
-                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-              </button>
-            </span>
-          </li>
-        </ul>
-        <div ng-switch-when="false">
-          No owners
-        </div>
-      </div>
-      <form>
-        <div class="form-group row">
-          <div class="col-xs-10">
-            <input
-              name="owner"
-              id="inputNewOwner"
-              type="text"
-              class="form-control"
-              placeholder="New Owner"
-              autocomplete="off"
-              ng-model="OrgCtrl.addOwner.value"
-              ng-blur="OrgCtrl.addOwner.validate()"
-              uib-typeahead="user.username as user.typeahead for user in OrgCtrl.users | filter:$viewValue | limitTo:8"
-              typeahead-editable="false"
-              required>
-          </div>
-          <div class="col-xs-2">
-            <span class="pull-right ">
-              <button
-                  type="button"
-                  class="btn btn-default"
-                  ng-click="OrgCtrl.addOwner()">
-                Add Owner</span>
-              </button>
-            </span>
-          </div>
-        </div>
-      </form>
-    </uib-tab>
 
+  <hr>
+  <h4>Funds</h4>
+  <div class="row">
+    <div class="col-sm-4 col-xs-5">
+      <div ng-repeat="child in OrgCtrl.org.children">
+        <span>{{child.name}}</span>
+        <span class="pull-right">${{child.budget.toFixed(2)}}</span>
+      </div>
+      <div>
+        <span>Allocated</span>
+        <span class="pull-right">${{OrgCtrl.org.allocated.toFixed(2)}}</span>
+      </div>
+      <div>
+        <span>Unallocated</span>
+        <span class="pull-right">
+          ${{(OrgCtrl.org.budget - OrgCtrl.org.allocated).toFixed(2)}}
+        </span>
+      </div>
+      <hr>
+      <div>
+        <span><b>Total</b></span>
+        <span class="pull-right">
+          <b>${{OrgCtrl.org.budget.toFixed(2)}}</b>
+        </span>
+      </div>
+    </div>
+    <div class="col-sm-8 col-xs-7">
+      <nvd3 id="budget-chart" options="OrgCtrl.options" data="OrgCtrl.data">
+      </nvd3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="btn-toolbar pull-right">
+        <button
+            type="button"
+            class="btn btn-default"
+            ng-click="">
+          Allocate Funds</button>
+        <button
+            type="button"
+            class="btn btn-default"
+            ng-click="">
+          Request Funds</button>
+      </div>
+    </div>
+  </div>
 
-  </uib-tabset>
+  <hr>
+  <h4>Settings</h4>
+
+  <div ng-switch="OrgCtrl.org.owners.length > 0">
+    <ul
+        ng-switch-when="true"
+        class="list-group">
+      <li class="list-group-item center-row" ng-repeat="owner in OrgCtrl.org.owners">
+        <span class="center">{{ owner.name }}</span>
+        <span class="center pull-right ">
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="OrgCtrl.removeOwner($index)">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+          </button>
+        </span>
+      </li>
+    </ul>
+    <div ng-switch-when="false">
+      No owners
+    </div>
+  </div>
+  <form>
+    <div class="form-group row">
+      <div class="col-xs-10">
+        <input
+          name="owner"
+          id="inputNewOwner"
+          type="text"
+          class="form-control"
+          placeholder="New Owner"
+          autocomplete="off"
+          ng-model="OrgCtrl.addOwner.value"
+          ng-blur="OrgCtrl.addOwner.validate()"
+          uib-typeahead="user.username as user.typeahead for user in OrgCtrl.users | filter:$viewValue | limitTo:8"
+          typeahead-editable="false"
+          required>
+      </div>
+      <div class="col-xs-2">
+        <span class="pull-right ">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="OrgCtrl.addOwner()">
+            Add Owner</span>
+          </button>
+        </span>
+      </div>
+    </div>
+  </form>
 </div>
+
+
+<!--
+<label>{{child.name}}</label>
+        <div class="input-group">
+          <span class="input-group-addon">$</span>
+          <input
+              type="number"
+              class="form-control currency"
+              name="price"
+              min="0"
+              aria-label="Budget"
+              ng-init="child.newBudget = child.budget"
+              ng-model="child.newBudget"
+              ng-blur=""
+              required/>
+        </div> -->
