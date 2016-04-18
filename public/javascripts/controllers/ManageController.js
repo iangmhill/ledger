@@ -164,6 +164,23 @@ app.controller('ManageController', function(AuthService, OrgService) {
       this.approvalProcess.helpBlock = '';
     }
   };
+
+
+  AuthService.getPendingUsers().then(function(pendingUsers) {
+    MngCtrl.pendingUsers = pendingUsers || [];
+  });
+
+
+
+  AuthService.getFundRequests().then(function(fundRequests) {
+    MngCtrl.pendingFundRequests = fundRequests || [];
+    console.log("MngCtrl.pendingFundRequests");
+    console.log(MngCtrl.pendingFundRequests);
+
+  });
+
+
+
   this.resolveUser = function(index, isApproved) {
     AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
       MngCtrl.alert.isActive = true;

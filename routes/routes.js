@@ -9,6 +9,7 @@ var q          = require('q');
 var validation = require('../utilities/validation');
 
 
+
 var routes = {
   getUserList: function(req, res) {
     User.find({}, 'username name', function(err, users) {
@@ -189,6 +190,7 @@ var routes = {
 
   },
   createRequest: function(req, res) {
+    // Request.find().remove().exec();   
     function confirm(err, request) {
       if (err) {
         console.log("I failrew" + err)
@@ -201,8 +203,7 @@ var routes = {
         success: true,
       });
     }
-    // console.log("req.body: " + req.body);
-    // console.log("user id: " + req.user._id);
+
 
     var data = {
               user: req.user._id,
@@ -299,9 +300,54 @@ var routes = {
   voidRecord: function(req, res) {
 
   },
-  getRecords: function(req, res){
 
+  getPendingFundRequests: function(req, res){
+ 
+    var errorResponse = {
+      pendingFundRequests: []
+    };
+  
+    console.log("routes, getPendingFundRequests");
+    var orgs = req.user.orgs;
+    var filteredOrgs = [];
+    var pendingRequests = [];
+
+    Org.find({_id:{$in: orgs}}, function(err,orgs){
+      console.log("find org");
+      orgs.forEach(function(org){
+        if(org.budgeted){
+          if(org.nonterminal){
+            Org.find({parent: org._id, budgeted: false}, function(err,orgs){
+              orgs.forEach(function(org){
+                filteredOrgs.push(org._id);
+              })
+            })
+          }else{
+            filteredOrgs.push(org._id);
+          }
+        }
+      })
+    })
+    console.log("filteredOrgs: ");
+    console.log(filteredOrgs);
+
+    // Request.find({org:{$in: orgs}}, function(err, requests){
+    //   if (err || !requests) { return res.json(errorResponse); }
+    //   var requestsUserId = []
+    //   requests.forEach(function(request){
+    //     requestsUserId.push(request.user);
+    //   })
+    //   User.find({user:{$in: requestsUserId}}, function(user){
+
+    //   })
+    //   console.log(requests);
+    //   // pendingRequests.push(request);   
+    // })
+
+    // console.log(pendingRequests);
+    // res.json({pendingFundRequests: pendingRequests});      
   }
 };
+
 
 module.exports = routes;

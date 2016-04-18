@@ -102,6 +102,10 @@ app.get('/api/getUserList',
     authentication.authenticateUser, routes.getUserList);
 app.get('/auth/getPendingUsers',
     authentication.authenticateAdmin, authentication.getPendingUsers);
+
+app.get('/auth/getPendingFundRequests',
+  authentication.authenticateUser, routes.getPendingFundRequests);
+
 app.get('/api/getUserOrgs',
     authentication.authenticateUser, routes.getUserOrgs);
 // org GET requests

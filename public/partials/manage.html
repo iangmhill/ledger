@@ -77,18 +77,18 @@ Description: Allows the users to manage all types of requests and the funds of
         class="row vertical-align"
         ng-repeat="request in MngCtrl.pendingFundRequests"
         ng-switch-when="true">
-      <div class="col-xs-8">
+      <div class="col-xs-12">
         <div class="row vertical-align">
-          <div class="col-sm-2">
+          <div class="col-sm-4">
           <div>{{request.user}}</div>
           </div>
 
-          <div class="col-sm-2 subtext indent">
-          <div>{{user.description}}</div>
+          <div class="col-sm-4 subtext indent">
+          <div>{{request.description}}</div>
           </div>
 
           <div class="col-sm-4 subtext indent">
-          <div>{{user.value}}</div>
+          <div>{{request.value}}</div>
           </div>
         </div>
       </div>
