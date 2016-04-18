@@ -12,7 +12,7 @@ app.directive('listing', function ($compile) {
         '<div class="org-header">' +
           '<div class="org-name">' +
             '<div class="">' +
-              '{{ directory[parent].name }}' +
+              '<a ng-href="/manage/{{directory[parent].url}}"> {{ directory[parent].name }}</a>' +
             '</div>' +
             '<div class="subtext">' +
               '{{ directory[parent].ownersList }}' +
@@ -38,10 +38,12 @@ app.directive('listing', function ($compile) {
       '</div>'
     ),
     link: function (scope, element, attrs) {
-      if (scope.children[scope.parent].length > 0) {
-        element.append("<listing ng-repeat='child in children[parent]' directory='directory' parent='child' children='children'></listing>");
-        $compile(element.contents())(scope)
-      }
+      scope.$watch('children', function() {
+        if (scope.children[scope.parent].length > 0) {
+          element.append("<listing ng-repeat='child in children[parent]' directory='directory' parent='child' children='children'></listing>");
+          $compile(element.contents())(scope)
+        }
+      })
     }
   }
 })

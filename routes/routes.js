@@ -11,7 +11,7 @@ var validation = require('../utilities/validation');
 
 var routes = {
   getUserList: function(req, res) {
-    User.find({}, {password: 0}, function(err, users) {
+    User.find({}, 'username name', function(err, users) {
       res.json(users);
     })
   },
@@ -27,7 +27,7 @@ var routes = {
       var children = {};
       var nextIds = [];
       Org.find({parent:ids[0]}, function(err, orgs) {
-        
+
         if (orgs.length > 0) {
           for (index in orgs) {
             children[orgs[index]._id] = orgs[index].toObject();
@@ -53,7 +53,7 @@ var routes = {
       }
       recursiveFind(req.user.orgs).then(function(children) {
         var allOrgs = mergeArray(children, roots);
-        User.find({orgs:{ $in: Object.keys(allOrgs)}}, function(err, users) {          
+        User.find({orgs:{ $in: Object.keys(allOrgs)}}, function(err, users) {
           for (userIndex in users) {
             for (idIndex in users[userIndex].orgs) {
               allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
@@ -78,6 +78,25 @@ var routes = {
       console.log(clean_orgs);
       res.status(200).json(orgs);
     })
+  },
+  getOrgByUrl: function(req, res) {
+    if (!typeof req.params.url === 'string') { res.json({isSuccessful: false}); }
+    Org.findOne({url: req.params.url}, function(err, org) {
+      User.find({orgs: org._id}, 'name username', function(err, users) {
+        if (err || !users || !org) { res.json({isSuccessful: false}); }
+        org = org.toObject();
+        org.owners = users;
+        res.json({
+          isSuccessful: !err && !!org,
+          isAuthorized:
+              (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+          org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+              ? org
+              : undefined
+        });
+      });
+
+    });
   },
   getOrgFinances: function(req, res) {
 
@@ -109,6 +128,7 @@ var routes = {
       if (isValid) {
         Org.create({
           name: req.body.name,
+          url: req.body.name.toLowerCase().replace(/ /g,"_").replace(/\W/g, ''),
           shortName: req.body.shortName,
           parent: req.body.org,
           budgeted: req.body.budgeted,
@@ -129,8 +149,38 @@ var routes = {
         });
       }
     })
-    
-
+  },
+  changeOwner: function(req, res) {
+    var orgId = req.body.orgId;
+    if (!req.user.isAdmin && !req.user.orgs.indexOf(orgId) > -1) {
+      return res.json({isSuccessful: false});
+    }
+    User.findOne({username: req.body.username}, 'name username orgs',
+        function(err, user) {
+      if (err || !user) { return res.json({isSuccessful: false}); }
+      if (req.body.action) {
+        // Add owner
+        if (user.orgs.indexOf(orgId) == -1) { user.orgs.push(orgId); }
+        user.save(function(err) {
+          if (err) { res.json({isSuccessful: false}); }
+          var cleanUser = user.toObject();
+          delete cleanUser['orgs'];
+          res.json({
+            isSuccessful: true,
+            user: cleanUser
+          });
+        })
+      } else {
+        // Remove owner
+        user.orgs.splice(user.orgs.indexOf(orgId), 1);
+        user.save(function(err) {
+          if (err) { res.json({isSuccessful: false}); }
+          res.json({
+            isSuccessful: true
+          });
+        })
+      }
+    })
   },
   editOrg: function(req, res) {
 
@@ -153,7 +203,7 @@ var routes = {
     }
     // console.log("req.body: " + req.body);
     // console.log("user id: " + req.user._id);
-    
+
     var data = {
               user: req.user._id,
               description: req.body.description,
@@ -170,21 +220,20 @@ var routes = {
     console.log("server request ");
     console.log(validation);
     if (!validation.request.request(
-      data.description, 
-      data.type, 
-      data.value, 
-      data.org, 
-      data.details, 
-      data.online, 
+      data.description,
+      data.type,
+      data.value,
+      data.org,
+      data.details,
+      data.online,
       data.specification
-    )) { 
-      // console.log("request data is InValid");
+    )) {
       return res.json(errorResponse);
     }
     console.log("request org: " +  data.org);
     validation.org.getInfo(data.org).then(function (orgData){
       data.org = orgData.id;
-      console.log("request org: " +  orgData.id);  
+      console.log("request org: " +  orgData.id);
       if(orgData.approval){
         data.isApproved = true;
       }
@@ -215,7 +264,7 @@ var routes = {
         success: true,
       });
     }
-    
+
     var data = {
           user: req.user._id,
           type: req.body.type,
@@ -231,13 +280,13 @@ var routes = {
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
     validation.record(
-      data.type, 
-      // data.value, 
-      data.paymentMethod, 
-      data.value, 
-      data.details, 
+      data.type,
+      // data.value,
+      data.paymentMethod,
+      data.value,
+      data.details,
       data.org
-    ).then(function(isValid) {     
+    ).then(function(isValid) {
       console.log("got here");
       if (!isValid) { return res.json(errorResponse); }
       console.log("record then function");
@@ -251,7 +300,7 @@ var routes = {
 
   },
   getRecords: function(req, res){
-    
+
   }
 };
 

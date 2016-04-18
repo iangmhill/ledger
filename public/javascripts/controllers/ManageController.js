@@ -1,6 +1,7 @@
 // public/javascripts/controllers/ManageController.js
 app.controller('ManageController', function(AuthService, OrgService) {
   var MngCtrl = this;
+  // Initialization
   this.roots = [];
   this.orgs = {};
   this.pendingUsers = [];
@@ -10,6 +11,7 @@ app.controller('ManageController', function(AuthService, OrgService) {
     type:'',
     msg:''
   };
+
   this.updateChildren = function() {
     var children = {};
     angular.forEach(this.orgs, function(org, parentId) {
@@ -42,11 +44,7 @@ app.controller('ManageController', function(AuthService, OrgService) {
     this.updateChildren();
     this.updateTypeaheadOptions();
   };
-  OrgService.getUserOrgs().then(function(response) {
-    MngCtrl.roots = response.roots;
-    MngCtrl.orgs = response.orgs;
-    MngCtrl.updateOrgs();
-  });
+
   this.createOrg = {
     isCollapsed: true,
     name: {
@@ -166,11 +164,6 @@ app.controller('ManageController', function(AuthService, OrgService) {
       this.approvalProcess.helpBlock = '';
     }
   };
-
-  AuthService.getPendingUsers().then(function(pendingUsers) {
-    MngCtrl.pendingUsers = pendingUsers || [];
-  });
-
   this.resolveUser = function(index, isApproved) {
     AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
       MngCtrl.alert.isActive = true;
@@ -182,6 +175,16 @@ app.controller('ManageController', function(AuthService, OrgService) {
       }
     });
   };
+
+
+  AuthService.getPendingUsers().then(function(pendingUsers) {
+    MngCtrl.pendingUsers = pendingUsers || [];
+  });
+  OrgService.getUserOrgs().then(function(response) {
+    MngCtrl.roots = response.roots;
+    MngCtrl.orgs = response.orgs;
+    MngCtrl.updateOrgs();
+  });
 }).filter('search', function() {
   return function(input, search) {
     if (!input) return input;
