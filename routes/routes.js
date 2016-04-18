@@ -83,16 +83,19 @@ var routes = {
     Org.findOne({url: req.params.url}, function(err, org) {
       User.find({orgs: org._id}, 'name username', function(err, users) {
         if (err || !users || !org) { res.json({isSuccessful: false}); }
-        org = org.toObject();
-        org.owners = users;
-        res.json({
-          isSuccessful: !err && !!org,
-          isAuthorized:
-              (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
-          org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
-              ? org
-              : undefined
-        });
+        Org.find({parent: org._id}, function(err, children) {
+          org = org.toObject();
+          org.children = !err && children ? children : [];
+          org.owners = users;
+          res.json({
+            isSuccessful: !err && !!org,
+            isAuthorized:
+                (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+            org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+                ? org
+                : undefined
+          });
+        })
       });
 
     });

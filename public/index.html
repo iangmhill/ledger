@@ -33,9 +33,16 @@
   <!-- load ANGULAR ngmessages -->
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.2/angular-messages.js"></script>
 
+  <!-- ANGULAR NVD3 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.2/nv.d3.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.5/angular-nvd3.js"></script>
+
   <!-- ANGULAR CUSTOM -->
   <script src="javascripts/client.js"></script>
-  
+
   <script src="javascripts/services/AllocationService.js"></script>
   <script src="javascripts/services/AuthService.js"></script>
   <script src="javascripts/services/OrgService.js"></script>
@@ -81,7 +88,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="navbar-collapse" style="overflow:hidden;" uib-collapse="NavCtrl.isCollapsed">
       <ul class="nav navbar-nav">
-        <li ng-repeat="route in MainCtrl.navRoutes" ng-class="{ active: isActive(route.path)}" ng-click="NavCtrl.hideMenu()"><a href="{{route.path}}">{{route.name}}</a></li>     
+        <li ng-repeat="route in MainCtrl.navRoutes" ng-class="{ active: isActive(route.path)}" ng-click="NavCtrl.hideMenu()"><a href="{{route.path}}">{{route.name}}</a></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

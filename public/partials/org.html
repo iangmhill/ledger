@@ -4,10 +4,42 @@ Description: Displays detailed information about one organization.
 -->
 <div class="container">
   <h1>{{ OrgCtrl.org.name }}</h1>
-  <p>{{ OrgCtrl.org.description }}</p>
-  <hr>
+  <p><b>Description:</b>{{ OrgCtrl.org.description }}</p>
+  <p><b>Owners: </b>{{ OrgCtrl.org.ownersList }}</p>
   <uib-tabset active="active">
-    <uib-tab index="0" heading="Owners">
+    <uib-tab id="budget-tab" index="0" heading="Budget" select="OrgCtrl.updateChartWidth()">
+      <div class="row">
+        <div class="col-xs-8">
+          <nvd3 id="budget-chart" options="OrgCtrl.options" data="OrgCtrl.data"></nvd3>
+        </div>
+        <div class="col-xs-4">
+          <h4>Orgs</h4>
+          <hr>
+          <div class="form-group" ng-repeat="child in OrgCtrl.org.children">
+            <label>{{child.name}}</label>
+            <div class="input-group">
+              <span class="input-group-addon">$</span>
+              <input
+                  type="number"
+                  class="form-control currency"
+                  name="price"
+                  min="0"
+                  aria-label="Budget"
+                  ng-init="child.newBudget = child.budget"
+                  ng-model="child.newBudget"
+                  ng-blur=""
+                  required/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+          type="button"
+          class="btn btn-default"
+          ng-click="OrgCtrl.changeData()">
+        Change</button>
+    </uib-tab>
+    <uib-tab index="1" heading="Owners" active="OrgCtrl.tabActivity[0]">
       <div ng-switch="OrgCtrl.org.owners.length > 0">
         <ul
             ng-switch-when="true"
@@ -57,9 +89,7 @@ Description: Displays detailed information about one organization.
         </div>
       </form>
     </uib-tab>
-    <uib-tab index="1" heading="Settings">
-      settings
-    </uib-tab>
+
 
   </uib-tabset>
 </div>

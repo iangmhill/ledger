@@ -1,8 +1,76 @@
 // public/javascripts/controllers/OrgController.js
 app.controller('OrgController', function($routeParams, AuthService,
-    OrgService, $location) {
+    OrgService, $location, $window, $scope) {
 
   var OrgCtrl = this;
+
+  this.updateChartWidth = function() {
+
+    if (angular.element(document.querySelector('.tab-content'))[0]) {
+      // var width = document.getElementById('budget-chart').parentNode.clientWidth;
+      var width = angular.element(document.querySelector('.tab-content'))[0]
+          .clientWidth * (2/3);
+      console.log(width);
+      OrgCtrl.options = {
+        chart: {
+          type: 'pieChart',
+          donut: false,
+          height: width * .75,
+          width: width,
+          x: function(d){return d.key;},
+          y: function(d){return d.y;},
+          showLabels: true,
+          duration: 500,
+          labelThreshold: 0.01,
+          labelSunbeamLayout: false,
+          labelsOutside: true,
+          valueFormat: function(n) {
+            return '$' + n.toFixed(2);
+          },
+          showLegend: true,
+          legend: {
+            margin: {
+              top: 5,
+              right: 35,
+              bottom: 5,
+              left: 0
+            },
+            width: width,
+            height: 50,
+            align: true,
+            rightAlign: false,
+            vers: 'classic'
+          }
+        }
+      };
+      console.log(OrgCtrl.options);
+    }
+  };
+  this.updateChartWidthAndReload = function() {
+    OrgCtrl.updateChartWidth();
+    $scope.$apply();
+  }
+  angular.element(document).ready(this.updateChartWidthAndReload);
+  angular.element($window).bind('resize', this.updateChartWidthAndReload);
+
+  this.data = [
+            {
+                key: "CORe",
+                y: 9000
+            },
+            {
+                key: "SAC",
+                y: 16000
+            },
+            {
+                key: "SERV",
+                y: 7000
+            },
+            {
+                key: "CCO",
+                y: 19000
+            }
+        ];
   this.addOwner = {
     value: '',
     isValidated: false,
@@ -20,13 +88,18 @@ app.controller('OrgController', function($routeParams, AuthService,
       }
       return true;
     })
-  }
+  };
   this.generateTypeahead = function() {
     for (index in this.users) {
       this.users[index].typeahead = this.users[index].name + ' (' +
           this.users[index].username + ')';
     }
-  }
+  };
+  this.generateOwnersList = function() {
+    this.org.ownersList = this.org.owners.map(function(owner) {
+      return owner.name
+    }).join(", ");
+  };
 
   AuthService.getUserList().then(function(users) {
     OrgCtrl.users = users;
@@ -36,6 +109,7 @@ app.controller('OrgController', function($routeParams, AuthService,
         return $location.path('/manage');
       }
       OrgCtrl.org = res.org;
+      OrgCtrl.generateOwnersList();
       OrgCtrl.removeCurrentOwners();
     })
   })
@@ -50,6 +124,7 @@ app.controller('OrgController', function($routeParams, AuthService,
         OrgCtrl.addOwner.isValidated = false;
         OrgCtrl.addOwner.isValid = false;
         OrgCtrl.removeCurrentOwners();
+        OrgCtrl.generateOwnersList();
       }
     });
   }
@@ -60,6 +135,7 @@ app.controller('OrgController', function($routeParams, AuthService,
       if (res.isSuccessful) {
         OrgCtrl.users = OrgCtrl.users.concat(OrgCtrl.org.owners.splice(index, 1));
         OrgCtrl.generateTypeahead();
+        OrgCtrl.generateOwnersList();
       }
     });
   }
