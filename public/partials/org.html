@@ -1,0 +1,65 @@
+<!--
+File: public/partials/org.html
+Description: Displays detailed information about one organization.
+-->
+<div class="container">
+  <h1>{{ OrgCtrl.org.name }}</h1>
+  <p>{{ OrgCtrl.org.description }}</p>
+  <hr>
+  <uib-tabset active="active">
+    <uib-tab index="0" heading="Owners">
+      <div ng-switch="OrgCtrl.org.owners.length > 0">
+        <ul
+            ng-switch-when="true"
+            class="list-group">
+          <li class="list-group-item center-row" ng-repeat="owner in OrgCtrl.org.owners">
+            <span class="center">{{ owner.name }}</span>
+            <span class="center pull-right ">
+              <button
+                  type="button"
+                  class="btn btn-link btn-sm"
+                  ng-click="OrgCtrl.removeOwner($index)">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              </button>
+            </span>
+          </li>
+        </ul>
+        <div ng-switch-when="false">
+          No owners
+        </div>
+      </div>
+      <form>
+        <div class="form-group row">
+          <div class="col-xs-10">
+            <input
+              name="owner"
+              id="inputNewOwner"
+              type="text"
+              class="form-control"
+              placeholder="New Owner"
+              autocomplete="off"
+              ng-model="OrgCtrl.addOwner.value"
+              ng-blur="OrgCtrl.addOwner.validate()"
+              uib-typeahead="user.username as user.typeahead for user in OrgCtrl.users | filter:$viewValue | limitTo:8"
+              typeahead-editable="false"
+              required>
+          </div>
+          <div class="col-xs-2">
+            <span class="pull-right ">
+              <button
+                  type="button"
+                  class="btn btn-default"
+                  ng-click="OrgCtrl.addOwner()">
+                Add Owner</span>
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </uib-tab>
+    <uib-tab index="1" heading="Settings">
+      settings
+    </uib-tab>
+
+  </uib-tabset>
+</div>

@@ -207,7 +207,7 @@ module.exports = {
       user.validPassword(password).then(function(isValid) {
         if (!isValid) { return res.json(errorResponse); }
         return next();
-      }); 
+      });
     });
   },
   /**
@@ -304,7 +304,7 @@ module.exports = {
   changePassword: function(req, res) {
     newPassword = req.body.newPassword;
     var errorResponse = {
-      isSuccessful: false, 
+      isSuccessful: false,
       isAuthenticated: true,
       error: 'Invalid new password.'
     };

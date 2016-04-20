@@ -22,7 +22,7 @@
  * @requires   routes/routes
  * @requires   ultilities/startup
  * @requires   authentication
- */ 
+ */
 
 // MODULE IMPORTS ==============================================================
 
@@ -99,7 +99,7 @@ app.get('/logout', authentication.logout);
 app.get('/api/getUserPermissions', authentication.getUserPermissions)
 // user GET requests
 app.get('/api/getUserList',
-    authentication.authenticateAdmin, routes.getUserList);
+    authentication.authenticateUser, routes.getUserList);
 app.get('/auth/getPendingUsers',
     authentication.authenticateAdmin, authentication.getPendingUsers);
 app.get('/api/getUserOrgs',
@@ -107,6 +107,8 @@ app.get('/api/getUserOrgs',
 // org GET requests
 app.get('/api/getListedOrgs',
     authentication.authenticateUser, routes.getListedOrgs);
+app.get('/api/getOrgByUrl/:url',
+    authentication.authenticateUser, routes.getOrgByUrl);
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
@@ -143,6 +145,8 @@ app.post('/auth/resolveUser',
 // org POST requests
 app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
+app.post('/api/changeOwner',
+    authentication.authenticateUser, routes.changeOwner);
 app.post('/api/editOrg',
     authentication.authenticateOwner, routes.editOrg);
 app.post('/api/deleteOrg',

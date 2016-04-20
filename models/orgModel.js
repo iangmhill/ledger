@@ -8,7 +8,19 @@ var Org = mongoose.Schema({
     type: String,
     required: true
   },
+  url: {
+    type: String,
+    required: true,
+    index: {
+      unique: true,
+      dropDups: true
+    }
+  },
   shortName: {
+    type: String,
+    required: false
+  },
+  description: {
     type: String,
     required: false
   },
