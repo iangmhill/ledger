@@ -5,61 +5,610 @@ Description: Displays detailed information about one organization.
 <div class="container">
   <h1>{{ OrgCtrl.org.name }}</h1>
   <p>{{ OrgCtrl.org.description }}</p>
-  <hr>
-  <uib-tabset active="active">
-    <uib-tab index="0" heading="Owners">
-      <div ng-switch="OrgCtrl.org.owners.length > 0">
-        <ul
-            ng-switch-when="true"
-            class="list-group">
-          <li class="list-group-item center-row" ng-repeat="owner in OrgCtrl.org.owners">
-            <span class="center">{{ owner.name }}</span>
-            <span class="center pull-right ">
+
+  <div ng-if="OrgCtrl.org.budgeted">
+    <h2 class="page-header">Budget</h2>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Pending Budget/Transfers Requests
+      </div>
+      <div class="panel-body">
+        <div class="list-group">
+          <div
+              class="list-group-item"
+              ng-repeat="transfer in OrgCtrl.transfers">
+
+            <form role="form" autocomplete="off" name="approvalForm">
+              <h5>
+                <b>{{transfer.type == 'budget' ? 'Budget Request' :
+                'Transfer Request' }}</b> from <b>{{transfer.from}}</b> to
+                <b>{{transfer.to}}</b>
+              </h5>
+              <!-- JUSTIFICATION -->
+              <div class="form-group row"> <!-- Org name field -->
+                <label
+                    for="inputAmount"
+                    class="col-sm-2
+                    form-control-label">
+                  Justification
+                </label>
+                <div class="col-sm-10">
+                  {{
+                    transfer.justification
+                    ? transfer.justification
+                    : '[none]'
+                  }}
+                </div>
+              </div>
+
+              <!-- REQUESTED AMOUNT -->
+              <div class="form-group row"> <!-- Org name field -->
+                <label
+                    for="inputAmount"
+                    class="col-sm-2
+                    form-control-label">
+                  Requested Amount
+                </label>
+                <div class="col-sm-10">
+                  ${{transfer.value.toFixed(2)}}
+                </div>
+              </div>
+
+
+              <!-- RESPONSE -->
+              <div class="form-group row"> <!-- Org name field -->
+                <label
+                    for="inputDescription"
+                    class="col-sm-2
+                    form-control-label">
+                  Response
+                </label>
+                <div class="col-sm-10">
+                  <div
+                      class="form-group"
+                      ng-class="transfer.response.isValidated
+                          ? (transfer.response.isValid
+                            ? 'has-success has-feedback'
+                            : 'has-error has-feedback')
+                          : ''">
+                    <textarea
+                        name="to"
+                        id="inputDescription"
+                        class="form-control"
+                        rows="2"
+                        autocomplete="off"
+                        ng-model="transfer.response.value"
+                        ng-init="OrgCtrl.approvalForm.response.init($index)"
+                        ng-blur="OrgCtrl.approvalForm.response.validate($index)"
+                        required></textarea>
+                    <span
+                        ng-if="transfer.response.isValidated &&
+                            !transfer.response.isValid"
+                        class="help-block">
+                      {{transfer.response.helpBlock}}
+                    </span>
+                  </div> <!-- .form-group -->
+                </div> <!-- .col-sm-10 -->
+              </div> <!-- .form-group .row -->
+
+              <!-- APPROVED AMOUNT -->
+              <div class="form-group row">
+                <label
+                    for="inputAmount"
+                    class="col-sm-2
+                    form-control-label">
+                  Approved Amount
+                </label>
+                <div class="col-sm-10">
+                  <div
+                      class="form-group"
+                      ng-class="transfer.amount.isValidated
+                          ? (transfer.amount.isValid
+                            ? 'has-success has-feedback'
+                            : 'has-error has-feedback')
+                          : ''">
+                    <div class="input-group">
+                      <span class="input-group-addon">$</span>
+                      <input
+                          name="amount"
+                          id="inputAmount"
+                          type="number"
+                          class="form-control"
+                          name="price"
+                          step="0.01"
+                          min="0"
+                          ng-model="transfer.amount.value"
+                          ng-init="OrgCtrl.approvalForm.amount.init($index)"
+                          ng-blur="OrgCtrl.approvalForm.amount.validate($index)"
+                          required/>
+                      <span
+                          ng-if="transfer.amount.isValidated &&
+                              transfer.amount.isValid"
+                          class="glyphicon glyphicon-ok form-control-feedback"
+                          aria-hidden="true"></span>
+                      <span
+                          ng-if="transfer.amount.isValidated &&
+                              !transfer.amount.isValid"
+                          class="glyphicon glyphicon-remove form-control-feedback"
+                          aria-hidden="true"></span>
+                    </div>
+                    <span
+                        ng-if="transfer.amount.isValidated &&
+                            !transfer.amount.isValid"
+                        class="help-block">
+                      {{transfer.amount.helpBlock}}
+                    </span>
+                  </div> <!-- .form-group -->
+                </div> <!-- .col-sm-10 -->
+              </div> <!-- .form-group .row -->
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="btn-toolbar pull-right">
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        ng-click="OrgCtrl.approvalForm.approve($index)">
+                      Approve
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-default"
+                        ng-click="OrgCtrl.approvalForm.reject($index)">
+                      Reject
+                    </button>
+<!--                     <button
+                        type="button"
+                        class="btn btn-default"
+                        ng-click="OrgCtrl.approvalForm.close($index)">
+                      Cancel
+                    </button> -->
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- <h5 class="list-group-item-heading">
+              <b>{{transfer.type == 'budget' ? 'Budget Request' :
+              'Transfer Request' }}</b> from <b>{{transfer.from}}</b> to
+              <b>{{transfer.to}}</b>
+            </h5>
+            <dl class="dl-horizontal list-group-item-text">
+              <dt>Justification</dt>
+              <dd>{{
+                  transfer.justification
+                  ? transfer.justification
+                  : '[none]'
+              }}</dd>
+              <dt>Amount</dt>
+              <dd>${{transfer.value.toFixed(2)}}</dd>
+            </dl>
+            <div class="btn-toolbar">
               <button
                   type="button"
-                  class="btn btn-link btn-sm"
-                  ng-click="OrgCtrl.removeOwner($index)">
-                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-              </button>
-            </span>
-          </li>
-        </ul>
-        <div ng-switch-when="false">
-          No owners
+                  class="btn btn-link pull-right">
+                Address</button>
+            </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
         </div>
       </div>
-      <form>
-        <div class="form-group row">
-          <div class="col-xs-10">
-            <input
-              name="owner"
-              id="inputNewOwner"
-              type="text"
-              class="form-control"
-              placeholder="New Owner"
-              autocomplete="off"
-              ng-model="OrgCtrl.addOwner.value"
-              ng-blur="OrgCtrl.addOwner.validate()"
-              uib-typeahead="user.username as user.typeahead for user in OrgCtrl.users | filter:$viewValue | limitTo:8"
-              typeahead-editable="false"
-              required>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {{OrgCtrl.org.name}} Current Funds
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4 col-xs-5">
+            <div ng-repeat="child in OrgCtrl.org.children">
+              <span>{{child.name}}</span>
+              <span class="pull-right">${{child.budget.toFixed(2)}}</span>
+            </div>
+            <div>
+              <span>Allocated</span>
+              <span class="pull-right">${{OrgCtrl.org.allocated.toFixed(2)}}</span>
+            </div>
+            <div>
+              <span>Unallocated</span>
+              <span class="pull-right">
+                ${{(OrgCtrl.org.budget - OrgCtrl.org.allocated).toFixed(2)}}
+              </span>
+            </div>
+            <div>
+              <span><b>Total</b></span>
+              <span class="pull-right">
+                <b>${{OrgCtrl.org.budget.toFixed(2)}}</b>
+              </span>
+            </div>
           </div>
-          <div class="col-xs-2">
-            <span class="pull-right ">
-              <button
-                  type="button"
-                  class="btn btn-default"
-                  ng-click="OrgCtrl.addOwner()">
-                Add Owner</span>
-              </button>
-            </span>
+          <div class="col-sm-8 col-xs-7">
+            <nvd3 id="budget-chart" options="OrgCtrl.options" data="OrgCtrl.data" ng-init="OrgCtrl.updateChartWidth()">
+            </nvd3>
           </div>
         </div>
-      </form>
-    </uib-tab>
-    <uib-tab index="1" heading="Settings">
-      settings
-    </uib-tab>
+      </div>
+    </div>
 
-  </uib-tabset>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="OrgCtrl.allocateForm.open()"
+              ng-disabled="!OrgCtrl.allocateForm.isCollapsed">
+            Allocate Funds</button>
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="OrgCtrl.requestForm.open()"
+              ng-disabled="!OrgCtrl.requestForm.isCollapsed">
+            Request Funds</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+        uib-collapse="OrgCtrl.allocateForm.isCollapsed"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Allocate Funds</div>
+      <div class="panel-body">
+        <form role="form" autocomplete="off" name="allocateForm">
+          <!-- AMOUNT -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputAmount"
+                class="col-sm-2
+                form-control-label">
+              Amount
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="OrgCtrl.allocateForm.amount.isValidated
+                      ? (OrgCtrl.allocateForm.amount.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <div class="input-group">
+                  <span class="input-group-addon">$</span>
+                  <input
+                      name="amount"
+                      id="inputAmount"
+                      type="number"
+                      class="form-control"
+                      name="price"
+                      step="0.01"
+                      min="0"
+                      ng-model="OrgCtrl.allocateForm.amount.value"
+                      ng-blur="OrgCtrl.allocateForm.amount.validate()"
+                      required/>
+                  <span
+                      ng-if="OrgCtrl.allocateForm.amount.isValidated &&
+                          OrgCtrl.allocateForm.amount.isValid"
+                      class="glyphicon glyphicon-ok form-control-feedback"
+                      aria-hidden="true"></span>
+                  <span
+                      ng-if="OrgCtrl.allocateForm.amount.isValidated &&
+                          !OrgCtrl.allocateForm.amount.isValid"
+                      class="glyphicon glyphicon-remove form-control-feedback"
+                      aria-hidden="true"></span>
+                </div>
+                <span
+                    ng-if="OrgCtrl.allocateForm.amount.isValidated &&
+                        !OrgCtrl.allocateForm.amount.isValid"
+                    class="help-block">
+                  {{OrgCtrl.allocateForm.amount.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+
+          <!-- TO -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputTo"
+                class="col-sm-2
+                form-control-label">
+              Transfer to
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="OrgCtrl.allocateForm.to.isValidated
+                      ? (OrgCtrl.allocateForm.to.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <input
+                    name="to"
+                    id="inputTo"
+                    type="text"
+                    class="form-control"
+                    autocomplete="off"
+                    ng-model="OrgCtrl.allocateForm.to.value"
+                    ng-blur="OrgCtrl.allocateForm.to.validate()"
+                    uib-typeahead="name for name in OrgCtrl.allocateForm.to.typeaheadOptions | search:$viewValue | limitTo:8"
+                    required>
+                <span
+                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
+                        OrgCtrl.allocateForm.to.isValid"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
+                        !OrgCtrl.allocateForm.to.isValid"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
+                        !OrgCtrl.allocateForm.to.isValid"
+                    class="help-block">
+                  {{OrgCtrl.allocateForm.to.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+
+          <!-- DESCRIPTION -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputDescription"
+                class="col-sm-2
+                form-control-label">
+              Description
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="OrgCtrl.allocateForm.description.isValidated
+                      ? (OrgCtrl.allocateForm.description.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <textarea
+                    name="to"
+                    id="inputDescription"
+                    class="form-control"
+                    rows="2"
+                    autocomplete="off"
+                    ng-model="OrgCtrl.allocateForm.description.value"
+                    ng-blur="OrgCtrl.allocateForm.description.validate()"
+                    required></textarea>
+                <span
+                    ng-if="OrgCtrl.allocateForm.description.isValidated &&
+                        !OrgCtrl.allocateForm.description.isValid"
+                    class="help-block">
+                  {{OrgCtrl.allocateForm.description.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="OrgCtrl.allocateForm.confirm()">
+              Confirm
+            </button>
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="OrgCtrl.allocateForm.close()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+        uib-collapse="OrgCtrl.requestForm.isCollapsed"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Request Funds</div>
+      <div class="panel-body">
+        <form role="form" autocomplete="off" name="requestForm">
+          <!-- AMOUNT -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputAmount"
+                class="col-sm-2
+                form-control-label">
+              Amount
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="OrgCtrl.requestForm.amount.isValidated
+                      ? (OrgCtrl.requestForm.amount.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <div class="input-group">
+                  <span class="input-group-addon">$</span>
+                  <input
+                      name="amount"
+                      id="inputAmount"
+                      type="number"
+                      class="form-control"
+                      name="price"
+                      step="0.01"
+                      min="0"
+                      ng-model="OrgCtrl.requestForm.amount.value"
+                      ng-blur="OrgCtrl.requestForm.amount.validate()"
+                      required/>
+                  <span
+                      ng-if="OrgCtrl.requestForm.amount.isValidated &&
+                          OrgCtrl.requestForm.amount.isValid"
+                      class="glyphicon glyphicon-ok form-control-feedback"
+                      aria-hidden="true"></span>
+                  <span
+                      ng-if="OrgCtrl.requestForm.amount.isValidated &&
+                          !OrgCtrl.requestForm.amount.isValid"
+                      class="glyphicon glyphicon-remove form-control-feedback"
+                      aria-hidden="true"></span>
+                </div>
+                <span
+                    ng-if="OrgCtrl.requestForm.amount.isValidated &&
+                        !OrgCtrl.requestForm.amount.isValid"
+                    class="help-block">
+                  {{OrgCtrl.requestForm.amount.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+
+          <!-- JUSTIFICATION -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputJustification"
+                class="col-sm-2
+                form-control-label">
+              Justification
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="OrgCtrl.requestForm.justification.isValidated
+                      ? (OrgCtrl.requestForm.justification.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <textarea
+                    name="to"
+                    id="inputJustification"
+                    class="form-control"
+                    rows="2"
+                    autocomplete="off"
+                    ng-model="OrgCtrl.requestForm.justification.value"
+                    ng-blur="OrgCtrl.requestForm.justification.validate()"
+                    required></textarea>
+                <span
+                    ng-if="OrgCtrl.requestForm.justification.isValidated &&
+                        !OrgCtrl.requestForm.justification.isValid"
+                    class="help-block">
+                  {{OrgCtrl.requestForm.justification.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="OrgCtrl.requestForm.confirm()">
+              Confirm
+            </button>
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="OrgCtrl.requestForm.close()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div><!-- ng-if org.budgeted -->
+
+  <h2 class="page-header">Settings</h2>
+  <div class="panel panel-default">
+      <div class="panel-heading">
+        Owners
+      </div>
+      <div class="panel-body">
+        <div ng-switch="OrgCtrl.org.owners.length > 0">
+          <ul
+              ng-switch-when="true"
+              class="list-group">
+            <li class="list-group-item center-row" ng-repeat="owner in OrgCtrl.org.owners">
+              <span class="center">{{ owner.name }}</span>
+              <span class="center pull-right ">
+                <button
+                    type="button"
+                    class="btn btn-link btn-sm"
+                    ng-click="OrgCtrl.removeOwner($index)">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </span>
+            </li>
+          </ul>
+          <div ng-switch-when="false">
+            No owners
+          </div>
+        </div>
+        <form>
+          <div class="form-group row">
+            <div class="col-xs-10">
+              <input
+                name="owner"
+                id="inputNewOwner"
+                type="text"
+                class="form-control"
+                placeholder="New Owner"
+                autocomplete="off"
+                ng-model="OrgCtrl.ownerForm.value"
+                ng-blur="OrgCtrl.ownerForm.validate()"
+                uib-typeahead="user.username as user.typeahead for user in OrgCtrl.users | filter:$viewValue | limitTo:8"
+                typeahead-editable="false"
+                required>
+            </div>
+            <div class="col-xs-2">
+              <span class="pull-right ">
+                <button
+                    type="button"
+                    class="btn btn-default"
+                    ng-click="OrgCtrl.addOwner()">
+                  Add Owner
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+<!--
+<label>{{child.name}}</label>
+        <div class="input-group">
+          <span class="input-group-addon">$</span>
+          <input
+              type="number"
+              class="form-control currency"
+              name="price"
+              min="0"
+              aria-label="Budget"
+              ng-init="child.newBudget = child.budget"
+              ng-model="child.newBudget"
+              ng-blur=""
+              required/>
+        </div>

@@ -6,7 +6,7 @@
  * @requires models/userModel
  * @requires utilities/constants
  */
- 
+
 'use strict';
 
 var validator = require('validator');
@@ -135,8 +135,8 @@ module.exports = {
       return true;
     },
     request:function(description, type, value, org, details, online, specification){
-      return stringCheck(description) && stringCheck(type) && 
-          numberCheck(value) && stringCheck(details) && 
+      return stringCheck(description) && stringCheck(type) &&
+          numberCheck(value) && stringCheck(details) &&
           this.online(online) && this.specification(specification);
     }
   },
@@ -163,9 +163,9 @@ module.exports = {
         console.log("find the org: " + orgs);
         if (orgs[0].approvalProcess == 'none'){
           console.log("find it none");
-          return deferred.resolve({approval: true, id: orgs[0]._id});          
+          return deferred.resolve({approval: true, id: orgs[0]._id});
         }
-        console.log("find it not none");  
+        console.log("find it not none");
         return deferred.resolve({approval: false, id: orgs[0]._id});
       })
       return deferred.promise;
@@ -209,18 +209,45 @@ module.exports = {
     }
 
   },
-  record:function(type, paymentMethod, value, details){
-    var deferred = q.defer();
-    var validation = this;
-      deferred.resolve(
-        validation.stringCheck(type) &&
-        validation.numberCheck(value) && validation.stringCheck(details) &&
-        validation.stringCheck(paymentMethod));
-    },function(err){
-      console.log("request validation err");
-    console.log("server validation done");  
-    return deferred.promise;
+  transfer: {
+    transfer: function(base, to, from, value, justification) {
+      var deferred = q.defer();
+      Org.find({_id: {$in: [base, to, from]}}, function(err, orgs) {
+        if (orgs.length != 2 || err) { return deferred.resolve(false); }
+        var baseOrg, toOrg, fromOrg;
+        for (index in orgs) {
+          if (orgs[index]._id == base) { baseOrg = orgs[index]; }
+          if (orgs[index]._id == to) { toOrg = orgs[index]; }
+          if (orgs[index]._id == from) { fromOrg = orgs[index]; }
+        }
+        if (!baseOrg || !toOrg || !fromOrg || !toOrg.budgeted ||
+            !fromOrg.budgeted) { return deferred.resolve(false); }
+        Org.find({ $and: [{parent: org._id}, {budgeted: true}]},
+            function(err, children) {
+          if (err) { return deferred.resolve(false); }
+          Request.find({ $and: [{org: from},{isActive: true}]},
+              function(err, requests) {
+            if (err) { return deferred.resolve(false); }
+            var allocated = 0;
+            for (index in requests) {
+              allocated += requests[index].value;
+            }
+            for (index in children) {
+              allocated += children[index].budget;
+            }
+            deferred.resolve(
+              to != from &&
+              (base == to || base == from) &&
+              typeof value === 'number' &&
+              value > 0 &&
+              value <= fromOrg.budget - allocated &&
+              typeof justification === 'string'
+            );
+          });
+        });
+      });
+      return deferred.promise;
+    }
   }
-
 };
 
