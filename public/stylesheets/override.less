@@ -124,3 +124,23 @@ body {
     vertical-align:middle;
     float:none;
 }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+.currency {
+  text-align: right;
+}
+.list-group-item-text {
+  & > dt {
+    width: 100px;
+    text-align: left;
+  }
+  & > dd {
+    margin-left: 120px;
+  }
+}

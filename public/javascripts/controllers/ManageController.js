@@ -181,7 +181,18 @@ app.controller('ManageController', function(AuthService, OrgService) {
     MngCtrl.pendingUsers = pendingUsers || [];
   });
   OrgService.getUserOrgs().then(function(response) {
-    MngCtrl.roots = response.roots;
+    var checkRoot = function(tree, roots, rootToCheck) {
+      if (roots.indexOf(rootToCheck) > -1) { return false; }
+      return tree[rootToCheck].parent
+          ? checkRoot(tree, roots, tree[rootToCheck].parent)
+          : true;
+    }
+    MngCtrl.roots = response.roots.filter(function(root) {
+      var roots = response.roots.slice(0);
+      roots.splice(roots.indexOf(root),1);
+      console.log(response.roots);
+      return checkRoot(response.orgs, roots, root);
+    });
     MngCtrl.orgs = response.orgs;
     MngCtrl.updateOrgs();
   });

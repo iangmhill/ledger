@@ -4,10 +4,28 @@ var mongoose   = require('mongoose');
 var Org        = require('../models/orgModel');
 var User       = require('../models/userModel');
 var Request    = require('../models/requestModel');
+var Transfer   = require('../models/transferModel');
 var Record     = require('../models/recordModel');
 var q          = require('q');
 var validation = require('../utilities/validation');
 
+var evaluateApprovals = function(approvalProcess, owners, approvals) {
+  switch (approvalProcess) {
+    case 'strict':
+      for (index in owners) {
+        if (approvals.indexOf(owners[index]) == -1) { return false; }
+      }
+      return true;
+    case 'onlyone':
+      for (index in approvals) {
+        if (owners.indexOf(approvals[index]) > -1) { return true; }
+      }
+    case 'none':
+      return true;
+    default:
+      return false;
+  }
+};
 
 var routes = {
   getUserList: function(req, res) {
@@ -68,14 +86,8 @@ var routes = {
     })
   },
   getListedOrgs: function(req, res) {
-    // Request.find().remove().exec();
-    var clean_orgs = []
-    Org.find(function(err, orgs) {
-      // console.log(orgs);
-      orgs.forEach(function(org){
-        clean_orgs.push({name: org.name, id: org._id});
-      })
-      console.log(clean_orgs);
+    Org.find({isActive: true}, 'name shortName url budgeted nonterminal',
+        function(err, orgs) {
       res.status(200).json(orgs);
     })
   },
@@ -86,14 +98,43 @@ var routes = {
         if (err || !users || !org) { res.json({isSuccessful: false}); }
         org = org.toObject();
         org.owners = users;
-        res.json({
-          isSuccessful: !err && !!org,
-          isAuthorized:
-              (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
-          org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
-              ? org
-              : undefined
-        });
+        if (org.budgeted) {
+          Org.find({ $and: [{parent: org._id}, {budgeted: true}]},
+              function(err, children) {
+            if (err) { res.json({isSuccessful: false}); }
+            Request.find({ $and: [{org: org._id},{isActive: true}]},
+                function(err, requests) {
+              if (err) { res.json({isSuccessful: false}); }
+              var allocated = 0;
+              for (index in requests) {
+                allocated += requests[index].value;
+              }
+              for (index in children) {
+                allocated += children[index].budget;
+              }
+              org.children = children ? children : [];
+              org.allocated = allocated;
+              res.json({
+                isSuccessful: true,
+                isAuthorized:
+                    (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+                org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+                    ? org
+                    : undefined
+              });
+            })
+          })
+        } else {
+          res.json({
+            isSuccessful: true,
+            isAuthorized:
+                (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+            org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
+                ? org
+                : undefined
+          });
+        }
+
       });
 
     });
@@ -181,6 +222,50 @@ var routes = {
         })
       }
     })
+  },
+  createTransfer: function(req, res) {
+    validation.transfer.transfer(
+      req.body.org,
+      req.body.to,
+      req.body.from,
+      req.body.value,
+      req.body.justification
+    ).then(function(isValid) {
+      if (isValid) {
+        Org.findById(req.body.from, function(err, org) {
+          User.find({orgs: req.body.from}, '', function(err, users) {
+            var approvals = (req.user.orgs.indexOf(req.body.from) > -1)
+                ? [req.user._id]
+                : [];
+            var owners = users.map(function(user) { return user._id; });
+            var isApproved =
+                evaluateApprovals(org.approvalProcess, owners, approvals);
+            Transfer.create({
+              user: req.user.id,
+              justification: req.body.justification,
+              type: (req.body.to == req.body.org) ? 'budget' : 'transfer',
+              value: req.body.value,
+              to: req.body.to,
+              from: req.body.from,
+              approvals: approvals,
+              isApproved: isApproved
+            }, function (err, transfer) {
+              res.json({
+                isSuccessful: !err && !!transfer,
+                org: org
+              });
+            });
+          });
+        });
+      } else {
+        res.json({
+          isSuccessful: false
+        });
+      }
+    })
+  },
+  approveTransfer: function(req, res) {
+    console.log(req.body);
   },
   editOrg: function(req, res) {
 
@@ -279,19 +364,9 @@ var routes = {
 
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
-    validation.record(
-      data.type,
-      // data.value,
-      data.paymentMethod,
-      data.value,
-      data.details,
-      data.org
-    ).then(function(isValid) {
-      console.log("got here");
-      if (!isValid) { return res.json(errorResponse); }
-      console.log("record then function");
-      Record.create(data, confirm);
-    })
+    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){    
+        Record.create(data, confirm);
+    } else { return res.json(errorResponse); }
   },
   editRecord: function(req, res) {
 
