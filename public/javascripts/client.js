@@ -36,6 +36,7 @@ var app = angular.module('ledger', [
       .when('/', {
         templateUrl: 'partials/dashboard.html',
         controller: 'DashboardController',
+        controllerAs: 'DashCtrl',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);

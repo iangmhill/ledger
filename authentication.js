@@ -174,7 +174,8 @@ module.exports = {
         name: req.user.name,
         email: req.user.email,
         orgs: req.user.orgs,
-        isAdmin: req.user.isAdmin
+        isAdmin: req.user.isAdmin,
+        _id: req.user._id  
       });
     } else {
       res.json({

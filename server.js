@@ -155,13 +155,18 @@ app.post('/api/editOrg',
     authentication.authenticateOwner, routes.editOrg);
 app.post('/api/deleteOrg',
     authentication.authenticateOwner, routes.deleteOrg);
+
+
 // requests POST requests
 app.post('/api/createRequest',
     authentication.authenticateUser, routes.createRequest);
-app.post('/api/approveRequest',
-    authentication.authenticateOwner, routes.approveRequest);
+app.post('/api/editRequest',routes.editRequest);
+    // authentication.authenticateOwner,
 app.post('/api/closeRequest',
     authentication.authenticateOwner, routes.closeRequest);
+app.get('/api/getRequests:user',routes.getRequests);
+// authentication.authenticateUser, 
+
 // record POST requests
 app.post('/api/createRecord',
     authentication.authenticateUser, routes.createRecord);
