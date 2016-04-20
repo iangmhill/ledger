@@ -12,10 +12,9 @@ var Transfer = mongoose.Schema({
     required: true,
     default: Date.now
   },
-  description: {
+  justification: {
     type: String,
-    required: true,
-    // default: "test"
+    required: true
   },
   type: {
     type: String,
