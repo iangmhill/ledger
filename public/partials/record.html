@@ -50,7 +50,7 @@
         </span>
       </div><br />
 
-<!--       <div class="form-group"
+      <div class="form-group"
       ng-class="{valid:'has-success has-feedback',
       invalid:'has-error has-feedback',
       empty:''}[org.validation.isValid]">
@@ -65,8 +65,8 @@
             class="help-block">
           {{org.validation.helpBlock}}
         </span>
-      </div><br /> -->
-
+      </div><br />
+<!-- 
 
       <input
           name="org"
@@ -76,7 +76,7 @@
           autocomplete="off"
           ng-model="org.value"
           uib-typeahead="name for name in typeaheadOptions | search:$viewValue | limitTo:8"
-          required>
+          required> -->
 
 
       <div class="form-group">
@@ -118,21 +118,16 @@
           ng-class="{valid:'has-success has-feedback',
           invalid:'has-error has-feedback',
           empty:''}[date.validation.isValid]">
-        <input type="text" class="form-control" name="date" placeholder="MM/DD/YYYY" 
-        ng-model = "date.value" ng-pattern='/^(0?[1-9]|1[012])\/(0?[1-9]|[12][0-9]|3[01])\/(199\d)|([2-9]\d{3})$/' 
-        ng-blur="date.validate()" required/>
+          <input type="text" class="form-control" uib-datepicker-popup="{{format}}" name="date" ng-model="date.value" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
       <span
         ng-if="date.validation.isValid == 'invalid'"
         class="col-md-8 col-md-offset-4 help-block" layout="row" layout-align="start center">
         {{date.validation.helpBlock}}
       </span>
       </div><br />
-
-
-
-
-
-
 
 
 

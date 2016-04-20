@@ -230,19 +230,9 @@ var routes = {
 
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
-    validation.record(
-      data.type, 
-      // data.value, 
-      data.paymentMethod, 
-      data.value, 
-      data.details, 
-      data.org
-    ).then(function(isValid) {     
-      console.log("got here");
-      if (!isValid) { return res.json(errorResponse); }
-      console.log("record then function");
-      Record.create(data, confirm);
-    })
+    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){    
+        Record.create(data, confirm);
+    } else { return res.json(errorResponse); }
   },
   editRecord: function(req, res) {
 

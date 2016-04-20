@@ -42,6 +42,58 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
 
 
 
+  $scope.today = function() {
+    $scope.dt = new Date();
+  };
+  $scope.today();
+
+  $scope.clear = function() {
+    $scope.dt = null;
+  };
+
+  $scope.dateOptions = {
+    formatYear: 'yy',
+    maxDate: new Date(),
+    minDate: new Date(2016, 1, 1),
+    startingDay: 1
+  };
+
+  $scope.inlineOptions = {
+    customClass: getDayClass,
+    minDate: new Date(),
+    showWeeks: true
+  };
+
+  $scope.open1 = function() {
+    $scope.popup1.opened = true;
+  };
+
+  function getDayClass(data) {
+    var date = data.date,
+      mode = data.mode;
+    if (mode === 'day') {
+      var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+      for (var i = 0; i < $scope.events.length; i++) {
+        var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+        if (dayToCheck === currentDay) {
+          return $scope.events[i].status;
+        }
+      }
+    }
+    return '';
+  }
+  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+  $scope.format = $scope.formats[0];
+  $scope.altInputFormats = ['M!/d!/yyyy'];
+
+  $scope.popup1 = {
+    opened: false
+  };
+
+
+
 
   $scope.reim = {
     value: '',
@@ -244,34 +296,6 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
 
 
 
-
-
-
-
-
-
-  $scope.price = {
-    value: 0,
-      validation: {
-        isValid: 'empty',
-        helpBlock: ''
-      },
-    validate: function(){
-      if($scope.recordForm.price.$valid && this.value > 0){
-        this.validation.isValid = "valid";
-      }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.price.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "The amount must be larger than zero";
-        }
-      }
-    } 
-  }
-
   $scope.sac = {
     value: '',
       validation: {
@@ -332,7 +356,6 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
     $scope.type.validate();
     $scope.org.validate();
     $scope.pcard.validate();
-    $scope.price.validate();
     $scope.sac.validate();
 
     var data = {
@@ -340,21 +363,34 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
       occurred: new Date($scope.date.value),
       paymentMethod: $scope.pcard.value,
       request: $scope.requests.value,
-      value: $scope.price.value,
-      details: "test",
+      value: $scope.totalamount,
+      details: $scope.items,
       org: $scope.org.value,
       void: false
     }
     console.log(data);
     RecordService.createRecord(data);
-      
+    $scope.totalamount = 0;
     this.clear($scope.org);
     this.clear($scope.type);
     this.clear($scope.pcard);
-    this.clear($scope.price);
     this.clear($scope.reim);
     this.clear($scope.date);
     this.clear($scope.sac);
+    $scope.requests = "";
+    
+
+    itemNum = 1;
+    $scope.items = $scope.items.splice(0, 1)
+    $scope.items.forEach(function(item){
+      item.name = "";
+      item.price = 0;
+      item.category = "";
+      item.validation.isValid = "empty";
+      item.validation.nameHelpBlock = "";
+        item.validation.priceHelpBlock = "";
+        item.validation.categoryHelpBlock = "";
+    })
   
 	};  
 
