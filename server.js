@@ -113,12 +113,14 @@ app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
 app.get('/api/getOrgRequests',
-    authentication.authenticateOwner, routes.getOrgRequests);
+    authentication.authenticateUser, routes.getOrgRequests);
+
 app.get('/api/getUserRequests',
     authentication.authenticateUser, routes.getUserRequests);
 // record GET requests
 app.get('/api/getOrgRecords',
     authentication.authenticateOwner, routes.getOrgRecords);
+
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 

@@ -1,7 +1,20 @@
 // public/javascripts/controllers/RecordController.js
-app.controller('RecordController', function($scope, RecordService) {
+app.controller('RecordController', function($scope, RecordService, OrgService) {
 	
   var RecCtrl = this;
+
+  $scope.reqdata = {
+    requests: null,
+    availableOptions : null 
+  };
+
+
+  RecordService.getRequests().then(function(response) {
+      console.log(response);
+      $scope.reqdata.availableOptions = response; 
+    });
+
+
 
   $scope.reim = {
     value: '',
@@ -72,6 +85,13 @@ app.controller('RecordController', function($scope, RecordService) {
       }
     } 
   }
+
+  OrgService.getOrgList().then(function(data) {
+    if (data){
+      $scope.orgs = data;
+    }
+  });
+
 
   $scope.pcard = {
     value: '',
@@ -152,16 +172,13 @@ app.controller('RecordController', function($scope, RecordService) {
     validate: function(){
       if($scope.recordForm.date.$valid){
         this.validation.isValid = "valid";
-        console.log("got through");
       }
       else{
         this.validation.isValid = "invalid";
         if($scope.recordForm.date.$error.required){
-          console.log("no input");
           this.validation.helpBlock = "This field cannot be empty";
         }
         else if ($scope.recordForm.date.$error.pattern){
-          console.log("wrong pattern");
           this.validation.helpBlock = "Please enter a valid date in the format MM/DD/YYYY";
         }
       }
@@ -177,6 +194,7 @@ app.controller('RecordController', function($scope, RecordService) {
 
 	this.submitCreateRecordForm = function() {
 
+    
     $scope.reim.validate();
     $scope.type.validate();
     $scope.org.validate();
@@ -188,7 +206,7 @@ app.controller('RecordController', function($scope, RecordService) {
       type: $scope.type.value,
       occurred: new Date($scope.date.value),
       paymentMethod: $scope.pcard.value,
-      request: "testrequest",
+      request: $scope.requests.value,
       value: $scope.price.value,
       details: "test",
       org: $scope.org.value,
