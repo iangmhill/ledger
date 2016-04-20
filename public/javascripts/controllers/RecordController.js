@@ -9,10 +9,37 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
   };
 
 
+  OrgService.getOrgList().then(function(data) {
+    if (data){
+      $scope.orgs = data;
+      console.log(data);
+    }
+
+  });
+
   RecordService.getRequests().then(function(response) {
-      console.log(response);
-      $scope.reqdata.availableOptions = response; 
+      $scope.reqs = response;
     });
+
+  $scope.filterReq = function() {
+      var request = $scope.reqs.filter(function (el) {
+        return el.org == $scope.org.value
+      });
+      $scope.reqdata.availableOptions = request; 
+  }
+
+  $scope.names = [];
+
+  $scope.updateTypeaheadOptions = function() {
+    $scope.typeaheadOptions = {};
+    for (var ele in $scope.orgs){
+      elename = ele.name;
+      $scope.typeaheadOptions[elename] = ele._id;
+      $scope.names.push(elename);
+    }
+  };
+  $scope.updateTypeaheadOptions();
+
 
 
 
@@ -86,12 +113,6 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
     } 
   }
 
-  OrgService.getOrgList().then(function(data) {
-    if (data){
-      $scope.orgs = data;
-    }
-  });
-
 
   $scope.pcard = {
     value: '',
@@ -115,6 +136,118 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
       }
     } 
   }
+
+
+
+  $scope.items = [];
+  $scope.links = [];
+  var itemNum = 1;
+  var linkNum = 1;
+  var item = {
+    name: "", 
+    price: 0, 
+    category: "", 
+    index: 0,
+      validation: {
+        isValid: 'empty',
+        nameHelpBlock: '',
+        priceHelpBlock: '',
+        categoryHelpBlock: ''
+      }
+  }
+  $scope.items.push(item);
+  $scope.specificationCheck = false;
+
+    $scope.validateItem = function(index){
+    $scope.items.forEach(function(item){
+    // console.log("validation item");
+      if (item.index == index) {
+        console.log("find the item");
+        console.log("index: " + index);
+        console.log(item.name);
+        item.validation.nameHelpBlock = "";
+        item.validation.priceHelpBlock = "";
+        item.validation.categoryHelpBlock = "";
+        if(item.name == ""  || !item.name){
+          item.validation.isValid = "invalid";
+          item.validation.nameHelpBlock = "The name cannot be empty";
+          console.log("name")
+          console.log(item.validation.isValid);
+          $scope.submitStatus -= 1; 
+        }
+        else{
+          $scope.submitStatus += 1; 
+          if(item.price == 0 || !item.price){
+            item.validation.isValid = "invalid";          
+            item.validation.priceHelpBlock = "The price must be a non-zero number";
+            item.validation.categoryHelpBlock = "";             
+            console.log("price")
+            console.log(item.validation.isValid);
+            $scope.submitStatus -= 1; 
+          }
+          else{
+            $scope.submitStatus += 1; 
+            if (item.category == ""  || !item.category){
+              item.validation.isValid = "invalid";
+              item.validation.categoryHelpBlock = "The category cannot be empty";             
+              console.log("category")
+              console.log(item.validation.isValid);
+              $scope.submitStatus -= 1; 
+            }
+            else{
+              $scope.submitStatus += 1; 
+              item.validation.isValid = "valid";
+              item.validation.nameHelpBlock = "";
+              item.validation.priceHelpBlock = "";
+              item.validation.categoryHelpBlock = "";
+              console.log("else")
+              console.log(item.validation.isValid);
+            }
+          }
+        } 
+      };
+    })
+  }
+
+
+  $scope.addItem = function(){
+    var newItem = {
+      name: "", 
+      price: 0, 
+      category: "", 
+      index: itemNum,
+        validation: {
+          isValid:  'empty',
+          nameHelpBlock: '',
+          priceHelpBlock: '',
+          categoryHelpBlock: ''
+        }
+    }
+    itemNum += 1;
+    $scope.items.push(newItem);
+  };
+  $scope.delItem = function(index){
+    $scope.items.splice(index, 1);
+  };
+
+  $scope.sum = function(items, prop){
+      return items.reduce( function(a, b){
+          return a + b[prop];
+      }, 0);
+  };
+
+  $scope.totalamount = 0;
+
+  $scope.updatePrice = function(){
+    $scope.totalamount = $scope.sum($scope.items, 'price');
+  }
+
+
+
+
+
+
+
 
 
   $scope.price = {
@@ -225,6 +358,19 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
   
 	};  
 
+}).filter('search', function() {
+  return function(input, search) {
+    if (!input) return input;
+    if (!search) return input;
+    var expected = ('' + search).toLowerCase();
+    var result = [];
+    angular.forEach(input, function(id, name) {
+      if (name.toLowerCase().indexOf(expected) !== -1) {
+        result.push(name);
+      }
+    });
+    return result;
+  }
 });
 
 

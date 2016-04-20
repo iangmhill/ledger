@@ -8,7 +8,7 @@
     <center><h1>Record a Purchase</h1></center>
     <br /> <br />
     <form 
-        name="recordForm" class="col-md-6 col-md-offset-3" role="form" 
+        name="recordForm" class="col-md-8 col-md-offset-2" role="form" 
         ng-submit="RecCtrl.submitCreateRecordForm()">
 
       <div 
@@ -35,14 +35,13 @@
           ng-class="{valid:'has-success has-feedback',
           invalid:'has-error has-feedback',
           empty:''}[type.validation.isValid]">
-        <label>Is this an expense, renvenue or transfer?</label>
+        <label>Is this an expense or renvenue?</label>
         <select 
             class="form-control" name="type" ng-model= "type.value" 
             ng-click="type.validate()" required>
           <option value="">---Please select---</option> <!-- not selected / blank option -->
           <option value="expense">Expense</option>
           <option value="revenue">Revenue</option>
-          <option value="transfer">Transfer</option>
         </select>
         <span
         ng-if="type.validation.isValid == 'invalid'"
@@ -51,14 +50,14 @@
         </span>
       </div><br />
 
-      <div class="form-group"
+<!--       <div class="form-group"
       ng-class="{valid:'has-success has-feedback',
       invalid:'has-error has-feedback',
       empty:''}[org.validation.isValid]">
         <label>Orgnization Name?</label>
         <select class="form-control" name="org" ng-model= "org.value" 
-                ng-click="org.validate()" required>
-          <option value="">---Please select---</option> <!-- not selected / blank option -->
+                ng-click="org.validate()" required ng-change="filterReq()">
+          <option value="">-Please select-</option> 
           <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
         </select>
         <span
@@ -66,7 +65,18 @@
             class="help-block">
           {{org.validation.helpBlock}}
         </span>
-      </div><br />
+      </div><br /> -->
+
+
+      <input
+          name="org"
+          id="inputParent"
+          type="text"
+          class="form-control"
+          autocomplete="off"
+          ng-model="org.value"
+          uib-typeahead="name for name in typeaheadOptions | search:$viewValue | limitTo:8"
+          required>
 
 
       <div class="form-group">
@@ -117,31 +127,72 @@
         {{date.validation.helpBlock}}
       </span>
       </div><br />
+
+
+
+
+
+
+
+
+
+    <div class = "row">
+      <label class="col-md-4">Specification</label>
+    </div>
+
+   
+        <div  class = "form-group row" ng-repeat="item in items">
+           <div 
+            class = "specification" 
+            ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[item.validation.isValid]">
+                <div class="col-md-4" >
+                  <div class="input-group">
+                        <span class="input-group-addon">Details</span>
+                        <input name = "itemName" type="text" class="form-control"  ng-model = item.name ng-blur="validateItem (item.index)" required/>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="input-group">
+                    <span class="input-group-addon">Price</span>
+                    <input name = "itemPrice" type="number" class="form-control" ng-model = item.price ng-blur="validateItem (item.index)" required ng-change="updatePrice()">
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="input-group">
+
+                    <select name = "itemCategory" class="form-control" ng-focus="validateItem(item.index)" ng-blur="validateItem (item.index)" ng-click="validateItem (item.index)" ng-model= item.category required>
+                      <option value="">Category</option>
+                      <option value="Food">Food</option>
+                      <option value="Equipment">Equipment</option>
+                      <option value="Stationary">Stationary</option>
+                      <option value="Dangerous Stuff">Dangerous Stuff</option>
+                    </select>
+                  </div>
+                </div>
+                <div class = "col-md-1 vcenter">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true" ng-click="delItem(item.index)"></span>
+                </div>
+                <span
+                    ng-if="item.validation.isValid == 'invalid'"
+                    class="col-md-8 col-md-offset-4 help-block">
+                  {{item.validation.nameHelpBlock}}
+                  {{item.validation.priceHelpBlock}}
+                  {{item.validation.categoryHelpBlock}}
+                </span>
+          </div>
+        </div>
+
+         
+        <div class="btn-toolbar">
+          <button type="button" class='btn btn-default' ng-click="addItem()">Add Item</button>
+          <div align="right"><label>Total Amount:</label> {{totalamount}}</div><br /> 
+          <!-- <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button>  -->
+        </div><br /><br />
       
-
-      <label >Purchase Amount</label><br /> 
-      <div 
-          class="form-group input-group" 
-          ng-class="{valid:'has-success has-feedback',
-          invalid:'has-error has-feedback',
-          empty:''}[price.validation.isValid]">
-        <span class="input-group-addon">$</span>
-        <input type="number" class="form-control" name="price" placeholder="< 200 $" 
-        aria-label="Amount (to the nearest dollar)" ng-model = "price.value"
-        ng-blur="price.validate()" required/>
-        <!-- <span class="input-group-addon">.00</span> -->
-      </div>
-      <div 
-          ng-class="{valid:'has-success has-feedback',
-          invalid:'has-error has-feedback',
-          empty:''}[price.validation.isValid]">
-       <span
-        ng-if="price.validation.isValid == 'invalid'"
-        class="col-md-8 col-md-offset-4 help-block">
-      {{price.validation.helpBlock}}
-    </span>
-      </div><br />
-
       
         <div 
             class="form-group"

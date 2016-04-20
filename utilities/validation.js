@@ -213,17 +213,18 @@ module.exports = {
 
   },
   record:function(type, paymentMethod, value, details){
-    var deferred = q.defer();
-    var validation = this;
-      deferred.resolve(
-        validation.stringCheck(type) &&
-        validation.numberCheck(value) && validation.stringCheck(details) &&
-        validation.stringCheck(paymentMethod));
-    },function(err){
-      console.log("request validation err");
-    console.log("server validation done");  
-    return deferred.promise;
-  }
+  //   var deferred = q.defer();
+  //   var validation = this;
+  //     deferred.resolve(
+  //       validation.stringCheck(type) &&
+  //       validation.numberCheck(value) && validation.stringCheck(details) &&
+  //       validation.stringCheck(paymentMethod));
+  //   function(err){
+  //     console.log("request validation err");
+  //   console.log("server validation done");  
+  //   return deferred.promise;
+  // }
+}
 
 };
 
