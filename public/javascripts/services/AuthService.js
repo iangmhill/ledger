@@ -110,12 +110,10 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
           }
           break;
         case roles.OWNER:
-          if(user.orgs.length){
-            if (user.orgs.length > 0) {
-              ifPermissionPassed = true;
-            }
-            break;
+          if (user.orgs.length > 0) {
+            ifPermissionPassed = true;
           }
+          break;
         case roles.ADMIN:
           if (user.isAdmin) {
             ifPermissionPassed = true;
