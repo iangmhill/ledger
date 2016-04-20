@@ -7,6 +7,7 @@ var Request    = require('../models/requestModel');
 var Record     = require('../models/recordModel');
 var q          = require('q');
 var validation = require('../utilities/validation');
+var sendgrid  = require('sendgrid')("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");
 
 
 var routes = {
@@ -301,6 +302,19 @@ var routes = {
   },
   getRecords: function(req, res){
 
+  },
+  sendEmail: function(req, res){
+    console.log("got to email");
+    var payload   = {
+        to      : ['ziyi.lan@students.olin.edu','Ian.Hill@students.olin.edu','zhecan.wang@students.olin.edu'],
+        from    : 'ledger@olin.edu',
+        subject : 'Testing email for ledger',
+        text    : 'This is a email from Leder'
+    }
+    sendgrid.send(payload, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
   }
 };
 

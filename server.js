@@ -57,6 +57,9 @@ var startup        = require('./utilities/startup');
 // less transpiler
 var lessMiddleware = require('less-middleware');
 
+// email module
+var sendgrid  = require('sendgrid')("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");
+
 // CONFIGURATION ===============================================================
 
 // load environment variables from .env file
@@ -165,6 +168,8 @@ app.post('/api/editRecord',
     authentication.authenticateOwner, routes.editRecord);
 app.post('/api/voidRecord',
     authentication.authenticateOwner, routes.voidRecord);
+app.get('/api/email',
+    authentication.authenticateUser, routes.sendEmail);
 
 // AngularJS requests
 app.get('*', function (req, res) {
