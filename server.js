@@ -165,6 +165,11 @@ app.post('/api/editRecord',
     authentication.authenticateOwner, routes.editRecord);
 app.post('/api/voidRecord',
     authentication.authenticateOwner, routes.voidRecord);
+// transfer POST requests
+app.post('/api/createTransfer',
+    authentication.authenticateOwner, routes.createTransfer);
+app.post('/api/approveTransfer',
+    authentication.authenticateOwner, routes.approveTransfer);
 
 // AngularJS requests
 app.get('*', function (req, res) {
