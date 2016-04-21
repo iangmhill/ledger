@@ -8,6 +8,9 @@ var Transfer   = require('../models/transferModel');
 var Record     = require('../models/recordModel');
 var q          = require('q');
 var validation = require('../utilities/validation');
+var async = require('async');
+
+
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
   switch (approvalProcess) {
@@ -274,20 +277,21 @@ var routes = {
 
   },
   createRequest: function(req, res) {
+    // Request.find().remove().exec();   
+
     function confirm(err, request) {
       if (err) {
-        console.log("I failrew" + err)
+        console.log("fail creating request " + err)
         return res.send({
           success: false,
-          message: 'ERROR: Could not create topic'
+          message: 'ERROR: Could not create request'
         });
       }
+      console.log("success!")
       return res.send({
         success: true,
       });
     }
-    // console.log("req.body: " + req.body);
-    // console.log("user id: " + req.user._id);
 
     var data = {
               user: req.user._id,
@@ -329,8 +333,77 @@ var routes = {
       Request.create(data, confirm);
     });
   },
-  approveRequest: function(req, res) {
+  editRequest: function(req, res) {
+    function confirm(err, request) {
+        if (err) {
+          console.log("I fail " + err)
+          return res.send({
+            success: false,
+            message: 'ERROR:'
+          });
+        }
+        return res.send({
+          success: true,
+        });
+      }
 
+
+    console.log("routes editRequest");
+    // console.log(req.body);
+    console.log(req.body.request);
+    Request.find({_id: req.body.request._id}, function(err, requests) {
+        if (err) {
+          console.log("fail edit request" + err)
+          return res.send({
+            success: false,
+            message: 'ERROR: Could not edit request'
+          });
+        }
+        var request = requests[0];
+        request.isApproved = req.body.request.isApproved;
+        console.log(request);
+        request.save(confirm);
+      });
+  },
+  getRequests: function(req, res) {
+    var tasks = [];
+    var id = mongoose.Types.ObjectId(req.params.user);
+    var filteredRequests = [];
+    console.log("routes getRequests");
+    console.log(typeof(id));
+    console.log(id);
+
+    Request.find({user: id}, function(err, requests) {
+        if (err) {
+          console.log("fail edit request" + err)
+          return res.send({
+            success: false,
+            message: 'ERROR: Could not edit request'
+          });
+        }
+        requests.forEach(function(request){
+          tasks.push(function(callback){
+            Org.find({_id: request.org}, function(err, orgs){
+              console.log("orgs[0].name");
+              console.log(orgs[0].name);
+              var newRequest = JSON.parse(JSON.stringify(request));
+              newRequest.orgName = orgs[0].name;
+              filteredRequests.push(newRequest);
+              callback(null, null);
+            })
+          })
+        })
+
+        async.series(tasks, function(err, results){
+          console.log("requests.length");
+          console.log(filteredRequests.length);
+          console.log(filteredRequests);
+          res.status(200).json({
+            success: true,
+            requests: filteredRequests
+          });
+        })
+      });
   },
   closeRequest: function(req, res) {
 
@@ -374,9 +447,107 @@ var routes = {
   voidRecord: function(req, res) {
 
   },
-  getRecords: function(req, res){
+
+  getPendingFundRequests: function(req, res){
+ 
+    var errorResponse = {
+      pendingFundRequests: []
+    };
+  
+    // console.log("routes, getPendingFundRequests");
+    var orgs = req.user.orgs;
+    var filteredOrgs = [];
+    var pendingRequests = [];
+    var tasks = []
+    var budgetedNonterminal = []
+    var requestsUserId = [];
+    var filtedPendingRequests = [];
+
+
+    Org.find({_id:{$in: orgs}}, function(err,orgs){
+      // console.log("find org");
+
+      orgs.forEach(function(org){
+          // console.log(org.name);
+          if(org.budgeted){
+            // console.log("is budgeted");
+            if(org.nonterminal){
+              // console.log("nonterminal");
+              filteredOrgs.push(org._id);
+              budgetedNonterminal.push(org._id);
+            }else{
+              // console.log("terminal");
+              filteredOrgs.push(org._id);
+            }
+          }
+      
+      })
+      
+      // console.log("filteredOrgs: ");
+      // console.log(filteredOrgs);
+      // console.log("budgetedNonterminal: ");
+      // console.log(budgetedNonterminal); 
+
+      budgetedNonterminal.forEach(function(pOrg){
+        tasks.push(function(callback){
+          // console.log("parent: ");
+          // console.log(pOrg);
+          Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
+            orgs.forEach(function(org){
+              // console.log("find children");
+              // console.log(org.name);
+              filteredOrgs.push(org._id);
+              callback(null, null);
+            })
+          })
+        })
+      })
+
+      async.series(tasks, function(err, results){
+        // console.log("filteredOrgs: ");
+        // console.log(filteredOrgs);
+        // console.log("budgetedNonterminal: ");
+        // console.log(budgetedNonterminal);  
+        Request.find({org:{$in: filteredOrgs}, isApproved: false, inApproved: true}, function(err, requests){
+          if (err || !requests) { return res.json(errorResponse); }
+          requests.forEach(function(request){
+            pendingRequests.push(request);
+            // requestsUserId.push(request.user);
+          })
+          tasks = [];
+          pendingRequests.forEach(function(request){
+            tasks.push(function(callback){
+              // console.log("request.user");
+              // console.log(request.user);
+              User.find({_id:request.user}, function(err, users){ 
+                if (err || !users) { return res.json(errorResponse); }
+                // console.log("find the user: ");
+                // console.log(users[0].username);
+
+                Org.find({_id: request.org}, function(err, orgs){
+                  // console.log("find the org: ");
+                  // console.log(orgs[0].name);
+                    var newRequest = JSON.parse(JSON.stringify(request));
+                    newRequest.username = users[0].username;
+                    newRequest.orgname = orgs[0].name
+                  filtedPendingRequests.push(newRequest);
+                  callback(null, null);
+                })
+              }) 
+            })
+          })
+          async.series(tasks, function(err, results){
+            // console.log("filteredPendingRequests: ");
+            // console.log(filtedPendingRequests);
+            res.json({pendingFundRequests: filtedPendingRequests});
+          }) 
+        })
+      })
+
+    })
 
   }
 };
+
 
 module.exports = routes;

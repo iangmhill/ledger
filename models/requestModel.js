@@ -63,6 +63,11 @@ var Request = mongoose.Schema({
     type: Boolean,
     required: true,
     default: false
+  },
+  inApproved: {
+    type: Boolean,
+    required: true,
+    default: true
   }
 });
 

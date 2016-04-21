@@ -1,5 +1,5 @@
 // public/javascripts/controllers/ManageController.js
-app.controller('ManageController', function(AuthService, OrgService) {
+app.controller('ManageController', function(AuthService, OrgService, RequestService) {
   var MngCtrl = this;
   // Initialization
   this.roots = [];
@@ -164,6 +164,8 @@ app.controller('ManageController', function(AuthService, OrgService) {
       this.approvalProcess.helpBlock = '';
     }
   };
+
+
   this.resolveUser = function(index, isApproved) {
     AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
       MngCtrl.alert.isActive = true;
@@ -176,10 +178,17 @@ app.controller('ManageController', function(AuthService, OrgService) {
     });
   };
 
+  AuthService.getFundRequests().then(function(fundRequests) {
+    MngCtrl.pendingFundRequests = fundRequests || [];
+    console.log("MngCtrl.pendingFundRequests");
+    console.log(MngCtrl.pendingFundRequests);
+
+  });
 
   AuthService.getPendingUsers().then(function(pendingUsers) {
     MngCtrl.pendingUsers = pendingUsers || [];
   });
+
   OrgService.getUserOrgs().then(function(response) {
     var checkRoot = function(tree, roots, rootToCheck) {
       if (roots.indexOf(rootToCheck) > -1) { return false; }
@@ -196,6 +205,29 @@ app.controller('ManageController', function(AuthService, OrgService) {
     MngCtrl.orgs = response.orgs;
     MngCtrl.updateOrgs();
   });
+
+  this.resolveFunRequest = function(index, ans){
+    var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
+    // var newRequest = JSON.parse(JSON.stringify(targetRequest))
+    targetRequest = targetRequest[0]
+    targetRequest.inApproved = false;
+    if(ans){
+      targetRequest.isApproved = true;
+    }else{
+      targetRequest.isApproved = false;
+    }
+    console.log("targetRequest");
+    console.log(targetRequest);  
+    RequestService.editRequest({request: targetRequest}).then(function(success){
+      if(success){
+        console.log("Modification Success");
+      }else{
+        alert("Modification Failure");
+      }
+    })
+  };
+
+
 }).filter('search', function() {
   return function(input, search) {
     if (!input) return input;
