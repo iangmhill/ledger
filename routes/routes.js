@@ -47,7 +47,7 @@ var routes = {
       var deferred = q.defer();
       var children = {};
       var nextIds = [];
-      Org.find({parent:ids[0]}, function(err, orgs) {
+      Org.find({parent: {$in: ids}}, function(err, orgs) {
 
         if (orgs.length > 0) {
           for (index in orgs) {
@@ -75,9 +75,12 @@ var routes = {
       recursiveFind(req.user.orgs).then(function(children) {
         var allOrgs = mergeArray(children, roots);
         User.find({orgs:{ $in: Object.keys(allOrgs)}}, function(err, users) {
+
           for (userIndex in users) {
             for (idIndex in users[userIndex].orgs) {
-              allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
+              if (Object.keys(allOrgs).indexOf(users[userIndex].orgs[idIndex].toString()) > -1) {
+                allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
+              }
             }
           }
           res.json({
@@ -277,7 +280,7 @@ var routes = {
 
   },
   createRequest: function(req, res) {
-    // Request.find().remove().exec();   
+    // Request.find().remove().exec();
 
     function confirm(err, request) {
       if (err) {
@@ -437,7 +440,7 @@ var routes = {
 
     var errorResponse = { isSuccessful: false, isValid: false };
     console.log("server request ");
-    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){    
+    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){
         Record.create(data, confirm);
     } else { return res.json(errorResponse); }
   },
@@ -449,12 +452,12 @@ var routes = {
   },
 
   getPendingFundRequests: function(req, res){
- 
+
     var errorResponse = {
       pendingFundRequests: []
     };
-  
-    // console.log("routes, getPendingFundRequests");
+
+    console.log("routes, getPendingFundRequests");
     var orgs = req.user.orgs;
     var filteredOrgs = [];
     var pendingRequests = [];
@@ -465,37 +468,37 @@ var routes = {
 
 
     Org.find({_id:{$in: orgs}}, function(err,orgs){
-      // console.log("find org");
+      console.log("find org");
 
       orgs.forEach(function(org){
-          // console.log(org.name);
+          console.log(org.name);
           if(org.budgeted){
-            // console.log("is budgeted");
+            console.log("is budgeted");
             if(org.nonterminal){
-              // console.log("nonterminal");
+              console.log("nonterminal");
               filteredOrgs.push(org._id);
               budgetedNonterminal.push(org._id);
             }else{
-              // console.log("terminal");
+              console.log("terminal");
               filteredOrgs.push(org._id);
             }
           }
-      
+
       })
-      
-      // console.log("filteredOrgs: ");
-      // console.log(filteredOrgs);
-      // console.log("budgetedNonterminal: ");
-      // console.log(budgetedNonterminal); 
+
+      console.log("filteredOrgs: ");
+      console.log(filteredOrgs);
+      console.log("budgetedNonterminal: ");
+      console.log(budgetedNonterminal);
 
       budgetedNonterminal.forEach(function(pOrg){
         tasks.push(function(callback){
-          // console.log("parent: ");
-          // console.log(pOrg);
+          console.log("parent: ");
+          console.log(pOrg);
           Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
             orgs.forEach(function(org){
-              // console.log("find children");
-              // console.log(org.name);
+              console.log("find children");
+              console.log(org.name);
               filteredOrgs.push(org._id);
               callback(null, null);
             })
@@ -504,10 +507,10 @@ var routes = {
       })
 
       async.series(tasks, function(err, results){
-        // console.log("filteredOrgs: ");
-        // console.log(filteredOrgs);
-        // console.log("budgetedNonterminal: ");
-        // console.log(budgetedNonterminal);  
+        console.log("filteredOrgs: ");
+        console.log(filteredOrgs);
+        console.log("budgetedNonterminal: ");
+        console.log(budgetedNonterminal);
         Request.find({org:{$in: filteredOrgs}, isApproved: false, inApproved: true}, function(err, requests){
           if (err || !requests) { return res.json(errorResponse); }
           requests.forEach(function(request){
@@ -519,7 +522,7 @@ var routes = {
             tasks.push(function(callback){
               // console.log("request.user");
               // console.log(request.user);
-              User.find({_id:request.user}, function(err, users){ 
+              User.find({_id:request.user}, function(err, users){
                 if (err || !users) { return res.json(errorResponse); }
                 // console.log("find the user: ");
                 // console.log(users[0].username);
@@ -533,14 +536,14 @@ var routes = {
                   filtedPendingRequests.push(newRequest);
                   callback(null, null);
                 })
-              }) 
+              })
             })
           })
           async.series(tasks, function(err, results){
-            // console.log("filteredPendingRequests: ");
-            // console.log(filtedPendingRequests);
+            console.log("filteredPendingRequests: ");
+            console.log(filtedPendingRequests);
             res.json({pendingFundRequests: filtedPendingRequests});
-          }) 
+          })
         })
       })
 
