@@ -309,7 +309,7 @@ var routes = {
         to      : ['ziyi.lan@students.olin.edu','Ian.Hill@students.olin.edu','zhecan.wang@students.olin.edu'],
         from    : 'ledger@olin.edu',
         subject : 'Testing email for ledger',
-        text    : 'This is a email from Leder'
+        text    : 'This is a email from Leder' + req.body
     }
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
