@@ -188,26 +188,6 @@
           <!-- <button type="button" class='btn btn-default' ng-click="delItem()">Delete Item</button>  -->
         </div><br /><br />
       
-      
-        <div 
-            class="form-group"
-            ng-class="{valid:'has-success has-feedback',
-            invalid:'has-error has-feedback',
-            empty:''}[sac.validation.isValid]">
-          <label>Was this purchase for SAC?</label>
-          <select class="form-control" name="sac" ng-model="sac.value" 
-                  ng-click="sac.validate()" required>
-            <option value="">---Please select---</option> <!-- not selected / blank option -->
-            <option value="sac1">Yes</option> 
-            <option value="sac2">No</option>
-          </select>
-          <span
-          ng-if="sac.validation.isValid == 'invalid'"
-          class="help-block">
-          {{sac.validation.helpBlock}}
-          </span>
-        </div><br />
-
 
         <div class = "row">
           <button type="submit" class='btn btn-success btn-lg btn-block' >Submit</button> 

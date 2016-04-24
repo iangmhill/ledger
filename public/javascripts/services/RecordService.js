@@ -4,6 +4,7 @@ app.service('RecordService', function($http, $q) {
     this.createRecord = function(recordData) {
 	    console.log("recordService: " + recordData);
 	    $http.post('/api/createRecord', recordData).then(function (response) {
+        $http.post('api/recordemail', recordData);
 	      console.log("response.data: " + response.data.success);
 	      });
   	};

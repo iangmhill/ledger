@@ -8,6 +8,7 @@ var Transfer   = require('../models/transferModel');
 var Record     = require('../models/recordModel');
 var q          = require('q');
 var validation = require('../utilities/validation');
+var sendgrid  = require('sendgrid')("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");
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
   switch (approvalProcess) {
@@ -376,7 +377,69 @@ var routes = {
   },
   getRecords: function(req, res){
 
+  },
+  recordEmail: function(req, res){
+    console.log("got to email");
+    // var payload   = {
+    //     to      : 'ziyi.lan@students.olin.edu',
+    //     from    : 'ledger@olin.edu',
+    //     subject : 'Testing email for ledger',
+    //     text    : 'This is a email from Leder' + req
+    // }
+    // sendgrid.send(payload, function(err, json) {
+    //   if (err) { console.error(err); }
+    //     console.log(json);
+    // }); 
+    var email = new sendgrid.Email();
+    email.to = 'ziyi.lan@students.olin.edu';
+    email.from = 'DONT.REPLY@ledger.com';
+    email.text = "Hi";
+    email.subject = "Ledger ";
+    email.sub = {"-referencenumber-": "24242424242"}
+    email.addFilter('templates', 'enable', 1);
+    email.addFilter('templates', 'template_id', 'b52301be-86da-442a-bd5a-a6329162c311');
+
+    sendgrid.send(email, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
+  },
+  
+  registerEmail: function(req, res){
+    console.log("got to email");
+    var email = new sendgrid.Email();
+    email.to = 'ziyi.lan@students.olin.edu';
+    email.from = 'DONT.REPLY@ledger.com';
+    email.text = "Hi";
+    email.subject = "Ledger ";
+    email.sub = {"-referencenumber-": "24242424242"}
+    email.addFilter('templates', 'enable', 1);
+    email.addFilter('templates', 'template_id', '508a7fdb-13db-4b0a-986d-f1389b17ea7c');
+
+    sendgrid.send(email, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
+  },
+
+  requestEmail: function(req, res){
+    console.log("got to email");
+    var email = new sendgrid.Email();
+    email.to = 'ziyi.lan@students.olin.edu';
+    email.from = 'DONT.REPLY@ledger.com';
+    email.text = "Hi";
+    email.subject = "Ledger ";
+    email.sub = {"-referencenumber-": "24242424242"}
+    email.addFilter('templates', 'enable', 1);
+    email.addFilter('templates', 'template_id', '2e7f6609-ff42-4b6b-8ab0-3b14c9b13b46');
+
+    sendgrid.send(email, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
   }
+
+
 };
 
 module.exports = routes;
