@@ -299,10 +299,8 @@ var routes = {
     var data = {
               user: req.user._id,
               description: req.body.description,
-              type: req.body.type,
               value: req.body.amount,
               org: req.body.organization,
-              details: req.body.details,
               online: req.body.online,
               specification: req.body.specification,
               isActive: false,
@@ -313,25 +311,16 @@ var routes = {
     console.log(validation);
     if (!validation.request.request(
       data.description,
-      data.type,
       data.value,
       data.org,
-      data.details,
       data.online,
       data.specification
     )) {
       return res.json(errorResponse);
     }
     console.log("request org: " +  data.org);
-    validation.org.getInfo(data.org).then(function (orgData){
-      data.org = orgData.id;
-      console.log("request org: " +  orgData.id);
-      if(orgData.approval){
-        data.isApproved = true;
-      }
-      else{
-        data.isApproved = false;
-      }
+    validation.org.getInfo(data.org).then(function (isValid) {
+      data.isApproved = isValid;
       console.log("data.isApproved: " + data.isApproved);
       Request.create(data, confirm);
     });

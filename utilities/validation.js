@@ -134,9 +134,8 @@ module.exports = {
       console.log("valid");
       return true;
     },
-    request:function(description, type, value, org, details, online, specification){
-      return stringCheck(description) && stringCheck(type) &&
-          numberCheck(value) && stringCheck(details) &&
+    request:function(description, value, org, online, specification){
+      return stringCheck(description) && numberCheck(value) &&
           this.online(online) && this.specification(specification);
     }
   },
@@ -157,16 +156,16 @@ module.exports = {
                 orgValidator.approvalProcess(approvalProcess);
         })
     },
-    getInfo: function(name){
+    getInfo: function(id){
       var deferred = q.defer();
-      Org.find({name: name}, function(err, orgs) {
-        console.log("find the org: " + orgs);
-        if (orgs[0].approvalProcess == 'none'){
+      Org.findById(id, function(err, org) {
+        console.log("find the org: " + org);
+        if (org.approvalProcess == 'none'){
           console.log("find it none");
-          return deferred.resolve({approval: true, id: orgs[0]._id});
+          return deferred.resolve(true);
         }
         console.log("find it not none");
-        return deferred.resolve({approval: false, id: orgs[0]._id});
+        return deferred.resolve(false);
       })
       return deferred.promise;
     },
@@ -258,6 +257,6 @@ module.exports = {
       return deferred.promise;
     }
   }
-  
+
 };
 

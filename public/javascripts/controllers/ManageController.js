@@ -181,7 +181,6 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
   AuthService.getFundRequests().then(function(fundRequests) {
     MngCtrl.pendingFundRequests = fundRequests || [];
     console.log(fundRequests);
-
   });
 
   AuthService.getPendingUsers().then(function(pendingUsers) {

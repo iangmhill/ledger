@@ -2,450 +2,205 @@
 
 // public/javascripts/controllers/RequestController.js
 app.controller('RequestController', function($scope, RequestService, OrgService) {
-	$scope.submitStatus = 0;	
-	$scope.alerts = [];
+  var ReqCtrl = this;
+  this.alerts = [];
+  this.onlineCheck = false;
 
-	$scope.items = [];
-	$scope.links = [];
-	var itemNum = 1;
-	var linkNum = 1;
+  function Field(initialValue) {
+    this.value = initialValue;
+    this.isValidated = false;
+    this.isValid = false;
+    this.helpBlock = '';
+    this.reset = function() {
+      this.value = initialValue;
+      this.isValidated = false;
+      this.isValid = false;
+      this.helpBlock = '';
+    };
+  }
+  function FieldWithValidation(initialValue, validationFunction) {
+    Field.call(this, initialValue);
+    this.validate = validationFunction;
+  }
+  function Item() {
+    this.name = new Field('');
+    this.price = new Field(0);
+    this.category = new Field('');
+  }
+  function Link() {
+    this.url = new Field('');
+    this.description = new Field('');
+  }
 
-	// var item = {name: "", price: 0, category: "", index: 0};
-	var item = {
-		name: "", 
-		price: 0, 
-		category: "", 
-		index: 0,
-	    validation: {
-	      isValid: 'empty',
-	      nameHelpBlock: '',
-	      priceHelpBlock: '',
-	      categoryHelpBlock: ''
-	    }
-	}
+  this.createRequest = {
+    org: new FieldWithValidation('', function() {
+      this.isValid = ReqCtrl.requestForm.org.$valid;
+      if (ReqCtrl.requestForm.org.$error.required) {
+        this.helpBlock = "This field cannot be empty";
+      } else {
+        this.helpBlock = "This field must be string";
+      }
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    description: new FieldWithValidation('', function() {
+      this.isValid = ReqCtrl.requestForm.description.$valid;
+      if (ReqCtrl.requestForm.description.$error.required) {
+        this.helpBlock = "This field cannot be empty";
+      } else {
+        this.helpBlock = "This field must be string";
+      }
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    amount: new FieldWithValidation(0, function() {
+      this.isValid = this.value && this.value != 0 &&
+          ReqCtrl.requestForm.amount.$valid;
+      if (ReqCtrl.requestForm.amount.$error.required) {
+        this.helpBlock = "This field cannot be empty";
+      } else {
+        this.helpBlock = "The amount cannot be zero";
+      }
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    online: {
+      value: false,
+      onChange: function() {
+        console.log(this.value);
+        ReqCtrl.createRequest.links.array = this.value ? [new Link()] : [];
+      }
+    },
+    items: {
+      array: [new Item()],
+      addItem: function() {
+        this.array.push(new Item());
+      },
+      delItem: function(index) {
+        this.array.splice(index, 1);
+      },
+      validateName: function(name) {
+        name.isValid = !!name.value && name.value != '';
+        name.helpBlock = name.isValid
+            ? ''
+            : 'The name cannot be empty';
+        name.isValidated = true;
+        return name.isValid;
+      },
+      validatePrice: function(price) {
+        price.isValid = !!price.value && price.value > 0;
+        price.helpBlock = price.isValid
+            ? ''
+            : 'The price must be greater than $0.00';
+        price.isValidated = true;
+        return price.isValid;
+      },
+      validateCategory: function(category) {
+        category.isValid = !!category.value && category.value != '';
+        category.helpBlock = category.isValid
+            ? ''
+            : 'The category cannot be empty';
+        category.isValidated = true;
+        return category.isValid;
+      }
+    },
+    links: {
+      array: [],
+      addLink: function() {
+        this.array.push(new Link());
+      },
+      delLink: function(index) {
+        this.array.splice(index, 1);
+      },
+      validateUrl: function(url) {
+        url.isValid = !!url.value && url.value != '';
+        url.helpBlock = url.isValid
+            ? ''
+            : 'The url cannot be empty';
+        url.isValidated = true;
+        return url.isValid;
+      },
+      validateDescription: function(description) {
+        description.isValid = true;
+        description.isValidated = true;
+        return description.isValid;
+      }
+    },
 
-	var link = {
-		url: "", 
-		description: "", 
-		index: 0,
-	    validation: {
-	      isValid: 'empty',
-	      urlhelpBlock: '',
-	      dspHelpBlock: ''
-	    }
-	}
+    validateAll: function() {
+      var isValid = 0;
+      isValid += this.org.validate() ? 0 : 1;
+      isValid += this.description.validate() ? 0 : 1;
+      isValid += this.amount.validate() ? 0 : 1;
 
-	$scope.items.push(item);
-	$scope.links.push(link);
+      this.items.array.forEach(function(item) {
+        isValid += ReqCtrl.createRequest.items.validateName(item.name) ? 0 : 1;
+        isValid += ReqCtrl.createRequest.items
+            .validatePrice(item.price) ? 0 : 1;
+        isValid += ReqCtrl.createRequest.items
+            .validateCategory(item.category) ? 0 : 1;
+      })
+      this.links.array.forEach(function(link){
+        isValid += ReqCtrl.createRequest.links.validateUrl(link.url) ? 0 : 1;
+        isValid += ReqCtrl.createRequest.links
+            .validateDescription(link.description) ? 0 : 1;
+      })
+      console.log(isValid);
+      return isValid == 0;
+    },
+    submit: function() {
+      ReqCtrl.alerts = [];
+      if (this.validateAll()) {
+        RequestService.createRequest({
+          organization: this.org.typeaheadOptions[this.org.value],
+          description: this.description.value,
+          amount: this.amount.value,
+          online: this.links.array.map(function(link) {
+            return {
+              url: link.url.value,
+              description: link.description.value
+            };
+          }),
+          specification: this.items.array.map(function(item) {
+            return {
+              name: item.name.value,
+              price: item.price.value,
+              category: item.category.value
+            };
+          })
+        }).then(function(success) {
+          if (success) {
+            ReqCtrl.alerts = [];
+          }
+          ReqCtrl.alerts.push({
+            type: success ? 'success' : 'danger',
+            msg: success ? 'Successfully Submit the Request' : 'Fail to Submit the Request'
+          });
+        });
+      } else {
+        ReqCtrl.alerts.push({
+          type: 'danger',
+          msg: 'Something wrong with the form'
+        });
+      }
+    }
+  };
 
+  OrgService.getOrgList().then(function(data) {
+    if (data){
+      ReqCtrl.orgs = data;
+    }
+    ReqCtrl.createRequest.org.typeaheadOptions = {};
+    for (index in ReqCtrl.orgs) {
+      var org = ReqCtrl.orgs[index];
+      var name = org.shortName
+          ? org.name + ' (' + org.shortName + ')'
+          : org.name;
+      ReqCtrl.createRequest.org.typeaheadOptions[name] = org._id;
+    }
+  });
 
-	$scope.specificationCheck = false;
-	$scope.onlineCheck = false;
-
-	OrgService.getOrgList().then(function(data) {
-		if (data){
-			$scope.orgs = data;
-		}
-	});
-
-
-	var clearAlerts = function(){
-		$scope.organization.validation.isValid = 'empty';
-		$scope.organization.validation.helpBlock = '';
-		$scope.organization.value = "";
-
-		$scope.description.validation.isValid = 'empty';
-		$scope.description.validation.helpBlock = '';
-		$scope.description.value = "";
-		
-		$scope.amount.validation.isValid = 'empty';
-		$scope.amount.validation.helpBlock = '';
-		$scope.amount.value = 0;
-		
-		$scope.type.validation.isValid = 'empty';
-		$scope.type.validation.helpBlock = '';
-		$scope.type.value = "";
-
-		
-		$scope.details.validation.isValid = 'empty';
-		$scope.details.validation.helpBlock = '';
-		$scope.details.value = "";
-
-		itemNum = 1;
-		$scope.items = $scope.items.splice(0, 1)
-		$scope.items.forEach(function(item){
-			item.name = "";
-			item.price = 0;
-			item.category = "";
-			item.validation.isValid = "empty";
-			item.validation.nameHelpBlock = "";
-		    item.validation.priceHelpBlock = "";
-		    item.validation.categoryHelpBlock = "";
-		})
-
-		linkNum = 1;
-		$scope.links = $scope.links.splice(0, 1)
-		$scope.links.forEach(function(link){
-			link.url = "";
-			link.description = "";
-			link.validation.isValid = "empty";
-			link.validation.urlHelpBlock = "";
-			link.validation.dspHelpBlock = "";
-		})
-
-	};
-
-	$scope.dismissAlert = function(index) {
-		$scope.alerts.splice(index, 1);
-	};	
-
-
-	$scope.processForm = function(){
-		console.log("organization.value: " + $scope.organization.value);
-		$scope.submitStatus = 0;
-		$scope.alerts = [];
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		$scope.organization.validate();
-		console.log("after organization");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		$scope.description.validate();
-		console.log("after description");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-
-		$scope.amount.validate();
-		console.log("after amount");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		
-		$scope.type.validate();
-		console.log("after type");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		
-		$scope.details.validate();
-		console.log("after details");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		
-		$scope.items.forEach(function(item){
-			console.log("for each items")
-			$scope.validateItem(item.index);
-		})
-		console.log("after items");
-		console.log("$scope.submitStatus: " + $scope.submitStatus);
-		
-		
-		if ($scope.onlineCheck){
-			$scope.links.forEach(function(link){
-				console.log("for each link")
-				$scope.validateLink(link.index);
-			})
-			console.log("after links");
-			console.log("$scope.submitStatus: " + $scope.submitStatus);
-			var targetSubmitStatus = 5 + itemNum*3 + linkNum*2;
-		}
-		else{
-			var targetSubmitStatus = 5 + itemNum*3;
-		}
-
-		if($scope.submitStatus !== targetSubmitStatus){
-			$scope.alerts.push({
-	          type: 'danger',
-	          msg: 'Something wrong with the form'
-	        });
-		}
-		else{
-			console.log("submit the form");
-			var data = {
-				type: $scope.type.value,
-				organization: $scope.organization.value,
-				description: $scope.description.value,
-				details: $scope.details.value,
-				amount: $scope.amount.value,
-				online: $scope.links,
-				specification: $scope.items
-			}
-			// console.log(data);
-			RequestService.createRequest(data).then(function(success) {
-	        $scope.alerts.push({
-	          type: success ? 'success' : 'danger',
-	          msg: success ? 'Successfully Submit the Request' : 'Fail to Submit the Request'
-	        });
-	        if(success){
-	        	clearAlerts();
-	        }
-	      });
-		}
-		$scope.submitStatus = 0;
-	}
-
-	$scope.type = {
-		value: '',
-	    validation: {
-	      // isValid: 'valid',
-	      isValid: 'empty',
-	      helpBlock: ''
-	    },
-		validate: function(){
-			console.log("triggered");
-			if($scope.requestForm.type.$valid){
-				this.validation.isValid = "valid";
-				$scope.submitStatus += 1;	
-			}
-			else{
-				$scope.submitStatus -= 1;		
-				this.validation.isValid = "invalid";
-				if($scope.requestForm.type.$error.required){
-					this.validation.helpBlock = "This field cannot be empty";
-				}
-				else{
-					this.validation.helpBlock = "This field must be string";
-				}
-			}
-			console.log($scope.requestForm.type.$valid);
-			console.log(JSON.stringify($scope.requestForm.type.$error, null, 4));
-		}	
-	}
-
-	$scope.organization = {
-		value: '',
-	    validation: {
-	      // isValid: 'valid',
-	      isValid: 'empty',
-	      helpBlock: ''
-	    },
-		validate: function(){
-			console.log("organization.value: " + this.value);
-			console.log("triggered");
-			if($scope.requestForm.organization.$valid){
-				this.validation.isValid = "valid";
-				$scope.submitStatus += 1;	
-			}
-			else{
-				$scope.submitStatus -= 1;	
-				this.validation.isValid = "invalid";
-				if($scope.requestForm.organization.$error.required){
-					this.validation.helpBlock = "This field cannot be empty";
-				}
-				else{
-					this.validation.helpBlock = "This field must be string";
-				}
-			}
-			console.log($scope.requestForm.organization.$valid);
-			console.log(JSON.stringify($scope.requestForm.organization.$error, null, 4));
-		}	
-	}
-
-	$scope.description = {
-		value: '',
-	    validation: {
-	      // isValid: 'valid',
-	      isValid: 'empty',
-	      helpBlock: ''
-	    },
-		validate: function(){
-			console.log("triggered");
-			if($scope.requestForm.description.$valid){
-				this.validation.isValid = "valid";
-				$scope.submitStatus += 1;	
-			}
-			else{
-				$scope.submitStatus -= 1;	
-				this.validation.isValid = "invalid";
-				if($scope.requestForm.description.$error.required){
-					this.validation.helpBlock = "This field cannot be empty";
-				}
-				else{
-					this.validation.helpBlock = "This field must be string";
-				}
-			}
-			console.log($scope.requestForm.description.$valid);
-			console.log(JSON.stringify($scope.requestForm.description.$error, null, 4));
-		}	
-	}
-
-	$scope.details = {
-		value: '',
-	    validation: {
-	      // isValid: 'valid',
-	      isValid: 'empty',
-	      helpBlock: ''
-	    },
-		validate: function(){
-			console.log("triggered");
-			if($scope.requestForm.details.$valid){
-				this.validation.isValid = "valid";
-				$scope.submitStatus += 1;	
-			}
-			else{
-				$scope.submitStatus -= 1;	
-				this.validation.isValid = "invalid";
-				if($scope.requestForm.description.$error.required){
-					this.validation.helpBlock = "This field cannot be empty";
-				}
-				else{
-					this.validation.helpBlock = "This field must be string";
-				}
-			}
-			console.log($scope.requestForm.details.$valid);
-			console.log(JSON.stringify($scope.requestForm.details.$error, null, 4));
-		}	
-	}
-
-
-	$scope.amount = {
-		value: 0,
-	    validation: {
-	      isValid: 'empty',
-	      helpBlock: ''
-	    },
-		validate: function(){
-			console.log("triggered");
-			if($scope.requestForm.amount.$valid && this.value != 0 && this.value){
-				this.validation.isValid = "valid";
-				$scope.submitStatus += 1;	
-			}
-			else{
-				$scope.submitStatus -= 1;	
-				this.validation.isValid = "invalid";
-				if($scope.requestForm.amount.$error.required){
-					this.validation.helpBlock = "This field cannot be empty";
-				}
-				else{
-					this.validation.helpBlock = "The amount cannot be zero";
-				}
-			}
-			console.log($scope.requestForm.amount.$valid);
-			console.log(JSON.stringify($scope.requestForm.amount.$error, null, 4));
-		}	
-	}
-
-
-	$scope.validateItem = function(index){
-		$scope.items.forEach(function(item){
-		// console.log("validation item");
-			if (item.index == index) {
-				console.log("find the item");
-				console.log("index: " + index);
-				console.log(item.name);
-				item.validation.nameHelpBlock = "";
-				item.validation.priceHelpBlock = "";
-				item.validation.categoryHelpBlock = "";
-				if(item.name == ""  || !item.name){
-					item.validation.isValid = "invalid";
-					item.validation.nameHelpBlock = "The name cannot be empty";
-					console.log("name")
-					console.log(item.validation.isValid);
-					$scope.submitStatus -= 1;	
-				}
-				else{
-					$scope.submitStatus += 1;	
-					if(item.price == 0 || !item.price){
-						item.validation.isValid = "invalid";					
-						item.validation.priceHelpBlock = "The price must be a non-zero number";
-						item.validation.categoryHelpBlock = ""; 						
-						console.log("price")
-						console.log(item.validation.isValid);
-						$scope.submitStatus -= 1;	
-					}
-					else{
-						$scope.submitStatus += 1;	
-						if (item.category == ""  || !item.category){
-							item.validation.isValid = "invalid";
-							item.validation.categoryHelpBlock = "The category cannot be empty"; 						
-							console.log("category")
-							console.log(item.validation.isValid);
-							$scope.submitStatus -= 1;	
-						}
-						else{
-							$scope.submitStatus += 1;	
-							item.validation.isValid = "valid";
-							item.validation.nameHelpBlock = "";
-							item.validation.priceHelpBlock = "";
-							item.validation.categoryHelpBlock = "";
-							console.log("else")
-							console.log(item.validation.isValid);
-						}
-					}
-				} 
-			};
-		})
-	}
-
-
-
-	$scope.validateLink = function(index){
-		$scope.links.forEach(function(link){
-			if (link.index == index) {
-				console.log("find the link");
-				console.log("index: " + index);
-				console.log(link.url);
-				link.validation.urlHelpBlock = "";
-				link.validation.dspHelpBlock = "";
-				if(link.url == ""  || !link.url){
-					link.validation.isValid = "invalid";
-					link.validation.urlHelpBlock = "The url cannot be empty";
-					console.log("url")
-					console.log(link.validation.isValid);
-					$scope.submitStatus -= 1;	
-				}
-				else{
-					$scope.submitStatus += 1;	
-					if(link.description == "" || !link.description){
-						link.validation.isValid = "invalid";					
-						link.validation.dspHelpBlock = "The description cannot be empty";
-						console.log("description")
-						console.log(link.validation.isValid);
-						$scope.submitStatus -= 1;	
-					}
-					else{
-						$scope.submitStatus += 1;	
-						link.validation.isValid = "valid";
-						link.validation.urlHelpBlock = "";
-						link.validation.dspHelpBlock = "";
-						console.log("else")
-						console.log(link.validation.isValid);
-					}
-				} 
-			};
-		})
-	}
-
-	$scope.addItem = function(){
-		var newItem = {
-			name: "", 
-			price: 0, 
-			category: "", 
-			index: itemNum,
-		    validation: {
-		      isValid:  'empty',
-		      nameHelpBlock: '',
-		      priceHelpBlock: '',
-		      categoryHelpBlock: ''
-		    }
-		}
-		itemNum += 1;
-		$scope.items.push(newItem);
-	};
-	$scope.delItem = function(index){
-		$scope.items.splice(index, 1);
-	};
-
-	$scope.addLink = function(){
-		var newLink  = {
-		url: "", 
-		description: "", 
-		index: linkNum,
-	    validation: {
-	      isValid: 'empty',
-	      urlhelpBlock: '',
-	      dspHelpBlock: ''
-	    }
-	}
-		linkNum += 1;
-		$scope.links.push(newLink);
-	};
-
-	$scope.delLink = function(index){
-		$scope.links.splice(index, 1)
-	};
-	
+  this.dismissAlert = function(index) {
+    ReqCtrl.alerts.splice(index, 1);
+  };
 });
-

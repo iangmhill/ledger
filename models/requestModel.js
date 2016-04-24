@@ -15,40 +15,23 @@ var Request = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
-    // default: "test"
-  },
-  type: {
-    type: String,
-    required: true,
-    enum: ['expense', 'transfer', 'revenue'],
-    default: "expense"
+    required: true
   },
   value: {
     type: Number,
-    required: true,
-    // default: 100
+    required: true
   },
   org: {
-    // type: String,
     type: ObjectId,
+    ref: 'orgs',
     required: true
-    // default: "SAO"
-  },
-  details: {
-    type: String, 
-    // type: Mixed,
-    required: true,
-    // default: {}
-    default: ""
   },
   online: {
     type: Array
   },
   specification: {
     type: Array,
-    required: true,
-    // default: ["test"]
+    required: true
   },
   isActive: {
     type: Boolean,
@@ -56,7 +39,8 @@ var Request = mongoose.Schema({
   },
   approvals: {
     type: [ObjectId],
-    // required: true,
+    ref: 'users',
+    required: false,
     default: []
   },
   isApproved: {

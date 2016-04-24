@@ -11,6 +11,7 @@ var Record = mongoose.Schema({
   },
   user: {
     type: ObjectId,
+    ref: 'users',
     required: true
   },
   occurred: {
@@ -28,6 +29,7 @@ var Record = mongoose.Schema({
   },
   request: {
     type: ObjectId,
+    ref: 'requests',
     required: true
   },
   value: {
@@ -41,6 +43,7 @@ var Record = mongoose.Schema({
   },
   org: {
     type: ObjectId,
+    ref: 'orgs',
     required: true
   },
   void: {
@@ -50,6 +53,7 @@ var Record = mongoose.Schema({
   },
   voider: {
     type: ObjectId,
+    ref: 'users',
     required: false
   }
 });
