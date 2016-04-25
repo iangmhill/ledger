@@ -42,6 +42,7 @@ var bodyParser     = require('body-parser');
 
 // database modules
 var mongoose       = require('mongoose');
+mongoose.Promise   = global.Promise;
 
 // route modules
 var routes         = require('./routes/routes');
@@ -165,7 +166,7 @@ app.post('/api/editRequest',routes.editRequest);
 app.post('/api/closeRequest',
     authentication.authenticateOwner, routes.closeRequest);
 app.get('/api/getRequests:user',routes.getRequests);
-// authentication.authenticateUser, 
+// authentication.authenticateUser,
 
 // record POST requests
 app.post('/api/createRecord',

@@ -1,7 +1,35 @@
 // models/requestModel.js
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var Mixed    = mongoose.Schema.Types.Mixed;
+var mongoose  = require('mongoose');
+var ObjectId  = mongoose.Schema.Types.ObjectId;
+var Mixed     = mongoose.Schema.Types.Mixed;
+var constants = require('../utilities/constants');
+
+var Item = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: constants.itemCategories
+  }
+});
+
+var Link = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
+  }
+});
 
 var Request = mongoose.Schema({
   user: {
@@ -26,12 +54,13 @@ var Request = mongoose.Schema({
     ref: 'orgs',
     required: true
   },
-  online: {
-    type: Array
+  links: {
+    type: [Link],
+    required: false
   },
-  specification: {
-    type: Array,
-    required: true
+  items: {
+    type: [Item],
+    required: false
   },
   isActive: {
     type: Boolean,

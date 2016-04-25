@@ -280,49 +280,35 @@ var routes = {
 
   },
   createRequest: function(req, res) {
-    // Request.find().remove().exec();
-
-    function confirm(err, request) {
-      if (err) {
-        console.log("fail creating request " + err)
-        return res.send({
-          success: false,
-          message: 'ERROR: Could not create request'
-        });
-      }
-      console.log("success!")
-      return res.send({
-        success: true,
+    console.log(req.body);
+    var request = {
+      user: req.user._id,
+      description: req.body.description,
+      value: req.body.amount,
+      org: req.body.org,
+      links: req.body.links,
+      items: req.body.items,
+      isActive: false,
+      isApproved: false
+    };
+    console.log(request)
+    validation.request.request(
+      request.description,
+      request.value,
+      request.org,
+      request.links,
+      request.items
+    ).then(function(preapproved) {
+      request.isApproved = preapproved;
+      return Request.create(request);
+    }).then(function(request) {
+      res.send({ isSuccessful: true, request: request });
+    }).catch(function(err) {
+      console.log(err);
+      res.send({
+        isSuccessful: false,
+        message: 'ERROR: Could not create request'
       });
-    }
-
-    var data = {
-              user: req.user._id,
-              description: req.body.description,
-              value: req.body.amount,
-              org: req.body.organization,
-              online: req.body.online,
-              specification: req.body.specification,
-              isActive: false,
-              isApproved: false
-            }
-    var errorResponse = { isSuccessful: false, isValid: false };
-    console.log("server request ");
-    console.log(validation);
-    if (!validation.request.request(
-      data.description,
-      data.value,
-      data.org,
-      data.online,
-      data.specification
-    )) {
-      return res.json(errorResponse);
-    }
-    console.log("request org: " +  data.org);
-    validation.org.getInfo(data.org).then(function (isValid) {
-      data.isApproved = isValid;
-      console.log("data.isApproved: " + data.isApproved);
-      Request.create(data, confirm);
     });
   },
   editRequest: function(req, res) {

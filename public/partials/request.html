@@ -15,6 +15,10 @@
       {{alert.msg}}
     </uib-alert>
 
+    <label>Organization</label>
+    <p class="text-muted">
+      For what club or organization are you requesting money?
+    </p>
     <div
         class="form-group"
         ng-class="ReqCtrl.createRequest.org.isValidated
@@ -22,10 +26,6 @@
             ? 'has-success has-feedback'
             : 'has-error has-feedback')
           : ''">
-      <label>Organization</label>
-      <p class="text-muted">
-        For what club or organization are you requesting money?
-      </p>
       <input
           name="org"
           type="text"
@@ -35,7 +35,7 @@
           ng-model="ReqCtrl.createRequest.org.value"
           ng-blur="ReqCtrl.createRequest.org.validate()"
           uib-typeahead="name for name in ReqCtrl.createRequest.org.typeaheadOptions | search:$viewValue | limitTo:8"
-          required>
+          required />
       <span
           ng-if="ReqCtrl.createRequest.org.isValidated &&
               ReqCtrl.createRequest.org.isValid"
@@ -52,6 +52,10 @@
       </span>
     </div>
 
+    <label class="control-label">Description</label>
+    <p class="text-muted">
+      For what are you requesting these funds?
+    </p>
     <div
         class="form-group"
         ng-class="ReqCtrl.createRequest.description.isValidated
@@ -59,10 +63,6 @@
             ? 'has-success has-feedback'
             : 'has-error has-feedback')
           : ''">
-      <label class="control-label">Description</label>
-      <p class="text-muted">
-        For what are you requesting these funds?
-      </p>
       <input
           name="description"
           type="text"
@@ -87,6 +87,10 @@
       </span>
     </div>
 
+    <label >Amount</label>
+    <p class="text-muted">
+      How much are you requesting?
+    </p>
     <div
         class="form-group"
         ng-class="ReqCtrl.createRequest.amount.isValidated
@@ -94,11 +98,6 @@
             ? 'has-success has-feedback'
             : 'has-error has-feedback')
           : ''">
-
-      <label >Amount</label>
-      <p class="text-muted">
-        How much are you requesting?
-      </p>
       <div class="input-group">
 
         <span class="input-group-addon">$</span>

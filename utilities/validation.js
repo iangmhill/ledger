@@ -98,45 +98,37 @@ module.exports = {
     email: emailCheck
   },
   request: {
-    specification: function(content){
-      var validation = this;
-      console.log("specification check");
-
-      if(content.length == 0){
-        return false;
-      }
-      content.forEach(function(entry){
-        var key = getObjKeys(entry)[0];
-        var value = getObjValues(entry)[0];
-        console.log(key);
-        console.log(value);
-        if(!stringCheck(key) || !numberCheck(value)){
-          return false;
-        }
+    items: function(items) {
+      if (items.length == 0) { return true; }
+      var isValid = 0;
+      items.forEach(function(item) {
+        isValid += (stringCheck(item.description) && numberCheck(item.price) &&
+            constants.itemCategories.indexOf(item.category) > -1) ? 0 : 1;
       })
-      console.log("valid");
-      return true;
+      return isValid == 0;
     },
-    online: function(content){
-      console.log("online check");
-
-      var validation = this;
-      content.forEach(function(entry){
-        var key = getObjKeys(entry)[0];
-        var value = getObjValues(entry)[0];
-        console.log(key);
-        console.log(value);
-
-        if(!stringCheck(key) || !stringCheck(value)){
-          return false;
-        }
+    links: function(links) {
+      if (links.length == 0) { return true; }
+      var isValid = 0;
+      links.forEach(function(link) {
+        isValid += (stringCheck(link.description) && stringCheck(link.url))
+            ? 0 : 1;
       })
-      console.log("valid");
-      return true;
+      return isValid == 0;
     },
-    request:function(description, value, org, online, specification){
-      return stringCheck(description) && numberCheck(value) &&
-          this.online(online) && this.specification(specification);
+    request:function(description, value, orgId, links, items) {
+      var requestValidator = this;
+      return Org.findById(orgId, function(err, org) {
+        console.log(orgId);
+        if (!err && !!org && org.isActive && stringCheck(description) &&
+        numberCheck(value) && requestValidator.links(links) &&
+        requestValidator.items(items)) {
+          console.log(org);
+          return Promise.resolve(org.approvalProcess == 'none');
+        } else {
+          return Promise.reject('Invalid request');
+        }
+      });
     }
   },
   org: {
@@ -155,19 +147,6 @@ module.exports = {
                 orgValidator.nonterminal(nonterminal) &&
                 orgValidator.approvalProcess(approvalProcess);
         })
-    },
-    getInfo: function(id){
-      var deferred = q.defer();
-      Org.findById(id, function(err, org) {
-        console.log("find the org: " + org);
-        if (org.approvalProcess == 'none'){
-          console.log("find it none");
-          return deferred.resolve(true);
-        }
-        console.log("find it not none");
-        return deferred.resolve(false);
-      })
-      return deferred.promise;
     },
     name: function(name) {
       var deferred = q.defer();

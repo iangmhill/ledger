@@ -152,18 +152,18 @@ app.controller('RequestController', function($scope, RequestService, OrgService)
       ReqCtrl.alerts = [];
       if (this.validateAll()) {
         RequestService.createRequest({
-          organization: this.org.typeaheadOptions[this.org.value],
+          org: this.org.typeaheadOptions[this.org.value],
           description: this.description.value,
           amount: this.amount.value,
-          online: this.links.array.map(function(link) {
+          links: this.links.array.map(function(link) {
             return {
               url: link.url.value,
               description: link.description.value
             };
           }),
-          specification: this.items.array.map(function(item) {
+          items: this.items.array.map(function(item) {
             return {
-              name: item.name.value,
+              description: item.name.value,
               price: item.price.value,
               category: item.category.value
             };
