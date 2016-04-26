@@ -81,10 +81,15 @@ var Request = mongoose.Schema({
     required: true,
     default: false
   },
-  inApproved: {
+  isDecided: {
     type: Boolean,
     required: true,
-    default: true
+    default: false
+  },
+  comment: {
+    type: String,
+    required: true,
+    default: ''
   }
 });
 

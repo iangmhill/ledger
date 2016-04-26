@@ -63,14 +63,14 @@ var routes = {
   * @param {object} req The HTTP request being handled.
   * @param {object} res The HTTP response to be sent.
   * @param {object} req.user.orgs an array of users' orgs.
-  */ 
+  */
   getUserOrgs: function(req, res) {
   /**
   * Merge two arrays together.
   * @param {object} array1 An array of objects.
   * @param {object} array2 An array of objects.
   * @return {array} An array of all the merged objects.
-  */ 
+  */
     function mergeArray(array1, array2) {
       for(item in array1) {
         array2[item] = array1[item];
@@ -78,9 +78,9 @@ var routes = {
       return array2;
     };
       /**
-  * Recursively get the childrean organizations. 
+  * Recursively get the childrean organizations.
   * @param {object} ids An array of org Object IDs.
-  */ 
+  */
     function recursiveFind(ids) {
       var deferred = q.defer();
       var children = {};
@@ -134,7 +134,7 @@ var routes = {
   * Get all the active orgs.
   * @param {object} req The HTTP request being handled.
   * @param {object} res The HTTP response to be sent.
-  */   
+  */
   getListedOrgs: function(req, res) {
     Org.find({isActive: true}, 'name shortName url budgeted nonterminal',
         function(err, orgs) {
@@ -197,7 +197,7 @@ var routes = {
   * Get all the requests in database
   * @param {object} req The HTTP request being handled.
   * @param {object} res The HTTP response to be sent.
-  */  
+  */
   getOrgRequests: function(req, res) {
     var orgid = req.params.id;
     var requestlist = [];
@@ -235,7 +235,7 @@ var routes = {
   * @param {Float} req.body.budgeted The budget amoung of the org.
   * @param {Boolean} req.body.nonterminal The boolean value determines if the org is terminal.
   * @param {Array} req.body.approvalProcess An array of String of the approvers' names.
-  */ 
+  */
   createOrg: function(req, res) {
     validation.org.org(req.body.name, req.body.shortName, req.body.org,
         req.body.budgeted, req.body.budget, req.body.nonterminal,
@@ -274,7 +274,7 @@ var routes = {
   * @param {Array} req.user.orgs An array holds Object IDs of all the orgs under the user's control.
   * @param {String} req.body.username The usersame of the target user.
   * @param {Boolean} req.body.action The boolean value indicates if the org should be transfered to the user or not.
-  */ 
+  */
   changeOwner: function(req, res) {
     var orgId = req.body.orgId;
     if (!req.user.isAdmin && !req.user.orgs.indexOf(orgId) > -1) {
@@ -366,7 +366,7 @@ var routes = {
   * @param {String} req.body.org The Object ID of the org this request is against to.
   * @param {Array} req.body.links An array of objects tha contain online order infos.
   * @param {Array} req.body.items An array of objects tha contain all item infos.
-  */ 
+  */
   createRequest: function(req, res) {
     var request = {
       user: req.user._id,
@@ -376,8 +376,9 @@ var routes = {
       org: req.body.org,
       links: req.body.links,
       items: req.body.items,
-      isActive: false,
-      isApproved: false
+      isActive: true,
+      isApproved: false,
+      isDecided: false
     };
     validation.request.request(
       request.description,
@@ -404,30 +405,39 @@ var routes = {
   * @param {Object} res The HTTP response to be sent.
   * @param {String} req.body.request._id The request's Object ID.
   * @param {Boolean} req.body.request.isApproved The boolean value that indicates if the request is approved or not.
-  */ 
+  */
   editRequest: function(req, res) {
     function confirm(err, request) {
-        if (err) {
-          console.log("I fail " + err)
-          return res.send({
-            success: false,
-            message: 'ERROR:'
-          });
-        }
+      if (err) {
+        console.log("I fail " + err)
         return res.send({
-          success: true,
+          success: false,
+          message: 'ERROR:'
         });
       }
-
-    Request.find({_id: req.body.request._id}, function(err, requests) {
+      return res.send({
+        success: true,
+      });
+    }
+    Request.findById(req.body.request._id, function(err, request) {
         if (err) {
           return res.send({
             success: false,
             message: 'ERROR: Could not edit request'
           });
         }
-        var request = requests[0];
-        request.isApproved = req.body.request.isApproved;
+
+        request.description = req.body.description;
+        request.value = req.body.value;
+        request.remaining = req.body.value;
+        request.links = req.body.links;
+        request.items = req.body.items;
+        request.approvals = req.body.approvals;
+        request.isApproved = req.body.isApproved;
+        request.isDecided = req.body.isDecided;
+        request.isActive = req.body.isActive;
+        request.comment = req.body.comment;
+
         request.save(confirm);
       });
   },
@@ -436,13 +446,13 @@ var routes = {
   * @param {Object} req The HTTP request being handled.
   * @param {Object} res The HTTP response to be sent.
   * @param {String} req.params.user The user's Object ID.
-  */ 
+  */
   getRequests: function(req, res) {
     var tasks = [];
     var id = mongoose.Types.ObjectId(req.params.user);
     var filteredRequests = [];
 
-    Request.find({user: id}, function(err, requests) {
+    Request.find({user: id, isActive: true}, function(err, requests) {
         if (err) {
           console.log("fail edit request" + err)
           return res.send({
@@ -570,7 +580,7 @@ var routes = {
       pendingFundRequests: []
     };
 
-    console.log("routes, getPendingFundRequests");
+    // console.log("routes, getPendingFundRequests");
     var orgs = req.user.orgs;
     var filteredOrgs = [];
     var pendingRequests = [];
@@ -581,50 +591,58 @@ var routes = {
 
 
     Org.find({_id:{$in: orgs}}, function(err,orgs){
-      console.log("find org");
+      // console.log("find org");
 
       orgs.forEach(function(org){
-          console.log(org.name);
+          // console.log(org.name);
           if(org.budgeted){
-            console.log("is budgeted");
+            // console.log("is budgeted");
             if(org.nonterminal){
-              console.log("nonterminal");
-              filteredOrgs.push(org._id);
+              // console.log("nonterminal");
               budgetedNonterminal.push(org._id);
             }else{
-              console.log("terminal");
-              filteredOrgs.push(org._id);
+              // console.log("terminal");
             }
+            filteredOrgs.push(org._id);
           }
 
       })
 
-      console.log("filteredOrgs: ");
-      console.log(filteredOrgs);
-      console.log("budgetedNonterminal: ");
-      console.log(budgetedNonterminal);
+      // console.log("filteredOrgs: ");
+      // console.log(filteredOrgs);
+      // console.log("budgetedNonterminal: ");
+      // console.log(budgetedNonterminal);
 
       budgetedNonterminal.forEach(function(pOrg){
         tasks.push(function(callback){
-          console.log("parent: ");
-          console.log(pOrg);
+          // console.log("parent: ");
+          // console.log(pOrg);
           Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
-            orgs.forEach(function(org){
-              console.log("find children");
-              console.log(org.name);
-              filteredOrgs.push(org._id);
-              callback(null, null);
-            })
+            if(orgs.length > 0){
+              orgs.forEach(function(org){
+                // console.log("find children");
+                // console.log(org.name);
+                filteredOrgs.push(org._id);
+                callback(null, null);
+              })
+            }else{
+                // console.log("no children!!!!!");
+                callback(null, null);
+            }
+
           })
         })
       })
 
       async.series(tasks, function(err, results){
-        console.log("filteredOrgs: ");
+
+        // console.log("second round");
+        // console.log("filteredOrgs: ");
         console.log(filteredOrgs);
-        console.log("budgetedNonterminal: ");
+        // console.log("budgetedNonterminal: ");
         console.log(budgetedNonterminal);
-        Request.find({org:{$in: filteredOrgs}, isApproved: false, inApproved: true}, function(err, requests){
+
+        Request.find({org:{$in: filteredOrgs}, isActive: true, isDecided: false}, function(err, requests){
           if (err || !requests) { return res.json(errorResponse); }
           requests.forEach(function(request){
             pendingRequests.push(request);
@@ -653,8 +671,8 @@ var routes = {
             })
           })
           async.series(tasks, function(err, results){
-            console.log("filteredPendingRequests: ");
-            console.log(filtedPendingRequests);
+            // console.log("filteredPendingRequests: ");
+            // console.log(filtedPendingRequests);
             res.json({pendingFundRequests: filtedPendingRequests});
           })
         })

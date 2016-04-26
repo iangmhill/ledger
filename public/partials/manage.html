@@ -73,54 +73,126 @@ Description: Allows the users to manage all types of requests and the funds of
   <div
       ng-switch="MngCtrl.pendingFundRequests.length > 0">
     <h4>Funding Requests</h4>
-    <div
-        class="row vertical-align"
-        ng-repeat="request in MngCtrl.pendingFundRequests"
-        ng-switch-when="true">
-      <div class="col-xs-12">
-        <div class="row vertical-align">
-          <div class="col-sm-3">
-          <div>{{request.username}}</div>
-          </div>
+    <div ng-repeat="request in MngCtrl.pendingFundRequests">
+      <div
+          class="row vertical-align"
+          ng-switch-when="true">
+        <div class="col-xs-12">
+          <div class="row vertical-align">
+            <div class="col-sm-3">
+            <div>{{request.username}}</div>
+            </div>
 
-          <div class="col-sm-4">
-          <div>{{request.orgname}}</div>
-          </div>
+            <div class="col-sm-4">
+            <div>{{request.orgname}}</div>
+            </div>
 
-          <div class="col-sm-4 subtext indent">
-          <div>{{request.description}}</div>
-          </div>
+            <div class="col-sm-4 subtext indent">
+            <div>{{request.description}}</div>
+            </div>
 
-          <div class="col-sm-4 subtext indent">
-          <div>{{request.value}}</div>
+            <div class="col-sm-4 subtext indent">
+            <div>{{request.value}}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-4 push-right">
+          <div class="btn-toolbar">
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click="MngCtrl.resolveFunRequest($index, true)">
+              <span>Approve</span>
+              <span class="glyphicon glyphicon-ok"></span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click ="MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+              <span>Reject</span>
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
           </div>
         </div>
       </div>
-
-      <div class="col-xs-4 push-right">
-        <div class="btn-toolbar">
-          <button
-              type="button"
-              class="btn btn-link btn-sm"
-              ng-click="MngCtrl.resolveFunRequest($index, true)">
-            <span>Approve</span>
-            <span class="glyphicon glyphicon-ok"></span>
-          </button>
-          <button
-              type="button"
-              class="btn btn-link btn-sm"
-              ng-click="MngCtrl.resolveFunRequest($index, false)">
-            <span>Reject</span>
-            <span class="glyphicon glyphicon-remove"></span>
-          </button>
+      <div class = "row vertical-align">
+        <div ng-show = "!request.isDecided" ng-if = "request.comment != ''" class="panel panel-danger panel-form col-md-10">
+          <div class="panel-heading">Comments</div>
+          <div class="panel-body">
+            {{request.comment}}
+          </div>
         </div>
       </div>
     </div>
+
+
+
+
+  <div
+      uib-collapse="MngCtrl.isCollapsed"
+      class="panel panel-default panel-form">
+    <div class="panel-heading">Comments</div>
+    <div class="panel-body">
+      <form role="form" autocomplete="off" name="commentForm">
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[MngCtrl.comment.validation.isValid]">
+              <input
+                  name="comment"
+                  id="commentContent"
+                  type="text"
+                  class="form-control"
+                  placeholder="why do you reject?"
+                  autocomplete="off"
+                  ng-model="MngCtrl.comment.value"
+                  ng-blur="MngCtrl.comment.validate()"
+                  required>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{MngCtrl.comment.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- .form-group .row -->
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="MngCtrl.resolveFunRequest($index, false)"> 
+            Save
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click = "MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
 
     <div ng-switch-when="false">
       <span class="subtext">No approvals pending</span>
     </div>
-  </div>
 
   <hr>
 
