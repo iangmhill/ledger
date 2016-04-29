@@ -1,0 +1,68 @@
+<!-- public/partials/dashboard.html -->
+<div class="container">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h1 class="panel-title">Welcome to Ledger</h1>
+    </div>
+    <div class="panel-body">
+      <p>This is a placeholder for the main landing page of Ledger. This page will eventually show a summary of the finances managed by Ledger.</p>
+    </div> 
+  </div>
+
+	<div class="row">
+	<div class="col-xs-9">
+	  <div class="row">
+	    <label class="col-sm-6">Requests History</label>
+	  </div>
+	</div>
+	<div class="col-xs-3">
+	  <button
+	      type="button"
+	      class="btn btn-default pull-right"
+	      ng-click=
+	          "DashCtrl.requestsHistory.isCollapsed =
+	          !DashCtrl.requestsHistory.isCollapsed">
+	    <span>{{DashCtrl.requestsHistory.isCollapsed ? "+" : "-"}}</span>
+	  </button>
+	</div>
+	</div>
+
+
+
+	<div
+	      uib-collapse="DashCtrl.requestsHistory.isCollapsed"
+	      class="panel panel-default panel-form">
+	    <div class="panel-body col-md-12 ">
+	        <ul class="list-group" ng-repeat = "request in DashCtrl.requests">
+	        	<div class = "row">
+					<h4 class="list-group-item-heading vertical-align">{{request.created}} {{request.orgName}} {{request.value}} {{request.isApproved}}</h4>
+					<p class="list-group-item-text vertical-align">
+						{{request.description}}
+						<div ng-show = "request.isDecided" ng-if = "request.comment != ''">
+						  <Strong>Comments: </Strong> {{request.comment}}
+						</div>
+					</p>
+
+			        <div class="btn-toolbar vertical-align pull-right" >
+			          <button
+			              type="button"
+			              class="btn btn-default"
+			              ng-click="DashCtrl.resubmit($index, true)">
+			            Resubmit
+			          </button>
+			          <button
+			              type="button"
+			              class="btn btn-default"
+			              ng-click="DashCtrl.cancel($index, true)">
+			            Cancel
+			          </button>
+		  	        </div>
+	  	        </div>
+
+			</ul>
+
+	    </div>
+	  </div>
+	  <hr>
+
+</div>

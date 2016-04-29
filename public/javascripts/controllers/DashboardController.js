@@ -1,6 +1,7 @@
 // public/javascripts/controllers/DashboardController.js
 app.controller('DashboardController', function($scope, RequestService, AuthService) {
-	var DashCtrl = this;
+	console.log(new Date());
+  var DashCtrl = this;
 
 	this.requestsHistory= {
 		isCollapsed: true
