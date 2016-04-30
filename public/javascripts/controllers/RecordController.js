@@ -2,6 +2,8 @@
 
 app.controller('RecordController', function(RecordService, OrgService) {
   var RecCtrl = this;
+  this.categories =
+      ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
 
   function Field(initialValue) {
     this.value = initialValue;
@@ -189,6 +191,16 @@ app.controller('RecordController', function(RecordService, OrgService) {
         }).then(function(success) {
           if (success) {
             RecCtrl.alerts = [];
+            RecCtrl.createRecord.type.reset();
+            RecCtrl.createRecord.org.reset();
+            RecCtrl.createRecord.description.reset();
+            RecCtrl.createRecord.reimbursement.reset();
+            RecCtrl.createRecord.pcard.reset();
+            RecCtrl.createRecord.request.reset();
+            RecCtrl.createRecord.date.reset();
+            RecCtrl.createRecord.amount.reset();
+            RecCtrl.createRecord.items.array = [];
+
           }
           RecCtrl.alerts.push({
             type: success ? 'success' : 'danger',
@@ -227,19 +239,4 @@ app.controller('RecordController', function(RecordService, OrgService) {
   this.dismissAlert = function(index) {
     RecCtrl.alerts.splice(index, 1);
   };
-}).filter('search', function() {
-  return function(input, search) {
-    if (!input) return input;
-    if (!search) return input;
-    var expected = ('' + search).toLowerCase();
-    var result = [];
-    angular.forEach(input, function(id, name) {
-      if (name.toLowerCase().indexOf(expected) !== -1) {
-        result.push(name);
-      }
-    });
-    return result;
-  }
 });
-
-
