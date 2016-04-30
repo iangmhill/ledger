@@ -2,9 +2,28 @@
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var Mixed = mongoose.Schema.Types.Mixed;
+var constants = require('../utilities/constants');
 
-var Record = mongoose.Schema({
-  created: {
+var discriminator = {discriminatorKey: 'type'};
+
+var itemSchema = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: constants.itemCategories
+  }
+});
+
+var recordSchema = mongoose.Schema({
+  logged: {
     type: Date,
     required: true,
     default: Date.now
@@ -14,32 +33,17 @@ var Record = mongoose.Schema({
     ref: 'users',
     required: true
   },
-  occurred: {
+  date: {
     type: Date,
     required: true
   },
-  type: {
+  description: {
     type: String,
-    required: true,
-    enum: ['expense', 'transfer', 'revenue']
-  },
-  paymentMethod: {
-    type: String,
-    required: false
-  },
-  request: {
-    type: ObjectId,
-    ref: 'requests',
     required: true
   },
   value: {
     type: Number,
     required: true
-  },
-  details: {
-    type: Mixed,
-    required: true,
-    default: "test"
   },
   org: {
     type: ObjectId,
@@ -56,17 +60,46 @@ var Record = mongoose.Schema({
     ref: 'users',
     required: false
   }
-});
+}, discriminator);
 
 // Some record fields are conditionally required
-Record.pre('save', function(next) {
+recordSchema.pre('save', function(next) {
   if (this.void && !this.voider) {
     return next(new Error("Record cannot be voided without voider ID"));
-  }
-  if (this.type == 'expense' && !this.paymentMethod) {
-    return next(new Error("Payment method must be recorded for all expenses"));
   }
   next();
 });
 
-module.exports = mongoose.model("records", Record);
+var Record = mongoose.model("records", recordSchema);
+
+var Purchase = Record.discriminator('purchase', new mongoose.Schema({
+  paymentMethod: {
+    type: String,
+    required: false,
+    enum: ['pcard','reimbursement']
+  },
+  pcard: {
+    type: Number,
+    required: false
+  },
+  request: {
+    type: ObjectId,
+    ref: 'requests',
+    required: true
+  },
+  items: {
+    type: [itemSchema],
+    required: false
+  }
+}, discriminator));
+
+var Revenue = Record.discriminator('revenue', new mongoose.Schema({
+}, discriminator));
+
+
+
+module.exports = {
+  record: Record,
+  purchase: Purchase,
+  revenue: Revenue
+};

@@ -49,6 +49,10 @@ var Request = mongoose.Schema({
     type: Number,
     required: true
   },
+  remaining: {
+    type: Number,
+    required: true
+  },
   org: {
     type: ObjectId,
     ref: 'orgs',

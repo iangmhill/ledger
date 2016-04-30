@@ -42,7 +42,7 @@ var bodyParser     = require('body-parser');
 
 // database modules
 var mongoose       = require('mongoose');
-mongoose.Promise   = global.Promise;
+mongoose.Promise   = require('bluebird');
 
 // route modules
 var routes         = require('./routes/routes');
