@@ -1,3 +1,17 @@
+/**
+ * Route module
+ * @module routes
+ * @requires NPM:express
+ * @requires NPM:mongoose
+ * @requires models/orgModel
+ * @requires models/userModel
+ * @requires models/requestModel
+ * @requires models/transferModel
+ * @requires models/recordModel
+ * @requires NPM:q
+ * @requires utilities/validation
+ * @requires NPM: async
+ */
 
 var express    = require('express');
 var mongoose   = require('mongoose');
@@ -31,18 +45,41 @@ var evaluateApprovals = function(approvalProcess, owners, approvals) {
 };
 
 var routes = {
+  /**
+  * Get all the users' name from database.
+  * @return {array} An array of all the user objects in database.
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */
   getUserList: function(req, res) {
     User.find({}, 'username name', function(err, users) {
       res.json(users);
     })
   },
+
+  /**
+  * Get all orgs under users' control from database.
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  * @param {object} req.user.orgs an array of users' orgs.
+  */ 
   getUserOrgs: function(req, res) {
+  /**
+  * Merge two arrays together
+  * @param {object} array1 An array of objects.
+  * @param {object} array2 An array of objects.
+  * @return {array} An array of all the merged objects.
+  */ 
     function mergeArray(array1, array2) {
       for(item in array1) {
         array2[item] = array1[item];
       }
       return array2;
     };
+      /**
+  * Recursively get the childrean organizations. 
+  * @param {object} ids An array of org Object IDs
+  */ 
     function recursiveFind(ids) {
       var deferred = q.defer();
       var children = {};
@@ -91,12 +128,19 @@ var routes = {
       })
     })
   },
+
+  /**
+  * Get all the active orgs
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */   
   getListedOrgs: function(req, res) {
     Org.find({isActive: true}, 'name shortName url budgeted nonterminal',
         function(err, orgs) {
       res.status(200).json(orgs);
     })
   },
+
   getOrgByUrl: function(req, res) {
     if (!typeof req.params.url === 'string') { res.json({isSuccessful: false}); }
     Org.findOne({url: req.params.url}, function(err, org) {
@@ -148,6 +192,11 @@ var routes = {
   getOrgFinances: function(req, res) {
 
   },
+  /**
+  * Get all the requests in database
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */  
   getOrgRequests: function(req, res) {
     var requestlist = [];
     Request.find({},function (err, requestlist) {
@@ -167,6 +216,15 @@ var routes = {
   changeOwnership: function(req, res) {
 
   },
+  /**
+  * Create an org in the database
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  , req.body.shortName, req.body.org,
+        req.body.budgeted, req.body.budget, req.body.nonterminal,
+        req.body.approvalProcess
+  * @param {object} req.body.name The .
+  */ 
   createOrg: function(req, res) {
     validation.org.org(req.body.name, req.body.shortName, req.body.org,
         req.body.budgeted, req.body.budget, req.body.nonterminal,
@@ -426,6 +484,12 @@ var routes = {
 
   },
 
+  /**
+   * Get an array of all the pending funding requests.
+   * @param {object} req The HTTP request being handled.
+   * @param {object} res The HTTP response to be sent.
+   * @param {object} req.user.orgs The authenticated user's organizations.
+   */
   getPendingFundRequests: function(req, res){
 
     var errorResponse = {
@@ -524,7 +588,7 @@ var routes = {
 
     })
 
-  }
+  };
 };
 
 
