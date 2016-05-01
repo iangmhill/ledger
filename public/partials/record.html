@@ -171,10 +171,10 @@
             ng-model= "RecCtrl.createRecord.request.value" >
           <option value="">[Please select the request you submitted]</option>
           <option
-              ng-repeat="option in RecCtrl.createRecord.request.options"
+              ng-repeat="request in RecCtrl.createRecord.request.options"
               value="{{option._id}}">
-          {{option.created.slice(5,10)}} {{option.description}} :
-          {{option.specification[0].name}} ${{option.specification[0].price}}
+          {{request.created.slice(5,10)}} {{request.description}} :
+          {{request.name}} ${{request.value}}
           </option>
         </select>
       </div>
