@@ -5,6 +5,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var Transfer = mongoose.Schema({
   user: {
     type: ObjectId,
+    ref: 'users',
     required: true
   },
   created: {
@@ -28,17 +29,17 @@ var Transfer = mongoose.Schema({
   },
   to: {
     type: ObjectId,
-    ref: 'Org',
+    ref: 'orgs',
     required: true
   },
   from: {
     type: ObjectId,
-    ref: 'Org',
+    ref: 'orgs',
     required: true
   },
   approvals: {
     type: [ObjectId],
-    ref: 'User',
+    ref: 'users',
     required: false,
     default: []
   },

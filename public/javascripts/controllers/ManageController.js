@@ -181,7 +181,6 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
   AuthService.getFundRequests().then(function(fundRequests) {
     MngCtrl.pendingFundRequests = fundRequests || [];
     console.log(fundRequests);
-
   });
 
   AuthService.getPendingUsers().then(function(pendingUsers) {
@@ -229,17 +228,4 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
   };
 
 
-}).filter('search', function() {
-  return function(input, search) {
-    if (!input) return input;
-    if (!search) return input;
-    var expected = ('' + search).toLowerCase();
-    var result = [];
-    angular.forEach(input, function(id, name) {
-      if (name.toLowerCase().indexOf(expected) !== -1) {
-        result.push(name);
-      }
-    });
-    return result;
-  }
 });

@@ -5,11 +5,12 @@ var Org        = require('../models/orgModel');
 var User       = require('../models/userModel');
 var Request    = require('../models/requestModel');
 var Transfer   = require('../models/transferModel');
-var Record     = require('../models/recordModel');
+var Record     = require('../models/recordModel').record;
+var Purchase   = require('../models/recordModel').purchase;
+var Revenue    = require('../models/recordModel').revenue;
 var q          = require('q');
 var validation = require('../utilities/validation');
 var async = require('async');
-
 
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
@@ -113,7 +114,7 @@ var routes = {
               if (err) { res.json({isSuccessful: false}); }
               var allocated = 0;
               for (index in requests) {
-                allocated += requests[index].value;
+                allocated += requests[index].remaining;
               }
               for (index in children) {
                 allocated += children[index].budget;
@@ -280,60 +281,36 @@ var routes = {
 
   },
   createRequest: function(req, res) {
-    // Request.find().remove().exec();
-
-    function confirm(err, request) {
-      if (err) {
-        console.log("fail creating request " + err)
-        return res.send({
-          success: false,
-          message: 'ERROR: Could not create request'
-        });
-      }
-      console.log("success!")
-      return res.send({
-        success: true,
+    console.log(req.body);
+    var request = {
+      user: req.user._id,
+      description: req.body.description,
+      value: req.body.amount,
+      remaining: req.body.amount,
+      org: req.body.org,
+      links: req.body.links,
+      items: req.body.items,
+      isActive: false,
+      isApproved: false
+    };
+    console.log(request)
+    validation.request.request(
+      request.description,
+      request.value,
+      request.org,
+      request.links,
+      request.items
+    ).then(function(preapproved) {
+      request.isApproved = preapproved;
+      return Request.create(request);
+    }).then(function(request) {
+      res.send({ isSuccessful: true, request: request });
+    }).catch(function(err) {
+      console.log(err);
+      res.send({
+        isSuccessful: false,
+        message: 'ERROR: Could not create request'
       });
-    }
-
-    var data = {
-              user: req.user._id,
-              description: req.body.description,
-              type: req.body.type,
-              value: req.body.amount,
-              org: req.body.organization,
-              details: req.body.details,
-              online: req.body.online,
-              specification: req.body.specification,
-              isActive: false,
-              isApproved: false
-            }
-    var errorResponse = { isSuccessful: false, isValid: false };
-    console.log("server request ");
-    console.log(validation);
-    if (!validation.request.request(
-      data.description,
-      data.type,
-      data.value,
-      data.org,
-      data.details,
-      data.online,
-      data.specification
-    )) {
-      return res.json(errorResponse);
-    }
-    console.log("request org: " +  data.org);
-    validation.org.getInfo(data.org).then(function (orgData){
-      data.org = orgData.id;
-      console.log("request org: " +  orgData.id);
-      if(orgData.approval){
-        data.isApproved = true;
-      }
-      else{
-        data.isApproved = false;
-      }
-      console.log("data.isApproved: " + data.isApproved);
-      Request.create(data, confirm);
     });
   },
   editRequest: function(req, res) {
@@ -349,14 +326,8 @@ var routes = {
           success: true,
         });
       }
-
-
-    console.log("routes editRequest");
-    // console.log(req.body);
-    console.log(req.body.request);
     Request.find({_id: req.body.request._id}, function(err, requests) {
         if (err) {
-          console.log("fail edit request" + err)
           return res.send({
             success: false,
             message: 'ERROR: Could not edit request'
@@ -364,7 +335,6 @@ var routes = {
         }
         var request = requests[0];
         request.isApproved = req.body.request.isApproved;
-        console.log(request);
         request.save(confirm);
       });
   },
@@ -372,9 +342,6 @@ var routes = {
     var tasks = [];
     var id = mongoose.Types.ObjectId(req.params.user);
     var filteredRequests = [];
-    console.log("routes getRequests");
-    console.log(typeof(id));
-    console.log(id);
 
     Request.find({user: id}, function(err, requests) {
         if (err) {
@@ -387,8 +354,6 @@ var routes = {
         requests.forEach(function(request){
           tasks.push(function(callback){
             Org.find({_id: request.org}, function(err, orgs){
-              console.log("orgs[0].name");
-              console.log(orgs[0].name);
               var newRequest = JSON.parse(JSON.stringify(request));
               newRequest.orgName = orgs[0].name;
               filteredRequests.push(newRequest);
@@ -398,9 +363,6 @@ var routes = {
         })
 
         async.series(tasks, function(err, results){
-          console.log("requests.length");
-          console.log(filteredRequests.length);
-          console.log(filteredRequests);
           res.status(200).json({
             success: true,
             requests: filteredRequests
@@ -412,37 +374,83 @@ var routes = {
 
   },
   createRecord: function(req, res) {
-    function confirm(err, record) {
-      if (err) {
-        console.log("fail recording" + err)
-        return res.send({
-          success: false,
-          message: 'ERROR: Could not create record'
-        });
-      }
-      console.log("success!")
-      return res.send({
-        success: true,
+    function handleError(err) {
+      console.log(err);
+      res.send({
+        isSuccessful: false,
+        message: 'ERROR: Could not create request'
       });
     }
-
-    var data = {
-          user: req.user._id,
-          type: req.body.type,
-          occurred: req.body.occurred,
-          paymentMethod: req.body.paymentMethod,
-          request: req.body.request,
-          value: req.body.value,
-          details: req.body.details,
-          org: req.body.org,
-          void: req.body.void
-          }
-
-    var errorResponse = { isSuccessful: false, isValid: false };
-    console.log("server request ");
-    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){
-        Record.create(data, confirm);
-    } else { return res.json(errorResponse); }
+    function handleSuccess(record) {
+      res.send({ isSuccessful: true, request: record });
+    }
+    function adjustBudget(orgId, value) {
+      return new Promise(function(resolve,reject) {
+        Org.findById(orgId).then(function(org) {
+          if (org.budgeted) { org.budget += value; }
+          org.save(function(err) {
+            if (err) { return reject() }
+            if (org.parent) {
+              adjustBudget(org.parent, value).then(resolve,reject);
+            } else {
+              resolve();
+            }
+          })
+        });
+      });
+    }
+    function adjustRequest(requestId, value) {
+      return new Promise(function(resolve,reject) {
+        Request.findById(requestId).then(function(request) {
+          request.remaining += value;
+          request.save(function(err) {
+            if (err) { return reject() }
+            resolve();
+          })
+        });
+      });
+    }
+    var record = {
+      user: req.user._id,
+      type: req.body.type,
+      date: new Date(!!req.body.date ? req.body.date : false),
+      description: req.body.description,
+      value: req.body.value,
+      org: req.body.org
+    }
+    switch (record.type) {
+      case 'purchase':
+        record.request = req.body.request;
+        record.paymentMethod = req.body.paymentMethod;
+        record.pcard = req.body.pcard;
+        record.items = req.body.items;
+        validation.record.purchase(record.date, record.description,
+            record.value, record.org, record.request, record.paymentMethod,
+            record.pcard, record.items).then(function() {
+          return adjustBudget(record.org, -record.value);
+        })
+        .then(function() {
+          return adjustRequest(record.request, -record.value);
+        })
+        .then(function() {
+          return Purchase.create(record);
+        }).then(handleSuccess)
+        .catch(handleError);
+        break;
+      case 'revenue':
+        validation.record.revenue(record.date, record.description, record.value,
+            record.org).then(function() {
+          return adjustBudget(record.org, record.value);
+        })
+        .then(function() {
+          return Revenue.create(record);
+        })
+        .then(handleSuccess)
+        .catch(handleError);
+        break;
+      default:
+        handleError('Invalid record type');
+    }
   },
   editRecord: function(req, res) {
 
