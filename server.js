@@ -77,7 +77,7 @@ app.use(express.static(pathRoot));
 
 // CONNECT TO DATABASE =========================================================
 mongoose.connect(process.env.MONGODB);
-console.log(process.env.MONGODB);
+
 // SECURITY CONFIGURATION ======================================================
 var passport = authentication.configure();
 
@@ -132,6 +132,8 @@ app.get('/api/getOrgRecords/:id',
     authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
+app.get('/api/getUserEmail/:id',
+    authentication.authenticateUser, routes.getUserEmail);
 
 // emails
 app.get('/api/RegEmail/:email',

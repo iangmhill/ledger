@@ -12,13 +12,14 @@ app.service('RequestService', function($http, $q, $location) {
     return deferred.promise;
   };
 
-  this.editRequest = function(requestData) {
+  this.editRequest = function(requestData, email) {
     var deferred = $q.defer();
     console.log("request Service: " + requestData);
     $http.post('/api/editRequest', requestData).then(function success(response) {
       console.log("response.data: " + response.data.success);
       if (response.data.success == true){
         deferred.resolve(response.data.success);
+        $http.get("/api/ReqEmail/" + email);
       }
       else{
         deferred.reject(response.data.success);

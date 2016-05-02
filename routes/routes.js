@@ -59,6 +59,12 @@ var routes = {
     })
   },
 
+  getUserEmail: function(req, res){
+    User.findById(req.params.id, function(err, user){
+      res.json(user.email);
+    })
+  },
+
   /**
   * Get all orgs under users' control from database.
   * @param {object} req The HTTP request being handled.
