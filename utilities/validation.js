@@ -195,21 +195,7 @@ module.exports = {
     }
 
   },
-<<<<<<< HEAD
-  record:function(type, paymentMethod, value, details){
-    // var deferred = q.defer();
-    // var validation = this;
-    //   deferred.resolve(
-    //     validation.stringCheck(type) &&
-    //     validation.numberCheck(value) && validation.stringCheck(details) &&
-    //     validation.stringCheck(paymentMethod));
-    }
-  //   ,function(err){
-  //     console.log("request validation err");
-  //   console.log("server validation done");  
-  //   return deferred.promise;
-  // }
-=======
+
   record: {
     org: function(org) {
       return !!org && org.isActive;
@@ -302,7 +288,6 @@ module.exports = {
       return deferred.promise;
     }
   }
->>>>>>> 5501c4a85cdbaf6f406c8d6bbe2962f98bcefa75
 
 };
 
