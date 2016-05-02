@@ -289,7 +289,6 @@ var routes = {
         user.save(function(err) {
           if (err) { res.json({isSuccessful: false}); }
           var cleanUser = user.toObject();
-          //wzc ??????
           delete cleanUser['orgs'];
           res.json({
             isSuccessful: true,

@@ -333,7 +333,6 @@ module.exports = {
       pendingUsers: []
     };
 
-    //wzc:???? options???
     User.find({isApproved: false},{
       password: 0,
       orgs: 0,
