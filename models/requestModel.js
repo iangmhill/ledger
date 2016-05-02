@@ -88,7 +88,7 @@ var Request = mongoose.Schema({
   },
   comment: {
     type: String,
-    required: true,
+    required: false,
     default: ''
   }
 });
