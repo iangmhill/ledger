@@ -1,0 +1,132 @@
+<div class="container container-login">
+  <uib-alert 
+      ng-if="RegCtrl.alert.isActive"
+      type="{{RegCtrl.alert.type}}"
+      close="RegCtrl.alert.isActive = false">
+    {{RegCtrl.alert.msg}}
+  </uib-alert>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Register</h3>
+    </div>
+    <div class="panel-body">
+      <form
+          name="RegCtrl.registrationForm"
+          role="form"
+          ng-submit="RegCtrl.submitRegistrationForm()"
+          autocomplete="off">
+        <div
+            class="form-group"
+            ng-switch="RegCtrl.username.validation.isValid"
+            ng-class="{valid:'has-success has-feedback',
+                invalid:'has-error has-feedback',
+                empty:''}[RegCtrl.username.validation.isValid]">
+          <label>Username</label>
+          <input
+              type="text"
+              class="form-control"
+              autocomplete="off"
+              ng-model="RegCtrl.username.value"
+              ng-blur="RegCtrl.username.validate()">
+          <span
+              ng-switch-when="valid"
+              class="glyphicon glyphicon-ok form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="glyphicon glyphicon-remove form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="help-block">
+            {{RegCtrl.username.validation.helpBlock}}
+          </span>
+        </div>
+        <div
+            class="form-group"
+            ng-switch="RegCtrl.name.validation.isValid"
+            ng-class="{valid:'has-success has-feedback',
+                invalid:'has-error has-feedback',
+                empty:''}[RegCtrl.name.validation.isValid]">
+          <label>Name</label>
+          <input
+              type="text"
+              class="form-control"
+              autocomplete="off"
+              ng-model="RegCtrl.name.value"
+              ng-blur="RegCtrl.name.validate()">
+          <span
+              ng-switch-when="valid"
+              class="glyphicon glyphicon-ok form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="glyphicon glyphicon-remove form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="help-block">
+            {{RegCtrl.name.validation.helpBlock}}
+          </span>
+        </div>
+        <div
+            class="form-group"
+            ng-switch="RegCtrl.email.validation.isValid"
+            ng-class="{valid:'has-success has-feedback',
+                invalid:'has-error has-feedback',
+                empty:''}[RegCtrl.email.validation.isValid]">
+          <label>Email</label>
+          <input
+              name="email"
+              type="email"
+              class="form-control"
+              autocomplete="off"
+              ng-model="RegCtrl.email.value"
+              ng-blur="RegCtrl.email.validate()">
+          <span
+              ng-switch-when="valid"
+              class="glyphicon glyphicon-ok form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="glyphicon glyphicon-remove form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="help-block">
+            {{RegCtrl.email.validation.helpBlock}}
+          </span>
+        </div>
+        <div
+            class="form-group"
+            ng-switch="RegCtrl.password.validation.isValid"
+            ng-class="{valid:'has-success has-feedback',
+                invalid:'has-error has-feedback',
+                empty:''}[RegCtrl.password.validation.isValid]">
+          <label>Password</label>
+          <input
+              type="password"
+              class="form-control"
+              autocomplete="new-password"
+              ng-model="RegCtrl.password.value"
+              ng-blur="RegCtrl.password.validate()">
+          <span
+              ng-switch-when="valid"
+              class="glyphicon glyphicon-ok form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="glyphicon glyphicon-remove form-control-feedback"
+              aria-hidden="true"></span>
+          <span
+              ng-switch-when="invalid"
+              class="help-block">
+            {{RegCtrl.password.validation.helpBlock}}
+          </span>
+        </div>
+        <button class="btn btn-primary pull-right">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>

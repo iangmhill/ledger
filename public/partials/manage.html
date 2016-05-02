@@ -1,0 +1,479 @@
+<!--
+File: public/partials/manage.html
+Description: Allows the users to manage all types of requests and the funds of
+    the organizations they own.
+-->
+<div class="container">
+  <uib-alert
+      ng-if="MngCtrl.alert.isActive"
+      type="{{MngCtrl.alert.type}}"
+      close="MngCtrl.alert.isActive = false">
+    {{MngCtrl.alert.msg}}
+  </uib-alert>
+  <h1>Manage</h1>
+  <hr>
+  <div
+      ng-if="MainCtrl.user.isAdmin"
+      ng-switch="MngCtrl.pendingUsers.length > 0">
+    <h4>Account Creation Requests</h4>
+    <div
+        class="row vertical-align"
+        ng-repeat="user in MngCtrl.pendingUsers"
+        ng-switch-when="true">
+      <div class="col-xs-8">
+        <div class="row vertical-align">
+          <div class="col-sm-2">
+            <div>{{user.name}}</div>
+          </div>
+
+          <div class="col-sm-2 subtext indent">
+            <div>{{user.username}}</div>
+          </div>
+
+          <div class="col-sm-4 subtext indent">
+            <div>{{user.email}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-4 push-right">
+        <div class="btn-toolbar">
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveUser($index, true)">
+            <span>Approve</span>
+            <span class="glyphicon glyphicon-ok"></span>
+          </button>
+          <button
+              type="button"
+              class="btn btn-link btn-sm"
+              ng-click="MngCtrl.resolveUser($index, false)">
+            <span>Reject</span>
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div ng-switch-when="false">
+      <span class="subtext">No approvals pending</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div>
+    <h4>Organization Budget Requests</h4>
+  </div>
+
+  <hr>
+
+
+  <div
+      ng-switch="MngCtrl.pendingFundRequests.length > 0">
+    <h4>Funding Requests</h4>
+
+
+    <ul class="list-group" ng-repeat = "request in MngCtrl.pendingFundRequests">
+      <p class="list-group-item-text vertical-align">
+            <div class="panel panel-info">
+          <div class="panel-heading">
+            {{request.created| date}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.username}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.orgname}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.value| currency}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isApproved === true ? "Approved" : "Declined"}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isDecided === true ? "Decided" : "Undecided"}}
+          </div>
+          <div class="panel-body">
+            <Strong>Description: </Strong>{{request.description}}
+          <div ng-show = "!request.isDecided" ng-if = "request.comment != ''">
+            <Strong>Comment: </Strong> {{request.comment}}
+          </div>
+          <div class="btn-toolbar pull-right" >
+            <div class="btn-toolbar">
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click="MngCtrl.resolveFunRequest($index, true)">
+              <span>Approve</span>
+              <span class="glyphicon glyphicon-ok"></span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click ="MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+              <span>Reject</span>
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+          </div>
+          </div>
+        </div>
+      </p>
+    </ul>
+
+
+
+<!--     <div ng-repeat="request in MngCtrl.pendingFundRequests">
+      <div
+          class="row vertical-align"
+          ng-switch-when="true">
+        <div class="col-xs-12">
+          <div class="row vertical-align">
+            <div class="col-sm-3">
+            <div>{{request.username}}</div>
+            </div>
+
+            <div class="col-sm-4">
+            <div>{{request.orgname}}</div>
+            </div>
+
+            <div class="col-sm-4 subtext indent">
+            <div>{{request.description}}</div>
+            </div>
+
+            <div class="col-sm-4 subtext indent">
+            <div>{{request.value}}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-4 push-right">
+          <div class="btn-toolbar">
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click="MngCtrl.resolveFunRequest($index, true)">
+              <span>Approve</span>
+              <span class="glyphicon glyphicon-ok"></span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-link btn-sm"
+                ng-click ="MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+              <span>Reject</span>
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class = "row vertical-align">
+        <div ng-show = "!request.isDecided" ng-if = "request.comment != ''" class="panel panel-danger panel-form col-md-10">
+          <div class="panel-heading">Comments</div>
+          <div class="panel-body">
+            {{request.comment}}
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+
+
+
+  <div
+      uib-collapse="MngCtrl.isCollapsed"
+      class="panel panel-default panel-form">
+    <div class="panel-heading">Comments</div>
+    <div class="panel-body">
+      <form role="form" autocomplete="off" name="commentForm">
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[MngCtrl.comment.validation.isValid]">
+              <input
+                  name="comment"
+                  id="commentContent"
+                  type="text"
+                  class="form-control"
+                  placeholder="why do you reject?"
+                  autocomplete="off"
+                  ng-model="MngCtrl.comment.value"
+                  ng-blur="MngCtrl.comment.validate()"
+                  required>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{MngCtrl.comment.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- .form-group .row -->
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="MngCtrl.resolveFunRequest($index, false)"> 
+            Save
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click = "MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+    <div ng-switch-when="false">
+      <span class="subtext">No approvals pending</span>
+    </div>
+
+  <hr>
+
+  <div>
+    <h4>Your Organizations</h4>
+    <listing
+        id="root-org"
+        directory="MngCtrl.orgs"
+        parent="root"
+        children="MngCtrl.children"
+        ng-repeat="root in MngCtrl.roots">
+    </listing>
+    <div class="button-row btn-toolbar">
+      <button
+          type="button"
+          class="btn btn-default"
+          ng-click="MngCtrl.createOrg.isCollapsed =
+              !MngCtrl.createOrg.isCollapsed">
+        Create Org
+      </button>
+    </div>
+
+    <!-- Collapsable org creation form -->
+    <div
+        uib-collapse="MngCtrl.createOrg.isCollapsed"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Create Organization</div>
+      <div class="panel-body">
+        <form role="form" autocomplete="off" name="MngCtrl.orgForm">
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputName"
+                class="col-sm-2 form-control-label">
+              Organization Full Name
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="MngCtrl.createOrg.name.isValidated
+                      ? (MngCtrl.createOrg.name.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <input
+                    name="name"
+                    id="inputName"
+                    type="text"
+                    class="form-control"
+                    placeholder="Council of Olin Representatives"
+                    autocomplete="off"
+                    ng-model="MngCtrl.createOrg.name.value"
+                    ng-blur="MngCtrl.createOrg.name.validate()"
+                    required>
+                <span
+                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                        MngCtrl.createOrg.name.isValid"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                        !MngCtrl.createOrg.name.isValid"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                        !MngCtrl.createOrg.name.isValid"
+                    class="help-block">
+                  {{MngCtrl.createOrg.name.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputShortName"
+                class="col-sm-2 form-control-label">
+              Organization Short Name
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="MngCtrl.createOrg.shortName.isValidated
+                      ? (MngCtrl.createOrg.shortName.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <input
+                    name="name"
+                    id="inputShortName"
+                    type="text"
+                    class="form-control"
+                    placeholder="CORe"
+                    autocomplete="off"
+                    ng-model="MngCtrl.createOrg.shortName.value"
+                    ng-blur="MngCtrl.createOrg.shortName.validate()"
+                    required>
+                <span
+                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                        MngCtrl.createOrg.shortName.isValid"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                        !MngCtrl.createOrg.shortName.isValid"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                        !MngCtrl.createOrg.shortName.isValid"
+                    class="help-block">
+                  {{MngCtrl.createOrg.shortName.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="inputParent"
+                class="col-sm-2
+                form-control-label">
+              Parent Organization
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="MngCtrl.createOrg.parent.isValidated
+                      ? (MngCtrl.createOrg.parent.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <input
+                    name="name"
+                    id="inputParent"
+                    type="text"
+                    class="form-control"
+                    placeholder="Organization"
+                    autocomplete="off"
+                    ng-model="MngCtrl.createOrg.parent.value"
+                    ng-blur="MngCtrl.createOrg.parent.validate()"
+                    uib-typeahead="name for name in MngCtrl.typeaheadOptions | search:$viewValue | limitTo:8"
+                    required>
+                <span
+                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                        MngCtrl.createOrg.parent.isValid"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                        !MngCtrl.createOrg.parent.isValid"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                        !MngCtrl.createOrg.parent.isValid"
+                    class="help-block">
+                  {{MngCtrl.createOrg.parent.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                class="col-sm-2
+                form-control-label">
+              Attributes
+            </label>
+            <div class="col-sm-10">
+              <div class="form-group checkbox">
+                <label>
+                  <input
+                      name="budgeted"
+                      id="checkboxBudgeted"
+                      type="checkbox"
+                      ng-model="MngCtrl.createOrg.budgeted.value">
+                  Can this organization have a set budget? [budgeted]
+                </label>
+              </div> <!-- .form-group -->
+              <div class="form-group checkbox">
+                <label>
+                  <input
+                      name="nonterminal"
+                      id="checkboxNonterminal"
+                      type="checkbox"
+                      ng-model="MngCtrl.createOrg.nonterminal.value">
+                  Can this organization create sub-organizations? [nonterminal]
+                </label>
+              </div> <!-- .form-group -->
+            </div>
+          </div> <!-- .form-group .row -->
+          <div class="form-group row"> <!-- Org name field -->
+            <label
+                for="selectApprovalProcess"
+                class="col-sm-2
+                form-control-label">
+              Approval Process
+            </label>
+            <div class="col-sm-10">
+              <div
+                  class="form-group"
+                  ng-class="MngCtrl.createOrg.approvalProcess.isValidated
+                      ? (MngCtrl.createOrg.approvalProcess.isValid
+                        ? 'has-success has-feedback'
+                        : 'has-error has-feedback')
+                      : ''">
+                <select
+                    name="approvalProcess"
+                    class="form-control"
+                    id="selectApprovalProcess"
+                    required="true"
+                    ng-required="true"
+                    ng-blur="MngCtrl.createOrg.approvalProcess.validate()"
+                    ng-model="MngCtrl.createOrg.approvalProcess.value"
+                    required>
+                  <option value="strict" selected>Strict (all owners must approve every request)</option>
+                  <option value="onlyone">Only one (only one owner must approve every request)</option>
+                  <option value="none">None (no one needs to approve any request)</option>
+                </select>
+                <span
+                    ng-if="MngCtrl.createOrg.approvalProcess.isValidated &&
+                        !MngCtrl.createOrg.approvalProcess.isValid"
+                    class="help-block">
+                  {{MngCtrl.createOrg.approvalProcess.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="MngCtrl.createOrg.submitCreateOrg()">
+              Create
+            </button>
+            <button
+                type="button"
+                class="btn btn-default "
+                ng-click="MngCtrl.createOrg.closeCreateOrg()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <hr>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<!-- public/views/search.html -->
+<div class="container-card">
+
+<form
+        name="searchForm" role="form"
+        ng-submit="submitSearch()">
+
+  <div class="col-md-2">
+    <select class="form-control" name="type" ng-model= "type.value" required>
+        <option value="">Type</option> <!-- not selected / blank option -->
+        <option value="request">Request</option>
+        <option value="record">Record</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select class="form-control" name="org" ng-model= "org.value" required>
+      <option value="">Org</option>
+      <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-default">Search</button>
+</form>
+  <hr>
+
+<div ng-hide="req">
+<table st-table="displayedCollection" class="table table-striped" st-safe-src="rowCollection">
+  <thead>
+  <tr>
+    <th st-sort="created" class="sortable">Date</th>
+    <th st-sort="description" class="sortable">Specification</th>
+    <th>Description</th>
+    <th st-sort="value" class="sortable">Price</th>
+    <th st-sort="isApproved" class="sortable">Is Approved</th>
+    <th st-sort="inApproved" class="sortable">In Approved</th>
+  </tr>
+  <tr>
+    <th colspan="1">
+    <input st-search="" placeholder="global search" class="input-sm form-control" type="search"/>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in displayedCollection">
+    <td>{{row.created|date}}</td>
+    <td>{{row.description}}</td>
+    <td>{{row.specification[0].name}}</td>
+    <td>{{row.value}}</td>
+    <td>{{row.isApproved}}</td>
+    <td>{{row.inApproved}}</td>
+  </tr>
+  </tbody>
+</table>
+</div>
+
+
+<div ng-hide="rec">
+<table st-table="displayedCollection" class="table table-striped" st-safe-src="rowCollection">
+  <thead>
+  <tr>
+    <th st-sort="occured" class="sortable">Date</th>
+    <th st-sort="details" class="sortable">Detail</th>
+    <th st-sort="value" class="sortable">Price</th>
+    <th st-sort="void" class="sortable">Is void</th>
+    <th st-sort="voider" class="sortable">Voider</th>
+  </tr>
+  <tr>
+    <th colspan="1">
+    <input st-search="" placeholder="global search" class="input-sm form-control" type="search"/>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in displayedCollection">
+    <td>{{row.date|date}}</td>
+    <td>{{row.description}}</td>
+    <td>{{row.value}}</td>
+    <td>{{row.void}}</td>
+    <td>{{row.voider}}</td>
+  </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+<style type="text/css">
+  .sortable {
+      cursor: pointer;
+  }
+  .sortable:after {
+      content: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
+      padding-left: 1em;
+  }
+  .st-sort-ascent:after {
+      content: '\25B2';
+  }
+  .st-sort-descent:after {
+      content: '\25BC';
+  }
+</style>
+

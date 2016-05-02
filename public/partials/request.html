@@ -1,0 +1,393 @@
+<!-- public/partials/request.html -->
+
+<div class="container container-small">
+  <h1>Request Funds</h1>
+  <hr>
+  <form
+      name="ReqCtrl.requestForm"
+      ng-submit="ReqCtrl.createRequest.submit()"
+      novalidate>
+      <!-- Alerts indicating the result of a requested operation -->
+    <uib-alert
+        ng-repeat="alert in ReqCtrl.alerts"
+        type="{{alert.type}}"
+        close="ReqCtrl.dismissAlert($index)">
+      {{alert.msg}}
+    </uib-alert>
+
+    <label>Organization</label>
+    <p class="text-muted">
+      For what club or organization are you requesting money?
+    </p>
+    <div
+        class="form-group"
+        ng-class="ReqCtrl.createRequest.org.isValidated
+          ? (ReqCtrl.createRequest.org.isValid
+            ? 'has-success has-feedback'
+            : 'has-error has-feedback')
+          : ''">
+      <input
+          name="org"
+          type="text"
+          class="form-control"
+          placeholder="Organization"
+          autocomplete="off"
+          ng-model="ReqCtrl.createRequest.org.value"
+          ng-blur="ReqCtrl.createRequest.org.validate()"
+          uib-typeahead="name for name in ReqCtrl.createRequest.org.typeaheadOptions | search:$viewValue | limitTo:8"
+          required />
+      <span
+          ng-if="ReqCtrl.createRequest.org.isValidated &&
+              ReqCtrl.createRequest.org.isValid"
+          class="glyphicon glyphicon-ok form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.org.isValidated &&
+              !ReqCtrl.createRequest.org.isValid"
+          class="glyphicon glyphicon-remove form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.org.isValidated &&
+              !ReqCtrl.createRequest.org.isValid"
+          class="help-block">
+        {{ReqCtrl.createRequest.org.helpBlock}}
+      </span>
+    </div>
+
+    <label class="control-label">Description</label>
+    <p class="text-muted">
+      For what are you requesting these funds?
+    </p>
+    <div
+        class="form-group"
+        ng-class="ReqCtrl.createRequest.description.isValidated
+          ? (ReqCtrl.createRequest.description.isValid
+            ? 'has-success has-feedback'
+            : 'has-error has-feedback')
+          : ''">
+      <input
+          name="description"
+          type="text"
+          class="form-control"
+          placeholder="< 100 words"
+          ng-model = "ReqCtrl.createRequest.description.value"
+          ng-blur="ReqCtrl.createRequest.description.validate()"
+          required />
+      <span
+          ng-if="ReqCtrl.createRequest.description.isValidated &&
+              ReqCtrl.createRequest.description.isValid"
+          class="glyphicon glyphicon-ok form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.description.isValidated &&
+              !ReqCtrl.createRequest.description.isValid"
+          class="glyphicon glyphicon-remove form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.description.isValidated &&
+              !ReqCtrl.createRequest.description.isValid"
+          class="help-block">
+        {{ReqCtrl.createRequest.description.helpBlock}}
+      </span>
+    </div>
+
+    <label >Amount</label>
+    <p class="text-muted">
+      How much are you requesting?
+    </p>
+    <div
+        class="form-group"
+        ng-class="ReqCtrl.createRequest.amount.isValidated
+          ? (ReqCtrl.createRequest.amount.isValid
+            ? 'has-success has-feedback'
+            : 'has-error has-feedback')
+          : ''">
+      <div class="input-group">
+
+        <span class="input-group-addon">$</span>
+        <input
+            name="amount"
+            type="number"
+            class="form-control"
+            placeholder="< 200 $"
+            min="0"
+            ng-model="ReqCtrl.createRequest.amount.value"
+            ng-blur="ReqCtrl.createRequest.amount.validate()"
+            required/>
+      </div>
+      <span
+          ng-if="ReqCtrl.createRequest.amount.isValidated &&
+              ReqCtrl.createRequest.amount.isValid"
+          class="glyphicon glyphicon-ok form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.amount.isValidated &&
+              !ReqCtrl.createRequest.amount.isValid"
+          class="glyphicon glyphicon-remove form-control-feedback"></span>
+      <span
+          ng-if="ReqCtrl.createRequest.amount.isValidated &&
+              !ReqCtrl.createRequest.amount.isValid"
+          class="help-block">
+        {{ReqCtrl.createRequest.amount.helpBlock}}
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label>Items</label>
+      <p class="text-muted">
+        Please provide an itemized list, with estimated costs, of what this
+        money will be spent on.
+      </p>
+      <div
+          class = "form-group row"
+          ng-repeat="item in ReqCtrl.createRequest.items.array">
+        <div
+            class="col-sm-4"
+            ng-class="item.name.isValidated
+              ? (item.name.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <div class="input-group">
+            <span class="input-group-addon">Item</span>
+            <input
+                name="itemName"
+                type="text"
+                class="form-control"
+                ng-model = "item.name.value"
+                ng-blur="ReqCtrl.createRequest.items.validateName(item.name)"
+                required/>
+          </div>
+        </div>
+
+        <div
+            class="col-sm-3"
+            ng-class="item.price.isValidated
+              ? (item.price.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <div class="input-group">
+            <span class="input-group-addon">Price</span>
+            <input
+                name = "itemPrice"
+                type="number"
+                class="form-control"
+                ng-model = "item.price.value"
+                ng-blur="ReqCtrl.createRequest.items
+                    .validatePrice(item.price)"
+                required>
+          </div>
+        </div>
+
+        <div
+            class="col-sm-4"
+            ng-class="item.category.isValidated
+              ? (item.category.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <div class="input-group">
+            <span class="input-group-addon">Category</span>
+            <select
+                name = "itemCategory"
+                class="form-control"
+                ng-model= "item.category.value"
+                ng-blur="ReqCtrl.createRequest.items
+                    .validateCategory(item.category)"
+                required>
+                <option ng-repeat="cat in ReqCtrl.categories" value="{{cat}}">
+                  {{cat}}
+                </option>
+            </select>
+          </div>
+        </div>
+          <div class = "col-sm-1">
+            <div class="btn-toolbar pull-right">
+              <button
+                  type="button"
+                  class="btn btn-link"
+                  ng-click="ReqCtrl.createRequest.items.delItem($index)">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </div>
+          </div>
+          <span
+              ng-if="item.validation.isValid == 'invalid'"
+              class="col-md-8 col-md-offset-4 help-block">
+            {{item.validation.nameHelpBlock}}
+            {{item.validation.priceHelpBlock}}
+            {{item.validation.categoryHelpBlock}}
+          </span>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class='btn btn-default'
+                ng-click="ReqCtrl.createRequest.items.addItem()">
+              Add Item
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        Are you requesting to purchase anything online?
+      </label>
+      <p class="text-muted">
+        Online purchases must be made by the Vice President for Finance.
+      </p>
+      <div class="btn-group">
+        <label
+            class="btn btn-default"
+            ng-model="ReqCtrl.createRequest.online.value"
+            ng-change="ReqCtrl.createRequest.online.onChange()"
+            uib-btn-radio="true">Yes</label>
+        <label
+            class="btn btn-default"
+            ng-model="ReqCtrl.createRequest.online.value"
+            ng-change="ReqCtrl.createRequest.online.onChange()"
+            uib-btn-radio="false">No</label>
+      </div>
+    </div>
+
+    <div class="form-group" ng-show="ReqCtrl.createRequest.online.value">
+      <label>Links</label>
+      <p class="text-muted">
+        Please provide links to what you'd like to purchase and any special
+        instructions if necessary.
+      </p>
+      <div
+          class="form-group row"
+          ng-repeat="link in ReqCtrl.createRequest.links.array">
+        <div
+            class="col-md-5"
+            ng-class="link.url.isValidated
+              ? (link.url.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <div class="input-group">
+            <span class="input-group-addon">Link</span>
+            <input
+                name="linkURL"
+                type="text"
+                class="form-control"
+                ng-model="link.url.value"
+                ng-blur="ReqCtrl.createRequest.links.validateUrl(link.url)"
+                required>
+          </div>
+        </div>
+
+        <div
+            class="col-md-6"
+            ng-class="link.description.isValidated
+              ? (link.description.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <div class="input-group">
+            <span class="input-group-addon">Description</span>
+            <input
+                name="linkDsp"
+                type="text"
+                class="form-control"
+                ng-model = "link.description.value"
+                ng-blur="ReqCtrl.createRequest.links
+                    .validateDescription(link.description)"
+                required>
+          </div>
+        </div>
+        <div class = "col-md-1">
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class="btn btn-link"
+                ng-click="ReqCtrl.createRequest.links.delLink($index)">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+        </div>
+        <span
+          ng-if="link.validation.isValid == 'invalid'"
+          class="col-md-8 col-md-offset-4 help-block">
+          {{link.validation.urlHelpBlock}}
+          {{link.validation.dspHelpBlock}}
+        </span>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class='btn btn-default'
+                ng-click="ReqCtrl.createRequest.links.addLink()">
+              Add Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+        ng-if="ReqCtrl.reEditRequest"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Comments</div>
+      <div class="panel-body">
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <div
+                class="form-group"
+                ng-class="ReqCtrl.createRequest.comment.isValidated
+                    ? (ReqCtrl.createRequest.comment.isValid
+                      ? 'has-success'
+                      : 'has-error')
+                    : ''">
+              <input
+                  name="comment"
+                  id="commentContent"
+                  type="text"
+                  class="form-control"
+                  placeholder="why do you resubmit again?"
+                  autocomplete="off"
+                  ng-model="ReqCtrl.createRequest.comment.value"
+                  ng-blur="ReqCtrl.createRequest.comment.validate()"
+                  required>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      ReqCtrl.createRequest.comment.isValid"
+                  class="glyphicon glyphicon-ok form-control-feedback"></span>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      !ReqCtrl.createRequest.comment.isValid"
+                  class="glyphicon glyphicon-remove form-control-feedback">
+              </span>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      !ReqCtrl.createRequest.comment.isValid"
+                  class="help-block">
+                {{ReqCtrl.createRequest.comment.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 -->
+        </div> <!-- .form-group .row -->
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar pull-right">
+          <button
+              type="submit"
+              class="btn btn-primary">
+            Submit Request
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+
+
+

@@ -1,0 +1,402 @@
+<!-- public/partials/record.html -->
+
+<div class="container container-small">
+
+  <h1>Record a Purchase</h1>
+  <hr>
+  <form
+      name="RecCtrl.recordForm"
+      role="form"
+      ng-submit="RecCtrl.createRecord.submit()"
+      novalidate>
+      <!-- Alerts indicating the result of a requested operation -->
+    <uib-alert
+        ng-repeat="alert in RecCtrl.alerts"
+        type="{{alert.type}}"
+        close="RecCtrl.dismissAlert($index)">
+      {{alert.msg}}
+    </uib-alert>
+
+    <div class="form-group">
+      <label>
+        Record Type
+      </label>
+      <p class="text-muted">
+        Are you recording a purchase or revenue?
+      </p>
+      <div class="btn-group">
+        <label
+            class="btn btn-default"
+            ng-model="RecCtrl.createRecord.type.value"
+            uib-btn-radio="'purchase'">Purchase</label>
+        <label
+            class="btn btn-default"
+            ng-model="RecCtrl.createRecord.type.value"
+            uib-btn-radio="'revenue'">Revenue</label>
+      </div>
+    </div>
+
+    <label>Organization</label>
+    <p class="text-muted">
+      {{RecCtrl.createRecord.type.value == 'purchase'
+          ? 'For what club or organization did you make the purchase?'
+          : 'Which club or organization generated the revenue?'}}
+    </p>
+    <div
+        class="form-group"
+        ng-class="RecCtrl.createRecord.org.isValidated
+          ? (RecCtrl.createRecord.org.isValid
+            ? 'has-success has-feedback'
+            : 'has-error has-feedback')
+          : ''">
+      <input
+          name="org"
+          type="text"
+          class="form-control"
+          placeholder="Organization"
+          autocomplete="off"
+          ng-model="RecCtrl.createRecord.org.value"
+          ng-blur="RecCtrl.createRecord.org.validate();
+              RecCtrl.createRecord.filterRequests();"
+          uib-typeahead=
+              "name for name in RecCtrl.createRecord.org.typeaheadOptions |
+              search:$viewValue | limitTo:8"
+          required />
+      <span
+          ng-if="RecCtrl.createRecord.org.isValidated &&
+              RecCtrl.createRecord.org.isValid"
+          class="glyphicon glyphicon-ok form-control-feedback"></span>
+      <span
+          ng-if="RecCtrl.createRecord.org.isValidated &&
+              !RecCtrl.createRecord.org.isValid"
+          class="glyphicon glyphicon-remove form-control-feedback"></span>
+      <span
+          ng-if="RecCtrl.createRecord.org.isValidated &&
+              !RecCtrl.createRecord.org.isValid"
+          class="help-block">
+        {{RecCtrl.createRecord.org.helpBlock}}
+      </span>
+    </div>
+
+    <label class="control-label">Description</label>
+    <p class="text-muted">
+      {{RecCtrl.createRecord.type.value == 'purchase'
+          ? 'What was this purchase for?'
+          : 'Where did this revenue come from?'}}
+    </p>
+    <div
+        class="form-group"
+        ng-class="RecCtrl.createRecord.description.isValidated
+          ? (RecCtrl.createRecord.description.isValid
+            ? 'has-success has-feedback'
+            : 'has-error has-feedback')
+          : ''">
+      <input
+          name="description"
+          type="text"
+          class="form-control"
+          placeholder="< 100 words"
+          ng-model = "RecCtrl.createRecord.description.value"
+          ng-blur="RecCtrl.createRecord.description.validate()"
+          required />
+      <span
+          ng-if="RecCtrl.createRecord.description.isValidated &&
+              RecCtrl.createRecord.description.isValid"
+          class="glyphicon glyphicon-ok form-control-feedback"></span>
+      <span
+          ng-if="RecCtrl.createRecord.description.isValidated &&
+              !RecCtrl.createRecord.description.isValid"
+          class="glyphicon glyphicon-remove form-control-feedback"></span>
+      <span
+          ng-if="RecCtrl.createRecord.description.isValidated &&
+              !RecCtrl.createRecord.description.isValid"
+          class="help-block">
+        {{RecCtrl.createRecord.description.helpBlock}}
+      </span>
+    </div>
+
+    <label>Transaction Date</label>
+    <p class="text-muted">
+      {{RecCtrl.createRecord.type.value == 'purchase'
+          ? 'When was this purchase made?'
+          : 'When was this revenue collected?'}}
+    </p>
+    <div
+        class="form-group input-group"
+        ng-class="RecCtrl.createRecord.date.isValidated
+          ? (RecCtrl.createRecord.date.isValid
+            ? 'has-success'
+            : 'has-error')
+          : ''">
+      <input
+          type="text"
+          class="form-control"
+          uib-datepicker-popup="{{RecCtrl.datePicker.format}}"
+          name="date"
+          ng-model="RecCtrl.createRecord.date.value"
+          is-open="RecCtrl.datePicker.open"
+          datepicker-options="RecCtrl.datePicker.options"
+          ng-required="true"
+          ng-blur="RecCtrl.createRecord.date.validate()"
+          close-text="Close"
+          alt-input-formats="RecCtrl.datePicker.altFormat"/>
+      <span class="input-group-btn">
+        <button
+            type="button"
+            class="btn btn-default"
+            ng-click="RecCtrl.datePicker.open = !RecCtrl.datePicker.open">
+          <i class="glyphicon glyphicon-calendar"></i>
+        </button>
+      </span>
+      <span
+          ng-if="date.validation.isValid == 'invalid'"
+          class="col-md-8 col-md-offset-4 help-block"
+          layout="row"
+          layout-align="start center">
+        {{date.validation.helpBlock}}
+      </span>
+    </div>
+
+    <div uib-collapse="RecCtrl.createRecord.type.value != 'purchase'">
+
+      <div class="form-group">
+        <label>Request</label>
+        <p class="text-muted">
+          Against which request for this organization are you recording this
+          purchase?
+        </p>
+        <select
+            class="form-control"
+            name="request"
+            ng-model= "RecCtrl.createRecord.request.value" >
+          <option value="">[Please select the request you submitted]</option>
+          <option
+              ng-repeat="request in RecCtrl.createRecord.request.options"
+              value="{{request._id}}">
+          {{request.created.slice(5,10)}} {{request.description}} :
+          {{request.name}} ${{request.value}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>
+          Payment Method
+        </label>
+        <p class="text-muted">
+          Did you make the purchase with a p-card or are you requesting a
+          reimbursement?
+        </p>
+        <div class="btn-group">
+          <label
+              class="btn btn-default"
+              ng-model="RecCtrl.createRecord.reimbursement.value"
+              ng-change="RecCtrl.createRecord.reimbursement.onChange()"
+              uib-btn-radio="'pcard'">P-Card</label>
+          <label
+              class="btn btn-default"
+              ng-model="RecCtrl.createRecord.reimbursement.value"
+              ng-change="RecCtrl.createRecord.reimbursement.onChange()"
+              uib-btn-radio="'reimbursement'">Reimbursement</label>
+        </div>
+        <span
+            ng-if="!RecCtrl.createRecord.reimbursement.isValid"
+            class="help-block">
+          {{RecCtrl.createRecord.reimbursement.helpBlock}}
+        </span>
+      </div>
+
+
+      <div uib-collapse="RecCtrl.createRecord.reimbursement.value != 'pcard'">
+        <div
+            class="form-group"
+            ng-class="RecCtrl.createRecord.pcard.isValidated
+              ? (RecCtrl.createRecord.pcard.isValid
+                ? 'has-success'
+                : 'has-error')
+              : ''">
+          <label>P-Card</label>
+          <p class="text-muted">
+            Which p-card did you use?
+          </p>
+          <select
+              class="form-control"
+              name="pcard"
+              ng-model="RecCtrl.createRecord.pcard.value"
+              ng-change="RecCtrl.createRecord.pcard.validate()"
+              required>
+            <option value="0" selected="selected">I don't remember.</option>
+            <option
+                ng-repeat="num in RecCtrl.pcardOptions"
+                value="{{num}}">{{num}}</option>
+          </select>
+          <span
+              ng-if="!RecCtrl.createRecord.pcard.isValid"
+              class="help-block">
+            {{RecCtrl.createRecord.pcard.helpBlock}}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Itemized List</label>
+        <p class="text-muted">
+          Please provide an itemized list, with exact costs, of what this
+          money was spent on.
+        </p>
+        <div
+            class = "form-group row"
+            ng-repeat="item in RecCtrl.createRecord.items.array">
+          <div
+              class="col-sm-4"
+              ng-class="item.name.isValidated
+                ? (item.name.isValid
+                  ? 'has-success'
+                  : 'has-error')
+                : ''">
+            <div class="input-group">
+              <span class="input-group-addon">Item</span>
+              <input
+                  name="itemName"
+                  type="text"
+                  class="form-control"
+                  ng-model = "item.name.value"
+                  ng-blur="RecCtrl.createRecord.items.validateName(item.name)"
+                  required/>
+            </div>
+          </div>
+
+          <div
+              class="col-sm-3"
+              ng-class="item.price.isValidated
+                ? (item.price.isValid
+                  ? 'has-success'
+                  : 'has-error')
+                : ''">
+            <div class="input-group">
+              <span class="input-group-addon">Price</span>
+              <input
+                  name = "itemPrice"
+                  type="number"
+                  class="form-control"
+                  ng-model = "item.price.value"
+                  ng-blur="RecCtrl.createRecord.items.validatePrice(item.price);
+                      RecCtrl.createRecord.items.updateTotal()"
+                  required>
+            </div>
+          </div>
+
+          <div
+              class="col-sm-4"
+              ng-class="item.category.isValidated
+                ? (item.category.isValid
+                  ? 'has-success'
+                  : 'has-error')
+                : ''">
+            <div class="input-group">
+              <span class="input-group-addon">Category</span>
+              <select
+                  name = "itemCategory"
+                  class="form-control"
+                  ng-model= "item.category.value"
+                  ng-blur="RecCtrl.createRecord.items
+                      .validateCategory(item.category)"
+                  required>
+                <option ng-repeat="cat in RecCtrl.categories" value="{{cat}}">
+                  {{cat}}
+                </option>
+              </select>
+            </div>
+          </div>
+            <div class = "col-sm-1">
+              <div class="btn-toolbar pull-right">
+                <button
+                    type="button"
+                    class="btn btn-link"
+                    ng-click="RecCtrl.createRecord.items.delItem($index)">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
+            </div>
+            <span
+                ng-if="item.validation.isValid == 'invalid'"
+                class="col-md-8 col-md-offset-4 help-block">
+              {{item.validation.nameHelpBlock}}
+              {{item.validation.priceHelpBlock}}
+              {{item.validation.categoryHelpBlock}}
+            </span>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <span>
+              <b>Total ${{RecCtrl.createRecord.items.total.toFixed(2)}}</b>
+            </span>
+            <div class="btn-toolbar pull-right">
+              <button
+                  type="button"
+                  class='btn btn-default'
+                  ng-click="RecCtrl.createRecord.items.addItem()">
+                Add Item
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!--- END UIB-COLLAPSE -->
+
+    <div uib-collapse="RecCtrl.createRecord.type.value != 'revenue'">
+      <label>Amount</label>
+      <p class="text-muted">
+        How much revenue was collected?
+      </p>
+      <div
+          class="form-group"
+          ng-class="RecCtrl.createRecord.amount.isValidated
+            ? (RecCtrl.createRecord.amount.isValid
+              ? 'has-success has-feedback'
+              : 'has-error has-feedback')
+            : ''">
+        <div class="input-group">
+
+          <span class="input-group-addon">$</span>
+          <input
+              name="amount"
+              type="number"
+              class="form-control"
+              min="0"
+              ng-model="RecCtrl.createRecord.amount.value"
+              ng-blur="RecCtrl.createRecord.amount.validate()"
+              required/>
+        </div>
+        <span
+            ng-if="RecCtrl.createRecord.amount.isValidated &&
+                RecCtrl.createRecord.amount.isValid"
+            class="glyphicon glyphicon-ok form-control-feedback"></span>
+        <span
+            ng-if="RecCtrl.createRecord.amount.isValidated &&
+                !RecCtrl.createRecord.amount.isValid"
+            class="glyphicon glyphicon-remove form-control-feedback"></span>
+        <span
+            ng-if="RecCtrl.createRecord.amount.isValidated &&
+                !RecCtrl.createRecord.amount.isValid"
+            class="help-block">
+          {{RecCtrl.createRecord.amount.helpBlock}}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-xs-12">
+        <div class="btn-toolbar pull-right">
+          <button
+              type="submit"
+              class="btn btn-primary">
+            Submit Record
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</div>

@@ -1,0 +1,34 @@
+<div class="container container-login">
+  <uib-alert 
+      ng-repeat="alert in LgnCtrl.alerts"
+      type="{{alert.type}}"
+      close="LgnCtrl.dismissAlert($index)">
+    {{alert.msg}}
+  </uib-alert>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Login</h3>
+    </div>
+    <div class="panel-body">
+      <form role="form" ng-submit="LgnCtrl.loginForm()">
+        <div class="form-group">
+          <label>Username</label>
+          <input
+              type="text"
+              class="form-control"
+              ng-model="LgnCtrl.username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input
+              type="password"
+              class="form-control"
+              ng-model="LgnCtrl.password">
+        </div>
+        <button class="btn btn-primary pull-right">Log in</button>
+      </form>
+      <a class="btn btn-link" href="/register">Register</a>
+    </div>
+  </div>
+</div>

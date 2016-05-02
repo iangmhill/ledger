@@ -1,0 +1,90 @@
+<!-- public/partials/dashboard.html -->
+<div class="container">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h1 class="panel-title">Welcome to Ledger</h1>
+    </div>
+    <div class="panel-body">
+      <p>This is a placeholder for the main landing page of Ledger. This page will eventually show a summary of the finances managed by Ledger.</p>
+    </div> 
+  </div>
+
+	<div class="row">
+	<div class="col-xs-9">
+	  <div class="row">
+	    <label class="col-sm-6">Requests History</label>
+	  </div>
+	</div>
+	<div class="col-xs-3">
+	  <button
+	      type="button"
+	      class="btn btn-default pull-right"
+	      ng-click=
+	          "DashCtrl.requestsHistory.isCollapsed =
+	          !DashCtrl.requestsHistory.isCollapsed">
+	    <span>{{DashCtrl.requestsHistory.isCollapsed ? "+" : "-"}}</span>
+	  </button>
+	</div>
+	</div>
+
+
+
+	<div
+	      uib-collapse="DashCtrl.requestsHistory.isCollapsed"
+	      class="panel panel-default panel-form">
+	    <!-- <div class="panel-heading"></div> -->
+	    <div class="panel-body col-md-11 ">
+	      <form role="form" autocomplete="off" ng-repeat = "request in DashCtrl.requests">
+	        <!-- col-sm-offset-1 -->
+	        <div class="form-group row" >
+				<div class="row vertical-align">
+					<div class="col-md-3">
+						<div>{{request.created}}</div>
+					</div>
+
+					<div class="col-md-3">
+						<div>{{request.orgName}}</div>
+					</div>
+
+					<div class="col-md-2 subtext indent">
+						<div>{{request.description}}</div>
+					</div>
+
+					<div class="col-md-2 subtext indent">
+						<div>{{request.value}}</div>
+					</div>
+
+					<div class="col-md-1">
+						<div>{{request.isApproved}}</div>
+					</div>
+				
+		        <div class="btn-toolbar pull-right col-md-2" >
+		          <button
+		              type="button"
+		              class="btn btn-default"
+		              ng-click="DashCtrl.resubmit($index, true)">
+		            Resubmit
+		          </button>
+		          <button
+		              type="button"
+		              class="btn btn-default"
+		              ng-click="DashCtrl.cancel($index, true)">
+		            Cancel
+		          </button>
+	  	        </div>
+				</div>
+
+				<div ng-show = "request.isDecided" ng-if = "request.comment != ''" class="panel panel-danger panel-form col-md-10">
+				  <div class="panel-heading">Comments</div>
+				  <div class="panel-body">
+				  	{{request.comment}}
+				  </div>
+				</div>
+
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	  <hr>
+
+</div>

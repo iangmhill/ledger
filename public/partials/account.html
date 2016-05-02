@@ -1,0 +1,379 @@
+<!--
+File: public/partials/account.html
+Description: Describes the user account page which displays user profile
+    information and allows users to change their account information.
+-->
+
+<div class="container">
+  <!-- Alerts indicating the result of a requested operation -->
+  <uib-alert 
+      ng-repeat="alert in AccCtrl.alerts"
+      type="{{alert.type}}"
+      close="AccCtrl.dismissAlert($index)">
+    {{alert.msg}}
+  </uib-alert>
+
+  <!-- The actual account settings information -->
+
+  <h1>Account Settings</h1>
+  <hr>
+
+  <!-- The username is unique to each user and cannot be edited -->
+  <div class="row">
+    <div class="col-xs-9">
+      <div class="row">
+        <label class="col-sm-3">Username</label>
+        <div class="col-sm-9">
+          <p>{{MainCtrl.user.username}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+
+  <!-- Display and allow users to edit their real name -->
+  <div class="row">
+    <div class="col-xs-9">
+      <div class="row">
+        <label class="col-sm-3">Name</label>
+        <div class="col-sm-9">
+          <p>{{MainCtrl.user.name}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click=
+              "AccCtrl.nameEditor.isCollapsed =
+              !AccCtrl.nameEditor.isCollapsed"
+          ng-disabled="!AccCtrl.nameEditor.isCollapsed">
+        Edit
+      </button>
+    </div>
+  </div>
+
+  <!-- Collapsable name editing form -->
+  <div
+      uib-collapse="AccCtrl.nameEditor.isCollapsed"
+      class="panel panel-default panel-form">
+    <div class="panel-heading">Edit Name</div>
+    <div class="panel-body">
+      <form role="form" autocomplete="off" name="nameForm">
+        <div class="form-group row">
+          <label
+              for="inputName"
+              class="col-sm-2
+              form-control-label">
+            New name
+          </label>
+          <div class="col-sm-10">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[AccCtrl.newName.validation.isValid]">
+              <input
+                  name="name"
+                  id="inputName"
+                  type="text"
+                  class="form-control"
+                  placeholder="Joe Student"
+                  autocomplete="off"
+                  ng-model="AccCtrl.newName.value"
+                  ng-blur="AccCtrl.newName.validate()"
+                  required>
+              <span
+                  ng-if="AccCtrl.newName.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newName.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newName.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{AccCtrl.newName.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- .form-group .row -->
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="AccCtrl.saveEditName()">
+            Save
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="AccCtrl.closeEditName()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <hr>
+
+  <!-- Display and allow users to edit their email address -->
+  <div class="row">
+    <div class="col-xs-9">
+      <div class="row">
+        <label class="col-sm-3">Email</label>
+        <div class="col-sm-9">
+          <p>{{MainCtrl.user.email}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click=
+              "AccCtrl.emailEditor.isCollapsed =
+              !AccCtrl.emailEditor.isCollapsed"
+          ng-disabled="!AccCtrl.emailEditor.isCollapsed">
+        Edit
+      </button>
+    </div>
+  </div>
+
+  <!-- Collapsable email editing form -->
+  <div
+      uib-collapse="AccCtrl.emailEditor.isCollapsed"
+      class="panel panel-default panel-form">
+    <div class="panel-heading">Edit Email</div>
+    <div class="panel-body">
+      <form role="form" autocomplete="off" name="AccCtrl.emailForm">
+        <div class="form-group row">
+          <label
+              for="inputEmail"
+              class="col-sm-2
+              form-control-label">
+            New email
+          </label>
+          <div class="col-sm-10">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[AccCtrl.newEmail.validation.isValid]">
+              <input
+                  name="email"
+                  id="inputEmail"
+                  type="email"
+                  class="form-control"
+                  placeholder="Joe.Student@students.olin.edu"
+                  autocomplete="off"
+                  ng-model="AccCtrl.newEmail.value"
+                  ng-blur="AccCtrl.newEmail.validate()"
+                  required>
+              <span
+                  ng-if="AccCtrl.newEmail.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newEmail.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newEmail.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{AccCtrl.newEmail.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- .form-group .row -->
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="AccCtrl.saveEditEmail()">
+            Save
+          </button>
+          <button
+              type="button"
+              class="btn btn-default "
+              ng-click="AccCtrl.closeEditEmail()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <hr>
+
+  <!-- Do not display a users password, but allow them to edit it -->
+  <div class="row">
+    <div class="col-xs-9">
+      <div class="row">
+        <label class="col-sm-3">Password</label>
+        <div class="col-sm-9">
+          <p>&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <button
+          type="button"
+          class="btn btn-default pull-right"
+          ng-click=
+              "AccCtrl.passwordEditor.isCollapsed =
+              !AccCtrl.passwordEditor.isCollapsed"
+          ng-disabled="!AccCtrl.passwordEditor.isCollapsed">
+        Edit
+      </button>
+    </div>
+  </div>
+
+  <!-- Collapsable password editing form -->
+  <div
+      uib-collapse="AccCtrl.passwordEditor.isCollapsed"
+      class="panel panel-default panel-form">
+    <div class="panel-heading">Edit Password</div>
+    <div class="panel-body">
+      <form role="form" autocomplete="off" name="passwordForm">
+        <div class="form-group row">
+          <label
+              for="inputCurrentPassword"
+              class="col-sm-2
+              form-control-label">
+            Current password
+          </label>
+          <div class="col-sm-10">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[AccCtrl.currentPassword.validation.isValid]">
+              <input
+                  name="currentPassword"
+                  id="inputCurrentPassword"
+                  type="password"
+                  class="form-control"
+                  placeholder="current password"
+                  autocomplete="new-password"
+                  ng-model="AccCtrl.currentPassword.value"
+                  ng-blur="AccCtrl.currentPassword.clearValidation()"
+                  required>
+              <span
+                  ng-if="AccCtrl.currentPassword.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.currentPassword.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.currentPassword.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{AccCtrl.currentPassword.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- currentPassword .form-group .row -->
+
+        <div class="form-group row">
+          <label
+              for="inputNewPassword"
+              class="col-sm-2
+              form-control-label">
+            New password
+          </label>
+          <div class="col-sm-10">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[AccCtrl.newPassword.validation.isValid]">
+              <input
+                  name="newPassword"
+                  id="inputNewPassword"
+                  type="password"
+                  class="form-control"
+                  placeholder="new password"
+                  autocomplete="new-password"
+                  ng-model="AccCtrl.newPassword.value"
+                  ng-blur="AccCtrl.newPassword.validate()"
+                  required>
+              <span
+                  ng-if="AccCtrl.newPassword.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newPassword.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if="AccCtrl.newPassword.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{AccCtrl.newPassword.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- newPassword .form-group .row -->
+
+        <div class="form-group row">
+          <label
+              for="inputConfirmNewPassword"
+              class="col-sm-2
+              form-control-label">
+            Confirm new password
+          </label>
+          <div class="col-sm-10">
+            <div
+                class="form-group"
+                ng-class="{valid:'has-success has-feedback',
+                    invalid:'has-error has-feedback',
+                    empty:''}[AccCtrl.confirmNewPassword.validation.isValid]">
+              <input
+                  name="confirmNewPassword"
+                  id="inputConfirmNewPassword"
+                  type="password"
+                  class="form-control"
+                  placeholder="new password"
+                  autocomplete="new-password"
+                  ng-model="AccCtrl.confirmNewPassword.value"
+                  ng-blur="AccCtrl.confirmNewPassword.validate()"
+                  required>
+              <span
+                  ng-if="AccCtrl.confirmNewPassword.validation.isValid == 'valid'"
+                  class="glyphicon glyphicon-ok form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if=
+                      "AccCtrl.confirmNewPassword.validation.isValid == 'invalid'"
+                  class="glyphicon glyphicon-remove form-control-feedback"
+                  aria-hidden="true"></span>
+              <span
+                  ng-if=
+                      "AccCtrl.confirmNewPassword.validation.isValid == 'invalid'"
+                  class="help-block">
+                {{AccCtrl.confirmNewPassword.validation.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 --> 
+        </div> <!-- confirmNewPassword .form-group .row -->
+        <div class="btn-toolbar pull-right">
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="AccCtrl.saveEditPassword()">
+            Save
+          </button>
+          <button
+              type="button"
+              class="btn btn-default"
+              ng-click="AccCtrl.closeEditPassword()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <hr>
+</div>
