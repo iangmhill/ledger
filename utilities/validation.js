@@ -126,16 +126,16 @@ module.exports = {
     },
     request:function(description, value, orgId, links, items) {
       var requestValidator = this;
-      return Org.findById(orgId, function(err, org) {
-        console.log(orgId);
-        if (!err && !!org && org.isActive && stringCheck(description) &&
-        numberCheck(value) && requestValidator.links(links) &&
-        requestValidator.items(items)) {
-          console.log(org);
-          return Promise.resolve(org.approvalProcess == 'none');
-        } else {
-          return Promise.reject('Invalid request');
-        }
+      return new Promise(function(resolve, reject) {
+        Org.findById(orgId, function(err, org) {
+          if (!err && !!org && org.isActive && stringCheck(description) &&
+          numberCheck(value) && requestValidator.links(links) &&
+          requestValidator.items(items)) {
+            return resolve(org.approvalProcess == 'none');
+          } else {
+            return reject('Invalid request');
+          }
+        });
       });
     }
   },

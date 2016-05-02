@@ -378,7 +378,8 @@ var routes = {
       items: req.body.items,
       isActive: true,
       isApproved: false,
-      isDecided: false
+      isDecided: false,
+      comment: ''
     };
     validation.request.request(
       request.description,
@@ -388,6 +389,7 @@ var routes = {
       request.items
     ).then(function(preapproved) {
       request.isApproved = preapproved;
+      console.log(request);
       return Request.create(request);
     }).then(function(request) {
       res.send({ isSuccessful: true, request: request });
@@ -680,7 +682,7 @@ var routes = {
 
     })
 
-  };
+  }
 };
 
 

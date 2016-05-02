@@ -126,14 +126,15 @@ app.controller('RequestController', function(RequestService, OrgService) {
         description.isValid = true;
         description.isValidated = true;
         return description.isValid;
-      },
-      comment: new FieldWithValidation('', function() {
-        this.isValid = !ReqCtrl.reEditRequest ||
-            (typeof this.value === 'string' && this.value.length > 0);
-        this.helpBlock = this.isValid ? ''
-      })
+      }
     },
-
+    comment: new FieldWithValidation('', function() {
+      this.isValid = !ReqCtrl.reEditRequest ||
+          (typeof this.value === 'string' && this.value.length > 0);
+      this.helpBlock = this.isValid ? '' : 'Comment cannot be empty';
+      this.isValidated = true;
+      return this.isValid;
+    }),
     validateAll: function() {
       var isValid = 0;
       isValid += this.org.validate() ? 0 : 1;
@@ -153,6 +154,7 @@ app.controller('RequestController', function(RequestService, OrgService) {
             .validateDescription(link.description) ? 0 : 1;
       })
       isValid += this.comment.validate() ? 0 : 1;
+
       return isValid == 0;
     },
     resetAll: function() {
@@ -190,7 +192,7 @@ app.controller('RequestController', function(RequestService, OrgService) {
           RequestService.editRequest(request).then(function(success) {
             if (success) {
               ReqCtrl.alerts = [];
-              ReqCtrl.resetAll();
+              ReqCtrl.createRequest.resetAll();
               RequestService.reEditRequest = false;
               RequestService.reEditRequestInfo = undefined;
               ReqCtrl.reEditRequest = false;
@@ -204,7 +206,7 @@ app.controller('RequestController', function(RequestService, OrgService) {
           RequestService.createRequest(request).then(function(success) {
             if (success) {
               ReqCtrl.alerts = [];
-              ReqCtrl.resetAll();
+              ReqCtrl.createRequest.resetAll();
             }
             ReqCtrl.alerts.push({
               type: success ? 'success' : 'danger',

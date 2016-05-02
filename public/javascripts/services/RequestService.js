@@ -4,14 +4,10 @@ app.service('RequestService', function($http, $q, $location) {
   this.reEditRequest = false;
   this.reEditRequestInfo;
 
-  this.createRequest = function(requestData) {
+  this.createRequest = function(request) {
   	var deferred = $q.defer();
-    $http.post('/api/createRequest', requestData).then(function success(response) {
-    	if (response.data.isSuccessful == true){
-	    	deferred.resolve(response.data.isSuccessful);
-    	} else {
-	    	deferred.reject(response.data.isSuccessful);
-    	}
+    $http.post('/api/createRequest', request).then(function success(response) {
+	    deferred.resolve(response.data.isSuccessful);
     });
     return deferred.promise;
   };
