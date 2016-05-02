@@ -323,10 +323,17 @@ module.exports = {
       });
     })
   },
+  /**
+   * Get an array of pending users in database
+   * @param {object} req The HTTP request being handled.
+   * @param {object} res The HTTP response to be sent.
+   */
   getPendingUsers: function(req, res) {
     var errorResponse = {
       pendingUsers: []
     };
+
+    //wzc:???? options???
     User.find({isApproved: false},{
       password: 0,
       orgs: 0,
@@ -337,6 +344,13 @@ module.exports = {
       res.json({pendingUsers: users});
     });
   },
+/**
+ * Helps to approve new user's registration status
+ * @param {Object} req An Object representing the http request.
+ * @param {Object} res An Object representing the http response.
+ * @param {String} req.body.userId Pending user's Object ID.
+ * @param {Boolean} req.body.isApproved Pending user's registration status.
+ */
   resolveUser: function(req, res) {
     var errorResponse = {
       isSuccessful: false,

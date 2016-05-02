@@ -80,6 +80,7 @@ mongoose.connect(process.env.MONGODB);
 
 // SECURITY CONFIGURATION ======================================================
 var passport = authentication.configure();
+
 app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
@@ -98,34 +99,37 @@ app.use(passport.session());
 // authentication GET requests
 app.get('/logout', authentication.logout);
 app.get('/api/getUserPermissions', authentication.getUserPermissions)
+
 // user GET requests
 app.get('/api/getUserList',
     authentication.authenticateUser, routes.getUserList);
 app.get('/auth/getPendingUsers',
     authentication.authenticateAdmin, authentication.getPendingUsers);
-
 app.get('/auth/getPendingFundRequests',
   authentication.authenticateUser, routes.getPendingFundRequests);
-
 app.get('/api/getUserOrgs',
     authentication.authenticateUser, routes.getUserOrgs);
+
 // org GET requests
 app.get('/api/getListedOrgs',
     authentication.authenticateUser, routes.getListedOrgs);
+//wzc:???
 app.get('/api/getOrgByUrl/:url',
     authentication.authenticateUser, routes.getOrgByUrl);
+//wzc:???
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
 app.get('/api/getOrgRequests',
     authentication.authenticateUser, routes.getOrgRequests);
-
+//wzc:???
 app.get('/api/getUserRequests',
     authentication.authenticateUser, routes.getUserRequests);
 // record GET requests
+//wzc:???
 app.get('/api/getOrgRecords',
     authentication.authenticateOwner, routes.getOrgRecords);
-
+//wzc:???
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 
@@ -142,18 +146,23 @@ app.post('/changePassword',
     authentication.authenticateUser,
     authentication.confirmPassword,
     authentication.changePassword);
+
 // user POST requests
+//wzc:???
 app.post('/api/changeOwnership',
     authentication.authenticateAdmin, routes.changeOwnership);
 app.post('/auth/resolveUser',
     authentication.authenticateAdmin, authentication.resolveUser);
+
 // org POST requests
 app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
 app.post('/api/changeOwner',
     authentication.authenticateUser, routes.changeOwner);
+//wzc:???
 app.post('/api/editOrg',
     authentication.authenticateOwner, routes.editOrg);
+//wzc:???
 app.post('/api/deleteOrg',
     authentication.authenticateOwner, routes.deleteOrg);
 
@@ -161,8 +170,7 @@ app.post('/api/deleteOrg',
 // requests POST requests
 app.post('/api/createRequest',
     authentication.authenticateUser, routes.createRequest);
-app.post('/api/editRequest',routes.editRequest);
-    // authentication.authenticateOwner,
+app.post('/api/editRequest', authentication.authenticateUser, routes.editRequest);
 app.post('/api/closeRequest',
     authentication.authenticateOwner, routes.closeRequest);
 app.get('/api/getRequests:user',routes.getRequests);

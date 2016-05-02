@@ -1,3 +1,17 @@
+/**
+ * Route module
+ * @module routes
+ * @requires NPM:express
+ * @requires NPM:mongoose
+ * @requires models/orgModel
+ * @requires models/userModel
+ * @requires models/requestModel
+ * @requires models/transferModel
+ * @requires models/recordModel
+ * @requires NPM:q
+ * @requires utilities/validation
+ * @requires NPM: async
+ */
 
 var express    = require('express');
 var mongoose   = require('mongoose');
@@ -32,18 +46,41 @@ var evaluateApprovals = function(approvalProcess, owners, approvals) {
 };
 
 var routes = {
+  /**
+  * Get all the users' name from database.
+  * @return {array} An array of all the user objects in database.
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */
   getUserList: function(req, res) {
     User.find({}, 'username name', function(err, users) {
       res.json(users);
     })
   },
+
+  /**
+  * Get all orgs under users' control from database.
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  * @param {object} req.user.orgs an array of users' orgs.
+  */ 
   getUserOrgs: function(req, res) {
+  /**
+  * Merge two arrays together.
+  * @param {object} array1 An array of objects.
+  * @param {object} array2 An array of objects.
+  * @return {array} An array of all the merged objects.
+  */ 
     function mergeArray(array1, array2) {
       for(item in array1) {
         array2[item] = array1[item];
       }
       return array2;
     };
+      /**
+  * Recursively get the childrean organizations. 
+  * @param {object} ids An array of org Object IDs.
+  */ 
     function recursiveFind(ids) {
       var deferred = q.defer();
       var children = {};
@@ -92,12 +129,19 @@ var routes = {
       })
     })
   },
+
+  /**
+  * Get all the active orgs.
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */   
   getListedOrgs: function(req, res) {
     Org.find({isActive: true}, 'name shortName url budgeted nonterminal',
         function(err, orgs) {
       res.status(200).json(orgs);
     })
   },
+
   getOrgByUrl: function(req, res) {
     if (!typeof req.params.url === 'string') { res.json({isSuccessful: false}); }
     Org.findOne({url: req.params.url}, function(err, org) {
@@ -149,6 +193,11 @@ var routes = {
   getOrgFinances: function(req, res) {
 
   },
+  /**
+  * Get all the requests in database
+  * @param {object} req The HTTP request being handled.
+  * @param {object} res The HTTP response to be sent.
+  */  
   getOrgRequests: function(req, res) {
     var requestlist = [];
     Request.find({},function (err, requestlist) {
@@ -168,6 +217,17 @@ var routes = {
   changeOwnership: function(req, res) {
 
   },
+  /**
+  * Create an org in the database.
+  * @param {Object} req The HTTP request being handled.
+  * @param {Object} res The HTTP response to be sent.
+  * @param {object} req.body.name The full name of the org.
+  * @param {String} req.body.shortName The short name of the org.
+  * @param {String} req.body.org The Object ID of the org's parent org.
+  * @param {Float} req.body.budgeted The budget amoung of the org.
+  * @param {Boolean} req.body.nonterminal The boolean value determines if the org is terminal.
+  * @param {Array} req.body.approvalProcess An array of String of the approvers' names.
+  */ 
   createOrg: function(req, res) {
     validation.org.org(req.body.name, req.body.shortName, req.body.org,
         req.body.budgeted, req.body.budget, req.body.nonterminal,
@@ -198,6 +258,15 @@ var routes = {
       }
     })
   },
+  /**
+  * Change the ownser of an org in the database.
+  * @param {Object} req The HTTP request being handled.
+  * @param {Object} res The HTTP response to be sent.
+  * @param {Boolean} req.user.isAdmin The boolean value indicates if the user is an admin account.
+  * @param {Array} req.user.orgs An array holds Object IDs of all the orgs under the user's control.
+  * @param {String} req.body.username The usersame of the target user.
+  * @param {Boolean} req.body.action The boolean value indicates if the org should be transfered to the user or not.
+  */ 
   changeOwner: function(req, res) {
     var orgId = req.body.orgId;
     if (!req.user.isAdmin && !req.user.orgs.indexOf(orgId) > -1) {
@@ -212,6 +281,7 @@ var routes = {
         user.save(function(err) {
           if (err) { res.json({isSuccessful: false}); }
           var cleanUser = user.toObject();
+          //wzc ??????
           delete cleanUser['orgs'];
           res.json({
             isSuccessful: true,
@@ -280,8 +350,18 @@ var routes = {
   deleteOrg: function(req, res) {
 
   },
+  /**
+  * Create a request in the database.
+  * @param {Object} req The HTTP request being handled.
+  * @param {Object} res The HTTP response to be sent.
+  * @param {String} req.user._id The user's Object ID.
+  * @param {String} req.body.description The description of the request.
+  * @param {Float} req.body.amount The amount of money that is requested.
+  * @param {String} req.body.org The Object ID of the org this request is against to.
+  * @param {Array} req.body.links An array of objects tha contain online order infos.
+  * @param {Array} req.body.items An array of objects tha contain all item infos.
+  */ 
   createRequest: function(req, res) {
-    console.log(req.body);
     var request = {
       user: req.user._id,
       description: req.body.description,
@@ -293,7 +373,6 @@ var routes = {
       isActive: false,
       isApproved: false
     };
-    console.log(request)
     validation.request.request(
       request.description,
       request.value,
@@ -313,6 +392,13 @@ var routes = {
       });
     });
   },
+  /**
+  * Edit a request in the database.
+  * @param {Object} req The HTTP request being handled.
+  * @param {Object} res The HTTP response to be sent.
+  * @param {String} req.body.request._id The request's Object ID.
+  * @param {Boolean} req.body.request.isApproved The boolean value that indicates if the request is approved or not.
+  */ 
   editRequest: function(req, res) {
     function confirm(err, request) {
         if (err) {
@@ -338,6 +424,12 @@ var routes = {
         request.save(confirm);
       });
   },
+  /**
+  * Get all the requests in the database.
+  * @param {Object} req The HTTP request being handled.
+  * @param {Object} res The HTTP response to be sent.
+  * @param {String} req.params.user The user's Object ID.
+  */ 
   getRequests: function(req, res) {
     var tasks = [];
     var id = mongoose.Types.ObjectId(req.params.user);
@@ -459,6 +551,12 @@ var routes = {
 
   },
 
+  /**
+   * Get an array of all the pending funding requests.
+   * @param {object} req The HTTP request being handled.
+   * @param {object} res The HTTP response to be sent.
+   * @param {object} req.user.orgs The authenticated user's organizations.
+   */
   getPendingFundRequests: function(req, res){
 
     var errorResponse = {
@@ -557,7 +655,7 @@ var routes = {
 
     })
 
-  }
+  };
 };
 
 
