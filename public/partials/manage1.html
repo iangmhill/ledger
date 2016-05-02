@@ -23,15 +23,15 @@ Description: Allows the users to manage all types of requests and the funds of
       <div class="col-xs-8">
         <div class="row vertical-align">
           <div class="col-sm-2">
-            <div>{{user.name}}</div>
+          <div>{{user.name}}</div>
           </div>
 
           <div class="col-sm-2 subtext indent">
-            <div>{{user.username}}</div>
+          <div>{{user.username}}</div>
           </div>
 
           <div class="col-sm-4 subtext indent">
-            <div>{{user.email}}</div>
+          <div>{{user.email}}</div>
           </div>
         </div>
       </div>
@@ -69,49 +69,11 @@ Description: Allows the users to manage all types of requests and the funds of
 
   <hr>
 
-
+    
   <div
       ng-switch="MngCtrl.pendingFundRequests.length > 0">
     <h4>Funding Requests</h4>
-
-
-    <ul class="list-group" ng-repeat = "request in MngCtrl.pendingFundRequests">
-      <p class="list-group-item-text vertical-align">
-            <div class="panel panel-info">
-          <div class="panel-heading">
-            {{request.created| date}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.username}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.orgname}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.value| currency}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isApproved === true ? "Approved" : "Declined"}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isDecided === true ? "Decided" : "Undecided"}}
-          </div>
-          <div class="panel-body">
-            <Strong>Description: </Strong>{{request.description}}
-          <div ng-show = "!request.isDecided" ng-if = "request.comment != ''">
-            <Strong>Comment: </Strong> {{request.comment}}
-          </div>
-          <div class="btn-toolbar pull-right" >
-            <div class="btn-toolbar">
-            <button
-                type="button"
-                class="btn btn-link btn-sm"
-                ng-click="MngCtrl.resolveFunRequest($index, true)">
-              <span>Approve</span>
-              <span class="glyphicon glyphicon-ok"></span>
-            </button>
-            <button
-                type="button"
-                class="btn btn-link btn-sm"
-                ng-click ="MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
-              <span>Reject</span>
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-          </div>
-          </div>
-          </div>
-        </div>
-      </p>
-    </ul>
-
-
-
-<!--     <div ng-repeat="request in MngCtrl.pendingFundRequests">
+    <div ng-repeat="request in MngCtrl.pendingFundRequests">
       <div
           class="row vertical-align"
           ng-switch-when="true">
@@ -162,7 +124,7 @@ Description: Allows the users to manage all types of requests and the funds of
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
 
 
@@ -285,23 +247,23 @@ Description: Allows the users to manage all types of requests and the funds of
                     ng-blur="MngCtrl.createOrg.name.validate()"
                     required>
                 <span
-                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                    ng-if="MngCtrl.createOrg.name.isValidated && 
                         MngCtrl.createOrg.name.isValid"
                     class="glyphicon glyphicon-ok form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                    ng-if="MngCtrl.createOrg.name.isValidated && 
                         !MngCtrl.createOrg.name.isValid"
                     class="glyphicon glyphicon-remove form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.name.isValidated &&
+                    ng-if="MngCtrl.createOrg.name.isValidated && 
                         !MngCtrl.createOrg.name.isValid"
                     class="help-block">
                   {{MngCtrl.createOrg.name.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
-            </div> <!-- .col-sm-10 -->
+            </div> <!-- .col-sm-10 --> 
           </div> <!-- .form-group .row -->
           <div class="form-group row"> <!-- Org name field -->
             <label
@@ -328,23 +290,23 @@ Description: Allows the users to manage all types of requests and the funds of
                     ng-blur="MngCtrl.createOrg.shortName.validate()"
                     required>
                 <span
-                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                    ng-if="MngCtrl.createOrg.shortName.isValidated && 
                         MngCtrl.createOrg.shortName.isValid"
                     class="glyphicon glyphicon-ok form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                    ng-if="MngCtrl.createOrg.shortName.isValidated && 
                         !MngCtrl.createOrg.shortName.isValid"
                     class="glyphicon glyphicon-remove form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.shortName.isValidated &&
+                    ng-if="MngCtrl.createOrg.shortName.isValidated && 
                         !MngCtrl.createOrg.shortName.isValid"
                     class="help-block">
                   {{MngCtrl.createOrg.shortName.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
-            </div> <!-- .col-sm-10 -->
+            </div> <!-- .col-sm-10 --> 
           </div> <!-- .form-group .row -->
           <div class="form-group row"> <!-- Org name field -->
             <label
@@ -360,7 +322,7 @@ Description: Allows the users to manage all types of requests and the funds of
                       ? (MngCtrl.createOrg.parent.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
-                      : ''">
+                      : ''">  
                 <input
                     name="name"
                     id="inputParent"
@@ -373,23 +335,23 @@ Description: Allows the users to manage all types of requests and the funds of
                     uib-typeahead="name for name in MngCtrl.typeaheadOptions | search:$viewValue | limitTo:8"
                     required>
                 <span
-                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                    ng-if="MngCtrl.createOrg.parent.isValidated && 
                         MngCtrl.createOrg.parent.isValid"
                     class="glyphicon glyphicon-ok form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                    ng-if="MngCtrl.createOrg.parent.isValidated && 
                         !MngCtrl.createOrg.parent.isValid"
                     class="glyphicon glyphicon-remove form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="MngCtrl.createOrg.parent.isValidated &&
+                    ng-if="MngCtrl.createOrg.parent.isValidated && 
                         !MngCtrl.createOrg.parent.isValid"
                     class="help-block">
                   {{MngCtrl.createOrg.parent.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
-            </div> <!-- .col-sm-10 -->
+            </div> <!-- .col-sm-10 --> 
           </div> <!-- .form-group .row -->
           <div class="form-group row"> <!-- Org name field -->
             <label
@@ -449,13 +411,13 @@ Description: Allows the users to manage all types of requests and the funds of
                   <option value="none">None (no one needs to approve any request)</option>
                 </select>
                 <span
-                    ng-if="MngCtrl.createOrg.approvalProcess.isValidated &&
+                    ng-if="MngCtrl.createOrg.approvalProcess.isValidated && 
                         !MngCtrl.createOrg.approvalProcess.isValid"
                     class="help-block">
                   {{MngCtrl.createOrg.approvalProcess.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
-            </div> <!-- .col-sm-10 -->
+            </div> <!-- .col-sm-10 --> 
           </div> <!-- .form-group .row -->
           <div class="btn-toolbar pull-right">
             <button

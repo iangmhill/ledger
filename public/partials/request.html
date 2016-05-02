@@ -328,6 +328,50 @@
       </div>
     </div>
 
+    <div
+        ng-if="ReqCtrl.reEditRequest"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Comments</div>
+      <div class="panel-body">
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <div
+                class="form-group"
+                ng-class="ReqCtrl.createRequest.comment.isValidated
+                    ? (ReqCtrl.createRequest.comment.isValid
+                      ? 'has-success'
+                      : 'has-error')
+                    : ''">
+              <input
+                  name="comment"
+                  id="commentContent"
+                  type="text"
+                  class="form-control"
+                  placeholder="why do you resubmit again?"
+                  autocomplete="off"
+                  ng-model="ReqCtrl.createRequest.comment.value"
+                  ng-blur="ReqCtrl.createRequest.comment.validate()"
+                  required>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      ReqCtrl.createRequest.comment.isValid"
+                  class="glyphicon glyphicon-ok form-control-feedback"></span>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      !ReqCtrl.createRequest.comment.isValid"
+                  class="glyphicon glyphicon-remove form-control-feedback">
+              </span>
+              <span
+                  ng-if="ReqCtrl.createRequest.comment.isValidated &&
+                      !ReqCtrl.createRequest.comment.isValid"
+                  class="help-block">
+                {{ReqCtrl.createRequest.comment.helpBlock}}
+              </span>
+            </div> <!-- .form-group -->
+          </div> <!-- .col-sm-10 -->
+        </div> <!-- .form-group .row -->
+      </div>
+    </div>
     <div class="form-group row">
       <div class="col-xs-12">
         <div class="btn-toolbar pull-right">
