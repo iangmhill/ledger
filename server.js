@@ -120,16 +120,15 @@ app.get('/api/getOrgByUrl/:url',
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
-app.get('/api/getOrgRequests',
+app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
 //wzc:???
 app.get('/api/getUserRequests',
     authentication.authenticateUser, routes.getUserRequests);
 // record GET requests
 //wzc:???
-app.get('/api/getOrgRecords',
-    authentication.authenticateOwner, routes.getOrgRecords);
-//wzc:???
+app.get('/api/getOrgRecords/:id',
+    authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 

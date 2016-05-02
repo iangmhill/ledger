@@ -4,7 +4,8 @@ var app = angular.module('ledger', [
     'ngRoute',
     'ngTouch',
     'nvd3',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'smart-table' 
   ]).config([
     '$routeProvider',
     '$locationProvider',

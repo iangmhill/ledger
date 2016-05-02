@@ -199,8 +199,9 @@ var routes = {
   * @param {object} res The HTTP response to be sent.
   */  
   getOrgRequests: function(req, res) {
+    var orgid = req.params.id;
     var requestlist = [];
-    Request.find({},function (err, requestlist) {
+    Request.find({org:orgid},function (err, requestlist) {
     if (err) return console.error(err);
       res.json(requestlist);
     })
@@ -209,7 +210,14 @@ var routes = {
 
   },
   getOrgRecords: function(req, res) {
-
+    var orgid = req.params.id;
+    console.log(orgid);
+    var recordlist = [];
+    Record.find({},function (err, recordlist) {
+      if (err) return console.error(err);
+      console.log("Record list: " + recordlist);
+      res.json(recordlist);
+    })
   },
   getUserRecords: function(req, res) {
 
@@ -342,7 +350,6 @@ var routes = {
     })
   },
   approveTransfer: function(req, res) {
-    console.log(req.body);
   },
   editOrg: function(req, res) {
 
@@ -412,6 +419,7 @@ var routes = {
           success: true,
         });
       }
+
     Request.find({_id: req.body.request._id}, function(err, requests) {
         if (err) {
           return res.send({
@@ -447,7 +455,7 @@ var routes = {
           tasks.push(function(callback){
             Org.find({_id: request.org}, function(err, orgs){
               var newRequest = JSON.parse(JSON.stringify(request));
-              newRequest.orgName = orgs[0].name;
+              // newRequest.orgName = orgs[0].name;
               filteredRequests.push(newRequest);
               callback(null, null);
             })
