@@ -219,7 +219,6 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
   };
 
   this.resolveUser = function(userId, isApproved, email) {
-    console.log("email: " + email);
     var deferred = $q.defer();
     $http.post('/auth/resolveUser', {
       userId: userId,

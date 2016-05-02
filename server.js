@@ -58,8 +58,6 @@ var startup        = require('./utilities/startup');
 // less transpiler
 var lessMiddleware = require('less-middleware');
 
-// // email module
-// var sendgrid  = require('sendgrid')(process.env.EMAIL);
 
 // CONFIGURATION ===============================================================
 
