@@ -42,6 +42,7 @@ var bodyParser     = require('body-parser');
 
 // database modules
 var mongoose       = require('mongoose');
+mongoose.Promise   = require('bluebird');
 
 // route modules
 var routes         = require('./routes/routes');
@@ -82,6 +83,7 @@ mongoose.connect(process.env.MONGODB);
 
 // SECURITY CONFIGURATION ======================================================
 var passport = authentication.configure();
+
 app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
@@ -100,30 +102,36 @@ app.use(passport.session());
 // authentication GET requests
 app.get('/logout', authentication.logout);
 app.get('/api/getUserPermissions', authentication.getUserPermissions)
+
 // user GET requests
 app.get('/api/getUserList',
     authentication.authenticateUser, routes.getUserList);
 app.get('/auth/getPendingUsers',
     authentication.authenticateAdmin, authentication.getPendingUsers);
+app.get('/auth/getPendingFundRequests',
+  authentication.authenticateUser, routes.getPendingFundRequests);
 app.get('/api/getUserOrgs',
     authentication.authenticateUser, routes.getUserOrgs);
+
 // org GET requests
 app.get('/api/getListedOrgs',
     authentication.authenticateUser, routes.getListedOrgs);
+//ToD0: To be implemented
 app.get('/api/getOrgByUrl/:url',
     authentication.authenticateUser, routes.getOrgByUrl);
+//ToD0: To be implemented
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
-app.get('/api/getOrgRequests',
+app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
-
+//ToD0: To be implemented
 app.get('/api/getUserRequests',
     authentication.authenticateUser, routes.getUserRequests);
 // record GET requests
-app.get('/api/getOrgRecords',
-    authentication.authenticateOwner, routes.getOrgRecords);
-
+//ToD0: To be implemented
+app.get('/api/getOrgRecords/:id',
+    authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 
@@ -140,27 +148,36 @@ app.post('/changePassword',
     authentication.authenticateUser,
     authentication.confirmPassword,
     authentication.changePassword);
+
 // user POST requests
+//ToD0: To be implemented
 app.post('/api/changeOwnership',
     authentication.authenticateAdmin, routes.changeOwnership);
 app.post('/auth/resolveUser',
     authentication.authenticateAdmin, authentication.resolveUser);
+
 // org POST requests
 app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
 app.post('/api/changeOwner',
     authentication.authenticateUser, routes.changeOwner);
+//ToD0: To be implemented
 app.post('/api/editOrg',
     authentication.authenticateOwner, routes.editOrg);
+//ToD0: To be implemented
 app.post('/api/deleteOrg',
     authentication.authenticateOwner, routes.deleteOrg);
+
+
 // requests POST requests
 app.post('/api/createRequest',
     authentication.authenticateUser, routes.createRequest);
-app.post('/api/approveRequest',
-    authentication.authenticateOwner, routes.approveRequest);
+app.post('/api/editRequest', authentication.authenticateUser, routes.editRequest);
 app.post('/api/closeRequest',
     authentication.authenticateOwner, routes.closeRequest);
+app.get('/api/getRequests:user',routes.getRequests);
+// authentication.authenticateUser,
+
 // record POST requests
 app.post('/api/createRecord',
     authentication.authenticateUser, routes.createRecord);
@@ -168,8 +185,16 @@ app.post('/api/editRecord',
     authentication.authenticateOwner, routes.editRecord);
 app.post('/api/voidRecord',
     authentication.authenticateOwner, routes.voidRecord);
+<<<<<<< HEAD
 app.get('/api/email',
     authentication.authenticateUser, routes.sendEmail);
+=======
+// transfer POST requests
+app.post('/api/createTransfer',
+    authentication.authenticateOwner, routes.createTransfer);
+app.post('/api/approveTransfer',
+    authentication.authenticateOwner, routes.approveTransfer);
+>>>>>>> 5501c4a85cdbaf6f406c8d6bbe2962f98bcefa75
 
 // AngularJS requests
 app.get('*', function (req, res) {

@@ -1,5 +1,5 @@
 // public/javascripts/controllers/ManageController.js
-app.controller('ManageController', function(AuthService, OrgService) {
+app.controller('ManageController', function(AuthService, OrgService, RequestService) {
   var MngCtrl = this;
   // Initialization
   this.roots = [];
@@ -164,6 +164,8 @@ app.controller('ManageController', function(AuthService, OrgService) {
       this.approvalProcess.helpBlock = '';
     }
   };
+
+
   this.resolveUser = function(index, isApproved) {
     AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
       MngCtrl.alert.isActive = true;
@@ -176,26 +178,54 @@ app.controller('ManageController', function(AuthService, OrgService) {
     });
   };
 
+  AuthService.getFundRequests().then(function(fundRequests) {
+    MngCtrl.pendingFundRequests = fundRequests || [];
+    console.log(fundRequests);
+  });
 
   AuthService.getPendingUsers().then(function(pendingUsers) {
     MngCtrl.pendingUsers = pendingUsers || [];
   });
+
   OrgService.getUserOrgs().then(function(response) {
-    MngCtrl.roots = response.roots;
+    console.log(response);
+    var checkRoot = function(tree, roots, rootToCheck) {
+      if (roots.indexOf(rootToCheck) > -1) { return false; }
+      return tree[rootToCheck] && tree[rootToCheck].parent
+          ? checkRoot(tree, roots, tree[rootToCheck].parent)
+          : true;
+    }
+
+    MngCtrl.roots = response.roots.filter(function(root) {
+      var roots = response.roots.slice(0);
+      roots.splice(roots.indexOf(root),1);
+
+      return checkRoot(response.orgs, roots, root);
+    });
     MngCtrl.orgs = response.orgs;
     MngCtrl.updateOrgs();
   });
-}).filter('search', function() {
-  return function(input, search) {
-    if (!input) return input;
-    if (!search) return input;
-    var expected = ('' + search).toLowerCase();
-    var result = [];
-    angular.forEach(input, function(id, name) {
-      if (name.toLowerCase().indexOf(expected) !== -1) {
-        result.push(name);
+
+  this.resolveFunRequest = function(index, ans){
+    var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
+    // var newRequest = JSON.parse(JSON.stringify(targetRequest))
+    targetRequest = targetRequest[0]
+    targetRequest.inApproved = false;
+    if(ans){
+      targetRequest.isApproved = true;
+    }else{
+      targetRequest.isApproved = false;
+    }
+    console.log("targetRequest");
+    console.log(targetRequest);
+    RequestService.editRequest({request: targetRequest}).then(function(success){
+      if(success){
+        console.log("Modification Success");
+      }else{
+        alert("Modification Failure");
       }
-    });
-    return result;
-  }
+    })
+  };
+
+
 });

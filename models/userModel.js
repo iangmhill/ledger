@@ -29,6 +29,7 @@ var User = mongoose.Schema({
   },
   orgs: {
     type: [ObjectId],
+    ref: 'orgs',
     required: false,
     default: []
   },

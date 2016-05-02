@@ -1,31 +1,97 @@
 <!-- public/views/search.html -->
 <div class="container-card">
-  <h1>Allocate</h1>
 
-  <form role="form" ng-submit="submitCreateAllocationForm()">
-    <div class="form-group">
-      <label for="sel1">Organization</label>
-      <select class="form-control" ng-model="org" ng-options="org._id as org.name for org in orgs">
-        <option value="" disabled>-- select org --</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="value">Value:</label>
-      <input class="form-control" type="number" min="0" step=".01" ng-model="value" placeholder="0.00">
-    </div>
-    <div class="form-group">
-      <label for="description">Description:</label>
-      <input class="form-control" type="text" ng-model="description" placeholder="What was this for?">
-    </div>
-    <button class="right">Submit</button>
-  </form>
+<form 
+        name="searchForm" role="form" 
+        ng-submit="submitSearch()">
+
+  <div class="col-md-2">
+    <select class="form-control" name="type" ng-model= "type.value" required>
+        <option value="">Type</option> <!-- not selected / blank option -->
+        <option value="request">Request</option>
+        <option value="record">Record</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select class="form-control" name="org" ng-model= "org.value" required>
+      <option value="">Org</option> 
+      <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-default">Search</button> 
+</form>
+  <hr>
+
+<div ng-hide="req">
+<table st-table="displayedCollection" class="table table-striped" st-safe-src="rowCollection">
+  <thead>
+  <tr>
+    <th st-sort="created" class="sortable">Date</th>
+    <th st-sort="description" class="sortable">Specification</th>
+    <th>Description</th>
+    <th st-sort="value" class="sortable">Price</th>
+    <th st-sort="isApproved" class="sortable">Is Approved</th>
+    <th st-sort="inApproved" class="sortable">In Approved</th>
+  </tr>
+  <tr>
+    <th colspan="1">
+    <input st-search="" placeholder="global search" class="input-sm form-control" type="search"/>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in displayedCollection">
+    <td>{{row.created.slice(0,10)}}</td>
+    <td>{{row.description}}</td>
+    <td>{{row.specification[0].name}}</td>
+    <td>{{row.value}}</td>
+    <td>{{row.isApproved}}</td>
+    <td>{{row.inApproved}}</td>
+  </tr>
+  </tbody>
+</table>
 </div>
 
-<div class="container-card red-edging" ng-repeat="error in errors">
-  <div>{{error.message}}</div>
+
+<div ng-hide="rec">
+<table st-table="displayed" class="table table-striped" st-safe-src="rowCollection">
+  <thead>
+  <tr>
+    <th st-sort="occured" class="sortable">Date</th>
+    <th st-sort="details" class="sortable">Detail</th>
+    <th st-sort="value" class="sortable">Price</th>
+    <th st-sort="void" class="sortable">Is void</th>
+    <th st-sort="voider" class="sortable">Voider</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="row in rowCollection">
+    <td>{{row.occurred}}</td>
+    <td>{{row.details}}</td>
+    <td>{{row.value}}</td>
+    <td>{{row.void}}</td>
+    <td>{{row.voider}}</td>
+  </tr>
+  </tbody>
+</table>
+</div>
 </div>
 
-<div class="container-card green-edging" ng-repeat="allocation in allocations">
-  <div><b>{{allocation.value}}</b> allocated to <b>{{allocation.org}}</b> for <b>{{allocation.description}}</b></div>
-  <div class="subtext">SUCCESS: {{allocation.date}}</div>
-</div>
+<style type="text/css">
+  .sortable {
+      cursor: pointer;
+  }
+  .sortable:after {
+      content: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
+      padding-left: 1em;
+  }
+  .st-sort-ascent:after {
+      content: '\25B2';
+  }
+  .st-sort-descent:after {
+      content: '\25BC';
+  }
+</style>
+

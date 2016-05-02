@@ -1,9 +1,11 @@
 var app = angular.module('ledger', [
-    'ngRoute',
     'ngAnimate',
+    'ngMessages',
+    'ngRoute',
     'ngTouch',
+    'nvd3',
     'ui.bootstrap',
-    'ngMessages'
+    'smart-table' 
   ]).config([
     '$routeProvider',
     '$locationProvider',
@@ -36,6 +38,7 @@ var app = angular.module('ledger', [
       .when('/', {
         templateUrl: 'partials/dashboard.html',
         controller: 'DashboardController',
+        controllerAs: 'DashCtrl',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);
@@ -46,6 +49,7 @@ var app = angular.module('ledger', [
       .when('/request', {
         templateUrl: 'partials/request.html',
         controller: 'RequestController',
+        controllerAs: 'ReqCtrl',
         resolve: {
           permission: function(AuthService, $route) {
             return AuthService.permissionCheck([roles.USER]);
@@ -129,6 +133,19 @@ var app = angular.module('ledger', [
   vm.hideMenu = function() {
     vm.isCollapsed = true;
   };
+}).filter('search', function() {
+  return function(input, search) {
+    if (!input) return input;
+    if (!search) return input;
+    var expected = ('' + search).toLowerCase();
+    var result = [];
+    angular.forEach(input, function(id, name) {
+      if (name.toLowerCase().indexOf(expected) !== -1) {
+        result.push(name);
+      }
+    });
+    return result;
+  }
 });
 
 

@@ -210,10 +210,10 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
-  this.getFunRequests = function() {
+  this.getFundRequests = function() {
     var deferred = $q.defer();
-    $http.get(this.currentUser, '/auth/getPendingUsers').then(function success(response) {
-      deferred.resolve(response.data.pendingUsers);
+    $http.get('/auth/getPendingFundRequests', this.currentUser).then(function success(response) {
+      deferred.resolve(response.data.pendingFundRequests);
     });
     return deferred.promise;
   };

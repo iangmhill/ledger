@@ -38,7 +38,7 @@ var Org = mongoose.Schema({
   },
   parent: {
     type: ObjectId,
-    ref: 'Org',
+    ref: 'orgs',
     required: false
   },
   isActive: {

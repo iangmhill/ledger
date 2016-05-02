@@ -6,13 +6,13 @@
  * @requires models/userModel
  * @requires utilities/constants
  */
- 
+
 'use strict';
 
 var validator = require('validator');
 var Org       = require('../models/orgModel');
 var User      = require('../models/userModel');
-var Org       = require('../models/orgModel');
+var Request   = require('../models/requestModel');
 var q         = require('q');
 var constants = require('./constants');
 
@@ -25,6 +25,14 @@ function stringCheck(content) {
 function numberCheck(content) {
   content = String(content);
   return(validator.isIn(content) || validator.isFloat(content));
+}
+function priceCheck(price) {
+  return typeof price === 'number' && price > 0;
+}
+function dateCheck(date) {
+  var oneYearAgo = new Date();
+  oneYearAgo.setFullYear(new Date().getFullYear() -1);
+  return date instanceof Date && date < new Date() && date > oneYearAgo;
 }
 function getObjKeys(obj){
   var keys = [];
@@ -98,46 +106,37 @@ module.exports = {
     email: emailCheck
   },
   request: {
-    specification: function(content){
-      var validation = this;
-      console.log("specification check");
-
-      if(content.length == 0){
-        return false;
-      }
-      content.forEach(function(entry){
-        var key = getObjKeys(entry)[0];
-        var value = getObjValues(entry)[0];
-        console.log(key);
-        console.log(value);
-        if(!stringCheck(key) || !numberCheck(value)){
-          return false;
-        }
+    items: function(items) {
+      if (items.length == 0) { return true; }
+      var isValid = 0;
+      items.forEach(function(item) {
+        isValid += (stringCheck(item.description) && numberCheck(item.price) &&
+            constants.itemCategories.indexOf(item.category) > -1) ? 0 : 1;
       })
-      console.log("valid");
-      return true;
+      return isValid == 0;
     },
-    online: function(content){
-      console.log("online check");
-
-      var validation = this;
-      content.forEach(function(entry){
-        var key = getObjKeys(entry)[0];
-        var value = getObjValues(entry)[0];
-        console.log(key);
-        console.log(value);
-
-        if(!stringCheck(key) || !stringCheck(value)){
-          return false;
-        }
+    links: function(links) {
+      if (links.length == 0) { return true; }
+      var isValid = 0;
+      links.forEach(function(link) {
+        isValid += (stringCheck(link.description) && stringCheck(link.url))
+            ? 0 : 1;
       })
-      console.log("valid");
-      return true;
+      return isValid == 0;
     },
-    request:function(description, type, value, org, details, online, specification){
-      return stringCheck(description) && stringCheck(type) && 
-          numberCheck(value) && stringCheck(details) && 
-          this.online(online) && this.specification(specification);
+    request:function(description, value, orgId, links, items) {
+      var requestValidator = this;
+      return Org.findById(orgId, function(err, org) {
+        console.log(orgId);
+        if (!err && !!org && org.isActive && stringCheck(description) &&
+        numberCheck(value) && requestValidator.links(links) &&
+        requestValidator.items(items)) {
+          console.log(org);
+          return Promise.resolve(org.approvalProcess == 'none');
+        } else {
+          return Promise.reject('Invalid request');
+        }
+      });
     }
   },
   org: {
@@ -156,19 +155,6 @@ module.exports = {
                 orgValidator.nonterminal(nonterminal) &&
                 orgValidator.approvalProcess(approvalProcess);
         })
-    },
-    getInfo: function(name){
-      var deferred = q.defer();
-      Org.find({name: name}, function(err, orgs) {
-        console.log("find the org: " + orgs);
-        if (orgs[0].approvalProcess == 'none'){
-          console.log("find it none");
-          return deferred.resolve({approval: true, id: orgs[0]._id});          
-        }
-        console.log("find it not none");  
-        return deferred.resolve({approval: false, id: orgs[0]._id});
-      })
-      return deferred.promise;
     },
     name: function(name) {
       var deferred = q.defer();
@@ -209,6 +195,7 @@ module.exports = {
     }
 
   },
+<<<<<<< HEAD
   record:function(type, paymentMethod, value, details){
     // var deferred = q.defer();
     // var validation = this;
@@ -222,6 +209,100 @@ module.exports = {
   //   console.log("server validation done");  
   //   return deferred.promise;
   // }
+=======
+  record: {
+    org: function(org) {
+      return !!org && org.isActive;
+    },
+    request: function(request, org) {
+      return !!request && !!org && request.org.toString() == org._id.toString();
+    },
+    paymentMethod: function(pm) {
+      return ['pcard','reimbursement'].indexOf(pm) > -1;
+    },
+    pcard: function(pcard, pm) {
+      return pm === 'reimbursement' || [0,1,2].indexOf(pcard) > -1;
+    },
+    items: function(items) {
+      if (items.length == 0) { return true; }
+      var isValid = 0;
+      items.forEach(function(item) {
+        isValid += (stringCheck(item.description) && priceCheck(item.price) &&
+            constants.itemCategories.indexOf(item.category) > -1) ? 0 : 1;
+      })
+      return isValid == 0;
+    },
+    purchase: function(date, description, value, orgId, requestId,
+        paymentMethod, pcard, items) {
+      var rv = this;
+      var org, request;
+      return Org.findById(orgId).exec().then(function(orgObj) {
+        org = orgObj;
+        return Request.findById(requestId).exec();
+      }).then(function(reqObj) {
+        request = reqObj;
+        return (dateCheck(date) && stringCheck(description) &&
+            priceCheck(value) && rv.org(org) && rv.request(request, org) &&
+            rv.paymentMethod(paymentMethod) && rv.pcard(pcard,paymentMethod) &&
+            rv.items(items))
+                ? Promise.resolve(true)
+                : Promise.reject('Invalid record');
+      });
+    },
+    revenue: function(date, description, value, orgId) {
+      var rv = this;
+      var org;
+      return Org.findById(orgId).then(function(orgObj) {
+        org = orgObj;
+        return (dateCheck(date) && stringCheck(description) &&
+            priceCheck(value) && rv.org(org))
+                ? Promise.resolve(true)
+                : Promise.reject('Invalid record');
+      });
+    }
+  },
+
+  transfer: {
+    transfer: function(base, to, from, value, justification) {
+      var deferred = q.defer();
+      Org.find({_id: {$in: [base, to, from]}}, function(err, orgs) {
+        if (orgs.length != 2 || err) { return deferred.resolve(false); }
+        var baseOrg, toOrg, fromOrg;
+        for (index in orgs) {
+          if (orgs[index]._id == base) { baseOrg = orgs[index]; }
+          if (orgs[index]._id == to) { toOrg = orgs[index]; }
+          if (orgs[index]._id == from) { fromOrg = orgs[index]; }
+        }
+        if (!baseOrg || !toOrg || !fromOrg || !toOrg.budgeted ||
+            !fromOrg.budgeted) { return deferred.resolve(false); }
+        Org.find({ $and: [{parent: org._id}, {budgeted: true}]},
+            function(err, children) {
+          if (err) { return deferred.resolve(false); }
+          Request.find({ $and: [{org: from},{isActive: true}]},
+              function(err, requests) {
+            if (err) { return deferred.resolve(false); }
+            var allocated = 0;
+            for (index in requests) {
+              allocated += requests[index].value;
+            }
+            for (index in children) {
+              allocated += children[index].budget;
+            }
+            deferred.resolve(
+              to != from &&
+              (base == to || base == from) &&
+              typeof value === 'number' &&
+              value > 0 &&
+              value <= fromOrg.budget - allocated &&
+              typeof justification === 'string'
+            );
+          });
+        });
+      });
+      return deferred.promise;
+    }
+  }
+>>>>>>> 5501c4a85cdbaf6f406c8d6bbe2962f98bcefa75
 
 };
 
