@@ -24,7 +24,8 @@ var Purchase   = require('../models/recordModel').purchase;
 var Revenue    = require('../models/recordModel').revenue;
 var q          = require('q');
 var validation = require('../utilities/validation');
-var async = require('async');
+var sendgrid   = require('sendgrid')(process.env.EMAIL);
+var async      = require('async');
 
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
@@ -573,6 +574,37 @@ var routes = {
   voidRecord: function(req, res) {
 
   },
+  sendRegEmail: function(req, res){
+    console.log("got to email");
+    var email = req.params.email;
+    console.log(email);
+    var payload   = {
+        to      :  email,
+        from    : 'DONT.REPLY@ledger.com',
+        subject : 'Successful registration for ledger',
+        text    : 'Congradualtions! You are successfully registered for ledger. Go and check it out!'
+    }
+    sendgrid.send(payload, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
+  },
+
+  sendReqEmail: function(req, res){
+    console.log("got to email");
+    var email = req.params.email;
+    console.log(email);
+    var payload   = {
+        to      :  email,
+        from    : 'DONT.REPLY@ledger.com',
+        subject : 'Your fund request',
+        text    : 'The purchase request you submitted has been updated. Go check it out!'
+    }
+    sendgrid.send(payload, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
+  },
 
   /**
    * Get an array of all the pending funding requests.
@@ -685,9 +717,9 @@ var routes = {
       })
 
     })
-
   }
 };
+
 
 
 module.exports = routes;

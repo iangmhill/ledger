@@ -34,6 +34,7 @@ app.service('OrgService', function($http, $q) {
   this.removeOwner = function(username, orgId) {
     return this.changeOwner(username, orgId, false);
   };
+
   this.changeOwner = function(username, orgId, action) {
     var deferred = $q.defer();
     $http.post('/api/changeOwner', {

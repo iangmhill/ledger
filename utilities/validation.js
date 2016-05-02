@@ -195,6 +195,7 @@ module.exports = {
     }
 
   },
+
   record: {
     org: function(org) {
       return !!org && org.isActive;

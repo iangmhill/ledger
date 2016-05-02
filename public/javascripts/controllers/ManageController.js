@@ -168,7 +168,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
 
 
   this.resolveUser = function(index, isApproved) {
-    AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
+    AuthService.resolveUser(this.pendingUsers[index], isApproved, this.pendingUsers[index].email).then(function(response) {
       MngCtrl.alert.isActive = true;
       MngCtrl.alert.type = response.isSuccessful ? 'success' : 'danger';
       MngCtrl.alert.msg = (response.isSuccessful ? 'SUCCESS' : 'FAILURE') +
@@ -234,6 +234,8 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     console.log(this.comment.value);
 
     var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
+
+
     targetRequest = targetRequest[0]
     targetRequest.isDecided = true;
     targetRequest.comment = MngCtrl.comment.value
@@ -244,6 +246,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     }
     console.log("targetRequest");
     console.log(targetRequest);
+
     RequestService.editRequest(targetRequest).then(function(success){
       if(success){
         console.log("Modification Success");

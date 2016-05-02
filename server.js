@@ -28,7 +28,7 @@
 
 // environment variable modules
 var dotenv         = require('dotenv');
-
+dotenv.config();
 // utility modules
 var path           = require('path');
 var logger         = require('morgan');
@@ -58,10 +58,8 @@ var startup        = require('./utilities/startup');
 // less transpiler
 var lessMiddleware = require('less-middleware');
 
-// CONFIGURATION ===============================================================
 
-// load environment variables from .env file
-dotenv.config();
+// CONFIGURATION ===============================================================
 
 // configure middleware
 var pathRoot = path.join(__dirname, 'public');
@@ -133,6 +131,10 @@ app.get('/api/getOrgRecords/:id',
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
 
+// emails
+app.get('/api/RegEmail/:email',
+    authentication.authenticateUser, routes.sendRegEmail);
+
 // POST requests
 // authentication POST requests
 app.post('/login', authentication.login);
@@ -179,11 +181,13 @@ app.post('/api/editRecord',
     authentication.authenticateOwner, routes.editRecord);
 app.post('/api/voidRecord',
     authentication.authenticateOwner, routes.voidRecord);
+
 // transfer POST requests
 app.post('/api/createTransfer',
     authentication.authenticateOwner, routes.createTransfer);
 app.post('/api/approveTransfer',
     authentication.authenticateOwner, routes.approveTransfer);
+
 
 // AngularJS requests
 app.get('*', function (req, res) {
