@@ -167,7 +167,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
 
 
   this.resolveUser = function(index, isApproved) {
-    AuthService.resolveUser(this.pendingUsers[index], isApproved).then(function(response) {
+    AuthService.resolveUser(this.pendingUsers[index], isApproved, this.pendingUsers[index].email).then(function(response) {
       MngCtrl.alert.isActive = true;
       MngCtrl.alert.type = response.isSuccessful ? 'success' : 'danger';
       MngCtrl.alert.msg = (response.isSuccessful ? 'SUCCESS' : 'FAILURE') +

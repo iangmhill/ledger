@@ -24,8 +24,8 @@ var Purchase   = require('../models/recordModel').purchase;
 var Revenue    = require('../models/recordModel').revenue;
 var q          = require('q');
 var validation = require('../utilities/validation');
-var sendgrid  = require('sendgrid')("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");
-var async = require('async');
+var sendgrid   = require('sendgrid')(process.env.EMAIL);
+var async      = require('async');
 
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
@@ -558,19 +558,37 @@ var routes = {
   voidRecord: function(req, res) {
 
   },
-  sendEmail: function(req, res){
+  sendRegEmail: function(req, res){
     console.log("got to email");
+    var email = req.params.email;
+    console.log(email);
     var payload   = {
-        to      : ['ziyi.lan@students.olin.edu','Ian.Hill@students.olin.edu','zhecan.wang@students.olin.edu'],
-        from    : 'ledger@olin.edu',
-        subject : 'Testing email for ledger',
-        text    : 'This is a email from Leder' + req.body
+        to      :  email,
+        from    : 'DONT.REPLY@ledger.com',
+        subject : 'Successful registration for ledger',
+        text    : 'Congradualtions! You are successfully registered for ledger. Go and check it out!'
     }
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
         console.log(json);
     }); 
-  }
+  },
+
+  sendReqEmail: function(req, res){
+    console.log("got to email");
+    var email = req.params.email;
+    console.log(email);
+    var payload   = {
+        to      :  email,
+        from    : 'DONT.REPLY@ledger.com',
+        subject : 'Your fund request',
+        text    : 'The purchase request you submitted has been updated. Go check it out!'
+    }
+    sendgrid.send(payload, function(err, json) {
+      if (err) { console.error(err); }
+        console.log(json);
+    }); 
+  },
 
   /**
    * Get an array of all the pending funding requests.
@@ -676,8 +694,7 @@ var routes = {
 
     })
 
-  };
-};
+  }}
 
 
 module.exports = routes;

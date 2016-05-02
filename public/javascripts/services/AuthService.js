@@ -218,12 +218,14 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     return deferred.promise;
   };
 
-  this.resolveUser = function(userId, isApproved) {
+  this.resolveUser = function(userId, isApproved, email) {
+    console.log("email: " + email);
     var deferred = $q.defer();
     $http.post('/auth/resolveUser', {
       userId: userId,
       isApproved: isApproved
     }).then(function success(response) {
+      $http.get('/api/RegEmail/' + email);
       deferred.resolve(response.data);
     });
     return deferred.promise;
