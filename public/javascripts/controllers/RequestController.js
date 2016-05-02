@@ -1,10 +1,11 @@
-
-
 // public/javascripts/controllers/RequestController.js
-app.controller('RequestController', function($scope, RequestService, OrgService) {
+
+app.controller('RequestController', function(RequestService, OrgService) {
   var ReqCtrl = this;
   this.alerts = [];
   this.onlineCheck = false;
+  this.categories =
+      ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
 
   function Field(initialValue) {
     this.value = initialValue;
@@ -171,6 +172,12 @@ app.controller('RequestController', function($scope, RequestService, OrgService)
         }).then(function(success) {
           if (success) {
             ReqCtrl.alerts = [];
+            ReqCtrl.createRequest.org.reset();
+            ReqCtrl.createRequest.description.reset();
+            ReqCtrl.createRequest.amount.reset();
+            ReqCtrl.createRequest.online.value = false;
+            ReqCtrl.createRequest.items.array = [];
+            ReqCtrl.createRequest.links.array = [];
           }
           ReqCtrl.alerts.push({
             type: success ? 'success' : 'danger',
@@ -186,17 +193,18 @@ app.controller('RequestController', function($scope, RequestService, OrgService)
     }
   };
 
-  OrgService.getOrgList().then(function(data) {
-    if (data){
-      ReqCtrl.orgs = data;
-    }
-    ReqCtrl.createRequest.org.typeaheadOptions = {};
-    for (index in ReqCtrl.orgs) {
-      var org = ReqCtrl.orgs[index];
-      var name = org.shortName
-          ? org.name + ' (' + org.shortName + ')'
-          : org.name;
-      ReqCtrl.createRequest.org.typeaheadOptions[name] = org._id;
+  OrgService.getOrgList().then(function(orgs) {
+    if (orgs) {
+      ReqCtrl.orgs = orgs;
+
+      ReqCtrl.createRequest.org.typeaheadOptions = {};
+      for (index in ReqCtrl.orgs) {
+        var org = ReqCtrl.orgs[index];
+        var name = org.shortName
+            ? org.name + ' (' + org.shortName + ')'
+            : org.name;
+        ReqCtrl.createRequest.org.typeaheadOptions[name] = org._id;
+      }
     }
   });
 

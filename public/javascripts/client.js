@@ -132,6 +132,19 @@ var app = angular.module('ledger', [
   vm.hideMenu = function() {
     vm.isCollapsed = true;
   };
+}).filter('search', function() {
+  return function(input, search) {
+    if (!input) return input;
+    if (!search) return input;
+    var expected = ('' + search).toLowerCase();
+    var result = [];
+    angular.forEach(input, function(id, name) {
+      if (name.toLowerCase().indexOf(expected) !== -1) {
+        result.push(name);
+      }
+    });
+    return result;
+  }
 });
 
 

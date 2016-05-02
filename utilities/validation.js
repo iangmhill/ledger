@@ -12,7 +12,7 @@
 var validator = require('validator');
 var Org       = require('../models/orgModel');
 var User      = require('../models/userModel');
-var Org       = require('../models/orgModel');
+var Request   = require('../models/requestModel');
 var q         = require('q');
 var constants = require('./constants');
 
@@ -25,6 +25,14 @@ function stringCheck(content) {
 function numberCheck(content) {
   content = String(content);
   return(validator.isIn(content) || validator.isFloat(content));
+}
+function priceCheck(price) {
+  return typeof price === 'number' && price > 0;
+}
+function dateCheck(date) {
+  var oneYearAgo = new Date();
+  oneYearAgo.setFullYear(new Date().getFullYear() -1);
+  return date instanceof Date && date < new Date() && date > oneYearAgo;
 }
 function getObjKeys(obj){
   var keys = [];
@@ -187,13 +195,56 @@ module.exports = {
     }
 
   },
-
-  record:function(type, paymentMethod, value, details){
-    var validation = this;
-    return(
-        validation.stringCheck(type) &&
-        validation.numberCheck(value) && validation.stringCheck(details) &&
-        validation.stringCheck(paymentMethod));
+  record: {
+    org: function(org) {
+      return !!org && org.isActive;
+    },
+    request: function(request, org) {
+      return !!request && !!org && request.org.toString() == org._id.toString();
+    },
+    paymentMethod: function(pm) {
+      return ['pcard','reimbursement'].indexOf(pm) > -1;
+    },
+    pcard: function(pcard, pm) {
+      return pm === 'reimbursement' || [0,1,2].indexOf(pcard) > -1;
+    },
+    items: function(items) {
+      if (items.length == 0) { return true; }
+      var isValid = 0;
+      items.forEach(function(item) {
+        isValid += (stringCheck(item.description) && priceCheck(item.price) &&
+            constants.itemCategories.indexOf(item.category) > -1) ? 0 : 1;
+      })
+      return isValid == 0;
+    },
+    purchase: function(date, description, value, orgId, requestId,
+        paymentMethod, pcard, items) {
+      var rv = this;
+      var org, request;
+      return Org.findById(orgId).exec().then(function(orgObj) {
+        org = orgObj;
+        return Request.findById(requestId).exec();
+      }).then(function(reqObj) {
+        request = reqObj;
+        return (dateCheck(date) && stringCheck(description) &&
+            priceCheck(value) && rv.org(org) && rv.request(request, org) &&
+            rv.paymentMethod(paymentMethod) && rv.pcard(pcard,paymentMethod) &&
+            rv.items(items))
+                ? Promise.resolve(true)
+                : Promise.reject('Invalid record');
+      });
+    },
+    revenue: function(date, description, value, orgId) {
+      var rv = this;
+      var org;
+      return Org.findById(orgId).then(function(orgObj) {
+        org = orgObj;
+        return (dateCheck(date) && stringCheck(description) &&
+            priceCheck(value) && rv.org(org))
+                ? Promise.resolve(true)
+                : Promise.reject('Invalid record');
+      });
+    }
   },
 
   transfer: {
