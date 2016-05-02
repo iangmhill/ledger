@@ -1,8 +1,8 @@
 <!-- public/views/search.html -->
 <div class="container-card">
 
-<form 
-        name="searchForm" role="form" 
+<form
+        name="searchForm" role="form"
         ng-submit="submitSearch()">
 
   <div class="col-md-2">
@@ -15,12 +15,12 @@
 
   <div class="col-md-2">
     <select class="form-control" name="org" ng-model= "org.value" required>
-      <option value="">Org</option> 
+      <option value="">Org</option>
       <option ng-repeat="org in orgs" value = "{{org._id}}">{{org.name}}</option>
     </select>
   </div>
 
-  <button type="submit" class="btn btn-default">Search</button> 
+  <button type="submit" class="btn btn-default">Search</button>
 </form>
   <hr>
 
@@ -43,7 +43,7 @@
   </thead>
   <tbody>
   <tr ng-repeat="row in displayedCollection">
-    <td>{{row.created.slice(0,10)}}</td>
+    <td>{{row.created|date}}</td>
     <td>{{row.description}}</td>
     <td>{{row.specification[0].name}}</td>
     <td>{{row.value}}</td>
@@ -56,7 +56,7 @@
 
 
 <div ng-hide="rec">
-<table st-table="displayed" class="table table-striped" st-safe-src="rowCollection">
+<table st-table="displayedCollection" class="table table-striped" st-safe-src="rowCollection">
   <thead>
   <tr>
     <th st-sort="occured" class="sortable">Date</th>
@@ -65,11 +65,16 @@
     <th st-sort="void" class="sortable">Is void</th>
     <th st-sort="voider" class="sortable">Voider</th>
   </tr>
+  <tr>
+    <th colspan="1">
+    <input st-search="" placeholder="global search" class="input-sm form-control" type="search"/>
+    </th>
+  </tr>
   </thead>
   <tbody>
-  <tr ng-repeat="row in rowCollection">
-    <td>{{row.occurred}}</td>
-    <td>{{row.details}}</td>
+  <tr ng-repeat="row in displayedCollection">
+    <td>{{row.date|date}}</td>
+    <td>{{row.description}}</td>
     <td>{{row.value}}</td>
     <td>{{row.void}}</td>
     <td>{{row.voider}}</td>

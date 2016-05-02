@@ -1,6 +1,6 @@
 // public/javascripts/controllers/SearchController.js
 app.controller('SearchController', function($scope, OrgService,
-    RequestService) {
+    RequestService, RecordService) {
 
   OrgService.getUserOrgs().then(function(data) {
     if (data){
@@ -19,7 +19,7 @@ app.controller('SearchController', function($scope, OrgService,
     if ($scope.type.value == "request"){
       $scope.req = false;
       $scope.rec = true;
-      RequestService.getOrgsRequests($scope.org.value).then(function(response) {
+      RequestService.getOrgRequests($scope.org.value).then(function(response) {
         $scope.rowCollection = response;
       });
     }

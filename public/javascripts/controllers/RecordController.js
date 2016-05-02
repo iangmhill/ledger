@@ -71,6 +71,9 @@ app.controller('RecordController', function(RecordService, RequestService,
       return this.isValid;
     }),
     request: new FieldWithValidation('', function() {
+      console.log(this.value);
+      console.log(typeof this.value === 'string');
+      console.log(this.value.length > 0);
       this.isValid = RecCtrl.createRecord.type.value !== 'purchase' ||
           (typeof this.value === 'string' && this.value.length > 0);
       this.helpBlock = this.isValid ? 'A request must be selected' : '';
@@ -155,24 +158,18 @@ app.controller('RecordController', function(RecordService, RequestService,
         if (requests) {
           RecCtrl.createRecord.request.options = requests;
         }
+        console.log(RecCtrl.createRecord.request.options);
       });
     },
     validateAll: function() {
       var isValid = 0;
       isValid += this.org.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.description.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.pcard.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.request.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.date.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.items.validate() ? 0 : 1;
-      console.log(isValid);
       isValid += this.amount.validate() ? 0 : 1;
-      console.log(isValid);
       return isValid == 0;
     },
     submit: function() {
