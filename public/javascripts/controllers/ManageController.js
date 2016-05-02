@@ -235,7 +235,6 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
 
     var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
 
-    var email = OrgService.getUserEmail(targetRequest.user);
 
     targetRequest = targetRequest[0]
     targetRequest.isDecided = true;
@@ -248,7 +247,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     console.log("targetRequest");
     console.log(targetRequest);
 
-    RequestService.editRequest(targetRequest, email).then(function(success){
+    RequestService.editRequest(targetRequest).then(function(success){
       if(success){
         console.log("Modification Success");
         MngCtrl.comment.value = "";

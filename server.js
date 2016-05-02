@@ -132,13 +132,9 @@ app.get('/api/getOrgRecords/:id',
     authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
-app.get('/api/getUserEmail/:id',
-    authentication.authenticateUser, routes.getUserEmail);
 
 // emails
 app.get('/api/RegEmail/:email',
-    authentication.authenticateUser, routes.sendRegEmail);
-app.get('/api/ReqEmail/:email',
     authentication.authenticateUser, routes.sendRegEmail);
 
 // POST requests
