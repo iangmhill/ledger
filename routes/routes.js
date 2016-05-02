@@ -421,13 +421,17 @@ var routes = {
         success: true,
       });
     }
-    Request.findById(req.body.request._id, function(err, request) {
+    console.log(req.body);
+    console.log(req.body._id);
+    Request.findById(req.body._id, function(err, request) {
         if (err) {
           return res.send({
             success: false,
             message: 'ERROR: Could not edit request'
           });
         }
+        console.log(request);
+                console.log(req.body);
 
         request.description = req.body.description;
         request.value = req.body.value;

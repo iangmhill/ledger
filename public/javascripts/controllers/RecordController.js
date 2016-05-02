@@ -1,5 +1,6 @@
 // public/javascripts/controllers/RecordController.js
-app.controller('RecordController', function(RecordService, OrgService) {
+app.controller('RecordController', function(RecordService, RequestService,
+    OrgService) {
   var RecCtrl = this;
   this.categories =
       ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
@@ -16,7 +17,7 @@ app.controller('RecordController', function(RecordService, OrgService) {
       this.helpBlock = '';
     };
   }
-  
+
   function FieldWithValidation(initialValue, validationFunction) {
     Field.call(this, initialValue);
     this.validate = validationFunction;
@@ -148,22 +149,30 @@ app.controller('RecordController', function(RecordService, OrgService) {
       }
     },
     filterRequests: function() {
-      if (this.org.typeaheadOptions) {
-        this.request.options = RecCtrl.requests.filter(function (request) {
-          return request.org == RecCtrl.createRecord.org
-              .typeaheadOptions[RecCtrl.createRecord.org.value];
-        });
-      }
+      var orgId = RecCtrl.createRecord.org
+          .typeaheadOptions[RecCtrl.createRecord.org.value];
+      RequestService.getOrgRequests(orgId).then(function(requests) {
+        if (requests) {
+          RecCtrl.createRecord.request.options = requests;
+        }
+      });
     },
     validateAll: function() {
       var isValid = 0;
       isValid += this.org.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.description.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.pcard.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.request.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.date.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.items.validate() ? 0 : 1;
+      console.log(isValid);
       isValid += this.amount.validate() ? 0 : 1;
+      console.log(isValid);
       return isValid == 0;
     },
     submit: function() {
@@ -227,12 +236,6 @@ app.controller('RecordController', function(RecordService, OrgService) {
             : org.name;
         RecCtrl.createRecord.org.typeaheadOptions[name] = org._id;
       }
-    }
-  });
-
-  RecordService.getRequests().then(function(requests) {
-    if (requests) {
-      RecCtrl.requests = requests;
     }
   });
 

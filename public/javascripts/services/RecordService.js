@@ -9,9 +9,11 @@ app.service('RecordService', function($http, $q) {
       return deferred.promise;
     };
 
-    this.getRequests = function(){
+    this.getRecords = function(orgValue){
+      console.log("org value:" + orgValue);
       var deferred = $q.defer();
-      $http.get('/api/getOrgRequests').then(function (response) {
+      $http.get('/api/getOrgRecords/' + orgValue).then(function (response) {
+        console.log(response.data);
         return deferred.resolve(response.data);
       });
       return deferred.promise;

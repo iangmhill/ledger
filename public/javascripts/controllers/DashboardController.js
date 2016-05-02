@@ -20,24 +20,18 @@ app.controller('DashboardController', function($scope, RequestService, AuthServi
     RequestService.go("/request");
 
     var targetRequest = DashCtrl.requests.splice(index, 1);
-    // var newRequest = JSON.parse(JSON.stringify(targetRequest))
-    
+
     targetRequest = targetRequest[0]
     DashCtrl.requests.push(targetRequest);
-  
+
     RequestService.reEditRequest = true;
-    RequestService. reEditRequestInfo = targetRequest;
+    RequestService.reEditRequestInfo = targetRequest;
 
     targetRequest.isDecided = false;
-    // if(ans){
-    //   targetRequest.isApproved = true;
-    // }else{
-    //   targetRequest.isApproved = false;
-    // }
-    
-    console.log("targetRequest");
-    console.log(targetRequest);  
-    RequestService.editRequest({request: targetRequest}).then(function(success){
+    targetRequest.isApproved = false;
+
+
+    RequestService.editRequest(targetRequest).then(function(success){
       if(success){
         console.log("Modification Success");
 
@@ -53,10 +47,10 @@ app.controller('DashboardController', function($scope, RequestService, AuthServi
     targetRequest = targetRequest[0]
     targetRequest.isDecided = true;
     targetRequest.isActive = false;
-    
+
     console.log("targetRequest");
-    console.log(targetRequest);  
-    RequestService.editRequest({request: targetRequest}).then(function(success){
+    console.log(targetRequest);
+    RequestService.editRequest(targetRequest).then(function(success){
       if(success){
         console.log("Modification Success");
       }else{
