@@ -20,20 +20,20 @@
     </select>
   </div>
 
-  <button type="submit" class="btn btn-default">Search</button> <small>Click the form header to sort.</small>
+  <button type="submit" class="btn btn-default">Search</button> 
 </form>
   <hr>
 
 <div ng-hide="req">
-<table st-table="displayed" class="table table-striped" st-safe-src="rowCollection">
+<table st-table="displayedCollection" class="table table-striped" st-safe-src="rowCollection">
   <thead>
   <tr>
-    <th st-sort="created">Date</th>
-    <th st-sort="description">Specification</th>
+    <th st-sort="created" class="sortable">Date</th>
+    <th st-sort="description" class="sortable">Specification</th>
     <th>Description</th>
-    <th st-sort="value">Price</th>
-    <th st-sort="isApproved">Is Approved</th>
-    <th st-sort="inApproved">In Approved</th>
+    <th st-sort="value" class="sortable">Price</th>
+    <th st-sort="isApproved" class="sortable">Is Approved</th>
+    <th st-sort="inApproved" class="sortable">In Approved</th>
   </tr>
   <tr>
     <th colspan="1">
@@ -42,7 +42,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr ng-repeat="row in displayed">
+  <tr ng-repeat="row in displayedCollection">
     <td>{{row.created.slice(0,10)}}</td>
     <td>{{row.description}}</td>
     <td>{{row.specification[0].name}}</td>
@@ -77,7 +77,21 @@
   </tbody>
 </table>
 </div>
-
-
-
 </div>
+
+<style type="text/css">
+  .sortable {
+      cursor: pointer;
+  }
+  .sortable:after {
+      content: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==);
+      padding-left: 1em;
+  }
+  .st-sort-ascent:after {
+      content: '\25B2';
+  }
+  .st-sort-descent:after {
+      content: '\25BC';
+  }
+</style>
+

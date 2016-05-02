@@ -1,33 +1,4 @@
 // public/javascripts/controllers/RecordController.js
-<<<<<<< HEAD
-app.controller('RecordController', function($scope, RecordService, OrgService) {
-	
-  var RecCtrl = this;
-
-  $scope.reqdata = {
-    requests: null,
-    availableOptions : null 
-  };
-
-
-  OrgService.getOrgList().then(function(data) {
-    if (data){
-      $scope.orgs = data;
-      console.log(data);
-    }
-  });
-
-  RecordService.getRequests().then(function(response) {
-      $scope.reqs = response;
-    });
-
-  $scope.filterReq = function() {
-      var request = $scope.reqs.filter(function (el) {
-        return el.org == $scope.org.value
-      });
-      $scope.reqdata.availableOptions = request; 
-=======
-
 app.controller('RecordController', function(RecordService, OrgService) {
   var RecCtrl = this;
   this.categories =
@@ -44,8 +15,8 @@ app.controller('RecordController', function(RecordService, OrgService) {
       this.isValid = false;
       this.helpBlock = '';
     };
->>>>>>> 09c923a83d283cf742d1ad213a9baf7416f6d05e
   }
+  
   function FieldWithValidation(initialValue, validationFunction) {
     Field.call(this, initialValue);
     this.validate = validationFunction;

@@ -11,7 +11,7 @@ app.controller('SearchController', function($scope, AllocationService, OrgServic
   $scope.rec = true;
 
   $scope.rowCollection = [];
-  $scope.displayed = [];
+  // $scope.displayed = [];
 
 
   $scope.submitSearch =function(){
