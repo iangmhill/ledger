@@ -113,20 +113,20 @@ app.get('/api/getUserOrgs',
 // org GET requests
 app.get('/api/getListedOrgs',
     authentication.authenticateUser, routes.getListedOrgs);
-//wzc:???
+//ToD0: To be implemented
 app.get('/api/getOrgByUrl/:url',
     authentication.authenticateUser, routes.getOrgByUrl);
-//wzc:???
+//ToD0: To be implemented
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
 app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
-//wzc:???
+//ToD0: To be implemented
 app.get('/api/getUserRequests',
     authentication.authenticateUser, routes.getUserRequests);
 // record GET requests
-//wzc:???
+//ToD0: To be implemented
 app.get('/api/getOrgRecords/:id',
     authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
@@ -147,7 +147,7 @@ app.post('/changePassword',
     authentication.changePassword);
 
 // user POST requests
-//wzc:???
+//ToD0: To be implemented
 app.post('/api/changeOwnership',
     authentication.authenticateAdmin, routes.changeOwnership);
 app.post('/auth/resolveUser',
@@ -158,10 +158,10 @@ app.post('/api/createOrg',
     authentication.authenticateOwner, routes.createOrg);
 app.post('/api/changeOwner',
     authentication.authenticateUser, routes.changeOwner);
-//wzc:???
+//ToD0: To be implemented
 app.post('/api/editOrg',
     authentication.authenticateOwner, routes.editOrg);
-//wzc:???
+//ToD0: To be implemented
 app.post('/api/deleteOrg',
     authentication.authenticateOwner, routes.deleteOrg);
 
