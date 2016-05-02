@@ -31,50 +31,39 @@
 
 	<div
 	      uib-collapse="DashCtrl.requestsHistory.isCollapsed"
-	      class="panel panel-default panel-form">
-	    <div class="panel-heading"></div>
-	    <div class="panel-body col-md-11 ">
-	      <form role="form" autocomplete="off" ng-repeat = "request in DashCtrl.requests">
-	        <!-- col-sm-offset-1 -->
-	        <div class="form-group row" >
-				<div class="row vertical-align">
-					<div class="col-md-3">
-						<div>{{request.created}}</div>
+	      class="panel panel-info panel-form">
+	    <div class="panel-body col-md-12 ">
+	        <ul class="list-group" ng-repeat = "request in DashCtrl.requests">
+	        	<p class="list-group-item-text vertical-align">
+	        		<div class="panel panel-info">
+					  <div class="panel-heading">
+					  	{{request.created| date}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.orgName}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.value| currency}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isApproved === true ? "Approved" : "Declined"}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isDecided === true ? "Decided" : "Undecided"}}
+					  </div>
+					  <div class="panel-body">
+					    <Strong>Description: </Strong>{{request.description}}
+						<div ng-show = "request.isDecided" ng-if = "request.comment != ''">
+						  <Strong>Comment: </Strong> {{request.comment}}
+						</div>
+						<div class="btn-toolbar pull-right" >
+				          	<button
+				              	type="button"
+				              	class="btn btn-default"
+				              	ng-click="DashCtrl.resubmit($index, true)">
+				            	Resubmit
+				          	</button>
+				          	<button
+				              	type="button"
+				              	class="btn btn-default"
+				              	ng-click="DashCtrl.cancel($index, true)">
+				            	Cancel
+				          	</button>
+			  	        </div>
+					  </div>
 					</div>
+				</p>
+			
+			</ul>
 
-					<div class="col-md-3">
-						<div>{{request.orgName}}</div>
-					</div>
-
-					<div class="col-md-2 subtext indent">
-						<div>{{request.description}}</div>
-					</div>
-
-					<div class="col-md-2 subtext indent">
-						<div>{{request.value}}</div>
-					</div>
-
-					<div class="col-md-1">
-						<div>{{request.isApproved}}</div>
-					</div>
-				
-		        <div class="btn-toolbar pull-right col-md-2" >
-		          <button
-		              type="button"
-		              class="btn btn-default"
-		              ng-click="DashCtrl.resubmit($index, true)">
-		            Resubmit
-		          </button>
-		          <button
-		              type="button"
-		              class="btn btn-default"
-		              ng-click="DashCtrl.cancelRequest()">
-		            Cancel
-		          </button>
-	  	        </div>
-				</div>
-	        </div>
-	      </form>
 	    </div>
 	  </div>
 	  <hr>

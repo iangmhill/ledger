@@ -2,6 +2,7 @@
 app.controller('ManageController', function(AuthService, OrgService, RequestService) {
   var MngCtrl = this;
   // Initialization
+  this.isCollapsed = true;
   this.roots = [];
   this.orgs = {};
   this.pendingUsers = [];
@@ -195,7 +196,6 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
           ? checkRoot(tree, roots, tree[rootToCheck].parent)
           : true;
     }
-
     MngCtrl.roots = response.roots.filter(function(root) {
       var roots = response.roots.slice(0);
       roots.splice(roots.indexOf(root),1);
@@ -206,11 +206,37 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     MngCtrl.updateOrgs();
   });
 
+
+
+ this.comment = {
+    value: '',
+    validation: {
+      isValid: 'empty',
+      helpBlock: ''
+    },
+    validate: function() {
+      if (typeof this.value != 'string' ||
+          this.value.length < 1) {
+        this.validation.isValid = 'invalid';
+        this.validation.helpBlock = 'comment cannot be empty';
+      } else {
+        this.validation.isValid = 'valid';
+      }
+    }
+  }
+
   this.resolveFunRequest = function(index, ans){
+    // this.isCollapsed = !this.isCollapsed;
+    // console.log("this.isCollapsed");
+    // console.log(this.isCollapsed);
+
+
+    console.log(this.comment.value);
+
     var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
-    // var newRequest = JSON.parse(JSON.stringify(targetRequest))
     targetRequest = targetRequest[0]
-    targetRequest.inApproved = false;
+    targetRequest.isDecided = true;
+    targetRequest.comment = MngCtrl.comment.value
     if(ans){
       targetRequest.isApproved = true;
     }else{
@@ -221,6 +247,8 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     RequestService.editRequest({request: targetRequest}).then(function(success){
       if(success){
         console.log("Modification Success");
+        MngCtrl.comment.value = "";
+        MngCtrl.isCollapsed = true;
       }else{
         alert("Modification Failure");
       }

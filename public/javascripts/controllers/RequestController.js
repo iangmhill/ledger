@@ -6,6 +6,7 @@ app.controller('RequestController', function(RequestService, OrgService) {
   this.onlineCheck = false;
   this.categories =
       ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
+  this.reEditRequest = RequestService.reEditRequest;
 
   function Field(initialValue) {
     this.value = initialValue;
@@ -125,7 +126,12 @@ app.controller('RequestController', function(RequestService, OrgService) {
         description.isValid = true;
         description.isValidated = true;
         return description.isValid;
-      }
+      },
+      comment: new FieldWithValidation('', function() {
+        this.isValid = !ReqCtrl.reEditRequest ||
+            (typeof this.value === 'string' && this.value.length > 0);
+        this.helpBlock = this.isValid ? ''
+      })
     },
 
     validateAll: function() {
@@ -146,13 +152,22 @@ app.controller('RequestController', function(RequestService, OrgService) {
         isValid += ReqCtrl.createRequest.links
             .validateDescription(link.description) ? 0 : 1;
       })
-      console.log(isValid);
+      isValid += this.comment.validate() ? 0 : 1;
       return isValid == 0;
+    },
+    resetAll: function() {
+      ReqCtrl.createRequest.org.reset();
+      ReqCtrl.createRequest.description.reset();
+      ReqCtrl.createRequest.amount.reset();
+      ReqCtrl.createRequest.online.value = false;
+      ReqCtrl.createRequest.items.array = [];
+      ReqCtrl.createRequest.links.array = [];
+      ReqCtrl.createRequest.comment.reset();
     },
     submit: function() {
       ReqCtrl.alerts = [];
       if (this.validateAll()) {
-        RequestService.createRequest({
+        var request = {
           org: this.org.typeaheadOptions[this.org.value],
           description: this.description.value,
           amount: this.amount.value,
@@ -169,21 +184,35 @@ app.controller('RequestController', function(RequestService, OrgService) {
               category: item.category.value
             };
           })
-        }).then(function(success) {
-          if (success) {
-            ReqCtrl.alerts = [];
-            ReqCtrl.createRequest.org.reset();
-            ReqCtrl.createRequest.description.reset();
-            ReqCtrl.createRequest.amount.reset();
-            ReqCtrl.createRequest.online.value = false;
-            ReqCtrl.createRequest.items.array = [];
-            ReqCtrl.createRequest.links.array = [];
-          }
-          ReqCtrl.alerts.push({
-            type: success ? 'success' : 'danger',
-            msg: success ? 'Successfully Submit the Request' : 'Fail to Submit the Request'
+        };
+        if (this.reEditRequest) {
+          request.comment = this.comment.value;
+          RequestService.editRequest(request).then(function(success) {
+            if (success) {
+              ReqCtrl.alerts = [];
+              ReqCtrl.resetAll();
+              RequestService.reEditRequest = false;
+              RequestService.reEditRequestInfo = undefined;
+              ReqCtrl.reEditRequest = false;
+            }
+            ReqCtrl.alerts.push({
+              type: success ? 'success' : 'danger',
+              msg: success ? 'Successfully Submit the Request' : 'Fail to Submit the Request'
+            });
           });
-        });
+        } else {
+          RequestService.createRequest(request).then(function(success) {
+            if (success) {
+              ReqCtrl.alerts = [];
+              ReqCtrl.resetAll();
+            }
+            ReqCtrl.alerts.push({
+              type: success ? 'success' : 'danger',
+              msg: success ? 'Successfully Submit the Request' : 'Fail to Submit the Request'
+            });
+          });
+        }
+
       } else {
         ReqCtrl.alerts.push({
           type: 'danger',
@@ -193,6 +222,11 @@ app.controller('RequestController', function(RequestService, OrgService) {
     }
   };
 
+  this.dismissAlert = function(index) {
+    ReqCtrl.alerts.splice(index, 1);
+  };
+
+  // Initialization
   OrgService.getOrgList().then(function(orgs) {
     if (orgs) {
       ReqCtrl.orgs = orgs;
@@ -208,7 +242,16 @@ app.controller('RequestController', function(RequestService, OrgService) {
     }
   });
 
-  this.dismissAlert = function(index) {
-    ReqCtrl.alerts.splice(index, 1);
-  };
+  if (RequestService.reEditRequest && RequestService.reEditRequestInfo) {
+    var targetRequest = RequestService.reEditRequestInfo;
+
+    this.org.value = targetRequest.orgName;
+    this.description.value = targetRequest.description;
+    this.amount.value = targetRequest.value;
+    this.online.value = targetRequest.links.length > 1;
+    this.links.array = targetRequest.online;
+    this.items.array = targetRequest.specification;
+  }
+
+
 });

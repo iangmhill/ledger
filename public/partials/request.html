@@ -328,6 +328,48 @@
       </div>
     </div>
 
+    <div
+        ng-if = "reEditRequest"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Comments</div>
+      <div class="panel-body">
+        <form role="form" autocomplete="off" name="commentForm">
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <div
+                  class="form-group"
+                  ng-class="{valid:'has-success has-feedback',
+                      invalid:'has-error has-feedback',
+                      empty:''}[comment.validation.isValid]">
+                <input
+                    name="comment"
+                    id="commentContent"
+                    type="text"
+                    class="form-control"
+                    placeholder="why do you resubmit again?"
+                    autocomplete="off"
+                    ng-model="comment.value"
+                    ng-blur="comment.validate()"
+                    required>
+                <span
+                    ng-if="comment.validation.isValid == 'valid'"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="comment.validation.isValid == 'invalid'"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="comment.validation.isValid == 'invalid'"
+                    class="help-block">
+                  {{comment.validation.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+        </form>
+      </div>
+    </div>
     <div class="form-group row">
       <div class="col-xs-12">
         <div class="btn-toolbar pull-right">

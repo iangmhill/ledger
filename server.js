@@ -120,6 +120,7 @@ app.get('/api/getOrgByUrl/:url',
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
+app.get('/api/getRequests:user', authentication.authenticateUser, routes.getRequests);
 app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
 //ToD0: To be implemented
@@ -170,10 +171,6 @@ app.post('/api/deleteOrg',
 app.post('/api/createRequest',
     authentication.authenticateUser, routes.createRequest);
 app.post('/api/editRequest', authentication.authenticateUser, routes.editRequest);
-app.post('/api/closeRequest',
-    authentication.authenticateOwner, routes.closeRequest);
-app.get('/api/getRequests:user',routes.getRequests);
-// authentication.authenticateUser,
 
 // record POST requests
 app.post('/api/createRecord',
