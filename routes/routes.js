@@ -146,8 +146,9 @@ var routes = {
 
   },
   getOrgRequests: function(req, res) {
+    var orgid = req.params.id;
     var requestlist = [];
-    Request.find({},function (err, requestlist) {
+    Request.find({org:orgid},function (err, requestlist) {
     if (err) return console.error(err);
       res.json(requestlist);
     })
@@ -156,7 +157,14 @@ var routes = {
 
   },
   getOrgRecords: function(req, res) {
-
+    var orgid = req.params.id;
+    console.log(orgid);
+    var recordlist = [];
+    Record.find({},function (err, recordlist) {
+      if (err) return console.error(err);
+      console.log("Record list: " + recordlist);
+      res.json(recordlist);
+    })
   },
   getUserRecords: function(req, res) {
 
@@ -268,7 +276,6 @@ var routes = {
     })
   },
   approveTransfer: function(req, res) {
-    console.log(req.body);
   },
   editOrg: function(req, res) {
 
@@ -306,8 +313,6 @@ var routes = {
               isApproved: false
             }
     var errorResponse = { isSuccessful: false, isValid: false };
-    console.log("server request ");
-    console.log(validation);
     if (!validation.request.request(
       data.description,
       data.type,
@@ -319,17 +324,14 @@ var routes = {
     )) {
       return res.json(errorResponse);
     }
-    console.log("request org: " +  data.org);
     validation.org.getInfo(data.org).then(function (orgData){
       data.org = orgData.id;
-      console.log("request org: " +  orgData.id);
       if(orgData.approval){
         data.isApproved = true;
       }
       else{
         data.isApproved = false;
       }
-      console.log("data.isApproved: " + data.isApproved);
       Request.create(data, confirm);
     });
   },
@@ -348,9 +350,6 @@ var routes = {
       }
 
 
-    console.log("routes editRequest");
-    // console.log(req.body);
-    console.log(req.body.request);
     Request.find({_id: req.body.request._id}, function(err, requests) {
         if (err) {
           console.log("fail edit request" + err)
@@ -361,7 +360,6 @@ var routes = {
         }
         var request = requests[0];
         request.isApproved = req.body.request.isApproved;
-        console.log(request);
         request.save(confirm);
       });
   },
@@ -369,9 +367,6 @@ var routes = {
     var tasks = [];
     var id = mongoose.Types.ObjectId(req.params.user);
     var filteredRequests = [];
-    console.log("routes getRequests");
-    console.log(typeof(id));
-    console.log(id);
 
     Request.find({user: id}, function(err, requests) {
         if (err) {
@@ -384,10 +379,8 @@ var routes = {
         requests.forEach(function(request){
           tasks.push(function(callback){
             Org.find({_id: request.org}, function(err, orgs){
-              console.log("orgs[0].name");
-              console.log(orgs[0].name);
               var newRequest = JSON.parse(JSON.stringify(request));
-              newRequest.orgName = orgs[0].name;
+              // newRequest.orgName = orgs[0].name;
               filteredRequests.push(newRequest);
               callback(null, null);
             })
@@ -395,9 +388,6 @@ var routes = {
         })
 
         async.series(tasks, function(err, results){
-          console.log("requests.length");
-          console.log(filteredRequests.length);
-          console.log(filteredRequests);
           res.status(200).json({
             success: true,
             requests: filteredRequests

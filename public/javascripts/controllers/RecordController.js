@@ -14,7 +14,6 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
       $scope.orgs = data;
       console.log(data);
     }
-
   });
 
   RecordService.getRequests().then(function(response) {
