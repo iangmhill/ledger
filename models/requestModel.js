@@ -1,7 +1,35 @@
 // models/requestModel.js
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var Mixed    = mongoose.Schema.Types.Mixed;
+var mongoose  = require('mongoose');
+var ObjectId  = mongoose.Schema.Types.ObjectId;
+var Mixed     = mongoose.Schema.Types.Mixed;
+var constants = require('../utilities/constants');
+
+var Item = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: constants.itemCategories
+  }
+});
+
+var Link = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
+  }
+});
 
 var Request = mongoose.Schema({
   user: {
@@ -15,40 +43,28 @@ var Request = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
-    // default: "test"
-  },
-  type: {
-    type: String,
-    required: true,
-    enum: ['expense', 'transfer', 'revenue'],
-    default: "expense"
+    required: true
   },
   value: {
     type: Number,
-    required: true,
-    // default: 100
+    required: true
+  },
+  remaining: {
+    type: Number,
+    required: true
   },
   org: {
-    // type: String,
     type: ObjectId,
+    ref: 'orgs',
     required: true
-    // default: "SAO"
   },
-  details: {
-    type: String, 
-    // type: Mixed,
-    required: true,
-    // default: {}
-    default: ""
+  links: {
+    type: [Link],
+    required: false
   },
-  online: {
-    type: Array
-  },
-  specification: {
-    type: Array,
-    required: true,
-    // default: ["test"]
+  items: {
+    type: [Item],
+    required: false
   },
   isActive: {
     type: Boolean,
@@ -56,7 +72,8 @@ var Request = mongoose.Schema({
   },
   approvals: {
     type: [ObjectId],
-    // required: true,
+    ref: 'users',
+    required: false,
     default: []
   },
   isApproved: {

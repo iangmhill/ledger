@@ -1,4 +1,5 @@
 // public/javascripts/controllers/RecordController.js
+<<<<<<< HEAD
 app.controller('RecordController', function($scope, RecordService, OrgService) {
 	
   var RecCtrl = this;
@@ -25,387 +26,246 @@ app.controller('RecordController', function($scope, RecordService, OrgService) {
         return el.org == $scope.org.value
       });
       $scope.reqdata.availableOptions = request; 
+=======
+
+app.controller('RecordController', function(RecordService, OrgService) {
+  var RecCtrl = this;
+  this.categories =
+      ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
+
+  function Field(initialValue) {
+    this.value = initialValue;
+    this.isValidated = false;
+    this.isValid = false;
+    this.helpBlock = '';
+    this.reset = function() {
+      this.value = initialValue;
+      this.isValidated = false;
+      this.isValid = false;
+      this.helpBlock = '';
+    };
+>>>>>>> 09c923a83d283cf742d1ad213a9baf7416f6d05e
+  }
+  function FieldWithValidation(initialValue, validationFunction) {
+    Field.call(this, initialValue);
+    this.validate = validationFunction;
+  }
+  function Item() {
+    this.name = new Field('');
+    this.price = new Field(0);
+    this.category = new Field('');
   }
 
-  $scope.names = [];
-
-  $scope.updateTypeaheadOptions = function() {
-    $scope.typeaheadOptions = {};
-    for (var ele in $scope.orgs){
-      elename = ele.name;
-      $scope.typeaheadOptions[elename] = ele._id;
-      $scope.names.push(elename);
+  this.alerts = [];
+  this.requests = [];
+  this.orgs = [];
+  this.pcardOptions = [1,2];
+  this.typeOptions = ['revenue','purchase'];
+  this.datePicker = {
+    open: false,
+    format: 'shortDate',
+    altFormat: 'M!/d!/yy',
+    options: {
+      formatYear: 'yy',
+      maxDate: new Date(),
+      minDate: new Date(2016, 1, 1),
+      startingDay: 1
     }
   };
-  $scope.updateTypeaheadOptions();
 
-
-
-  $scope.today = function() {
-    $scope.dt = new Date();
-  };
-  $scope.today();
-
-  $scope.clear = function() {
-    $scope.dt = null;
-  };
-
-  $scope.dateOptions = {
-    formatYear: 'yy',
-    maxDate: new Date(),
-    minDate: new Date(2016, 1, 1),
-    startingDay: 1
-  };
-
-  $scope.inlineOptions = {
-    customClass: getDayClass,
-    minDate: new Date(),
-    showWeeks: true
-  };
-
-  $scope.open1 = function() {
-    $scope.popup1.opened = true;
-  };
-
-  function getDayClass(data) {
-    var date = data.date,
-      mode = data.mode;
-    if (mode === 'day') {
-      var dayToCheck = new Date(date).setHours(0,0,0,0);
-
-      for (var i = 0; i < $scope.events.length; i++) {
-        var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
-
-        if (dayToCheck === currentDay) {
-          return $scope.events[i].status;
-        }
+  this.createRecord = {
+    type: new Field('purchase'),
+    org: new FieldWithValidation('', function() {
+      if (this.typeaheadOptions) {
+        this.isValid = !!this.typeaheadOptions[this.value];
+        this.helpBlock = this.isValid ? 'Invalid organization' : '';
+        this.isValidated = true;
+        return this.isValid;
       }
-    }
-    return '';
-  }
-  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-  $scope.format = $scope.formats[0];
-  $scope.altInputFormats = ['M!/d!/yyyy'];
-
-  $scope.popup1 = {
-    opened: false
-  };
-
-
-
-
-  $scope.reim = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
+    }),
+    description: new FieldWithValidation('', function() {
+      this.isValid = typeof this.value === 'string';
+      this.helpBlock = this.isValid ? 'Invalid description' : '';
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    reimbursement: new Field('pcard'),
+    pcard: new FieldWithValidation('0', function() {
+      this.isValid = RecCtrl.createRecord.type.value !== 'purchase' ||
+          (parseInt(this.value) == 0 ||
+          RecCtrl.pcardOptions.indexOf(parseInt(this.value)) > -1);
+      this.helpBlock = this.isValid ? 'Invalid p-card number' : '';
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    request: new FieldWithValidation('', function() {
+      this.isValid = RecCtrl.createRecord.type.value !== 'purchase' ||
+          (typeof this.value === 'string' && this.value.length > 0);
+      this.helpBlock = this.isValid ? 'A request must be selected' : '';
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    date: new FieldWithValidation('', function() {
+      var date = new Date(this.value);
+      this.isValid = !!date && date > RecCtrl.datePicker.options.minDate &&
+          date < RecCtrl.datePicker.options.maxDate;
+      this.helpBlock = this.isValid ? 'Invalid date of purchase' : '';
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    amount: new FieldWithValidation(0, function() {
+      if (RecCtrl.createRecord.type.value !== 'revenue') { return true; }
+      this.isValid = this.value && this.value != 0 &&
+          RecCtrl.recordForm.amount.$valid;
+      if (RecCtrl.recordForm.amount.$error.required) {
+        this.helpBlock = "This field cannot be empty";
+      } else {
+        this.helpBlock = "The amount cannot be zero";
+      }
+      this.isValidated = true;
+      return this.isValid;
+    }),
+    items: {
+      array: [new Item()],
+      total: 0,
+      addItem: function() {
+        this.array.push(new Item());
       },
-    validate: function(){
-      if($scope.recordForm.reim.$valid){
-        this.validation.isValid = "valid";
-      }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.reim.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "This field must be string";
-        }
-      }
-    } 
-  }
-
-
-  $scope.type = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
+      delItem: function(index) {
+        this.array.splice(index, 1);
       },
-    validate: function(){
-      if($scope.recordForm.type.$valid){
-        this.validation.isValid = "valid";
-      }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.type.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "This field must be string";
-        }
-      }
-    } 
-  }
-
-  $scope.org = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
+      validate: function() {
+        if (RecCtrl.createRecord.type.value !== 'purchase') { return true; }
+        var isValid = 0, items = this;
+        this.array.forEach(function(item) {
+          isValid += items.validateName(item.name) ? 0 : 1;
+          isValid += items.validatePrice(item.price) ? 0 : 1;
+          isValid += items.validateCategory(item.category) ? 0 : 1;
+        })
+        return isValid == 0;
       },
-    validate: function(){
-      if($scope.recordForm.org.$valid){
-        this.validation.isValid = "valid";
-      }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.org.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "This field must be string";
-        }
-      }
-    } 
-  }
-
-
-  $scope.pcard = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
+      validateName: function(name) {
+        name.isValid = !!name.value && name.value != '';
+        name.helpBlock = name.isValid
+            ? ''
+            : 'The name cannot be empty';
+        name.isValidated = true;
+        return name.isValid;
       },
-    validate: function(){
-      if($scope.recordForm.pcard.$valid){
-        this.validation.isValid = "valid";
+      validatePrice: function(price) {
+        price.isValid = !!price.value && price.value > 0;
+        price.helpBlock = price.isValid
+            ? ''
+            : 'The price must be greater than $0.00';
+        price.isValidated = true;
+        return price.isValid;
+      },
+      validateCategory: function(category) {
+        category.isValid = !!category.value && category.value != '';
+        category.helpBlock = category.isValid
+            ? ''
+            : 'The category cannot be empty';
+        category.isValidated = true;
+        return category.isValid;
+      },
+      updateTotal: function() {
+        var sum = 0;
+        this.array.map(function(item) {
+          sum += item.price.value;
+        });
+        this.total = sum;
       }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.pcard.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "This field must be string";
-        }
+    },
+    filterRequests: function() {
+      if (this.org.typeaheadOptions) {
+        this.request.options = RecCtrl.requests.filter(function (request) {
+          return request.org == RecCtrl.createRecord.org
+              .typeaheadOptions[RecCtrl.createRecord.org.value];
+        });
       }
-    } 
-  }
+    },
+    validateAll: function() {
+      var isValid = 0;
+      isValid += this.org.validate() ? 0 : 1;
+      isValid += this.description.validate() ? 0 : 1;
+      isValid += this.pcard.validate() ? 0 : 1;
+      isValid += this.request.validate() ? 0 : 1;
+      isValid += this.date.validate() ? 0 : 1;
+      isValid += this.items.validate() ? 0 : 1;
+      isValid += this.amount.validate() ? 0 : 1;
+      return isValid == 0;
+    },
+    submit: function() {
+      RecCtrl.alerts = [];
+      if (this.validateAll()) {
+        console.log(this.type.value);
+        RecordService.createRecord({
+          type: this.type.value,
+          description: this.description.value,
+          value: (this.type.value == 'purchase'
+              ? this.items.total
+              : this.amount.value),
+          org: this.org.typeaheadOptions[this.org.value],
+          paymentMethod: this.reimbursement.value,
+          pcard: parseInt(this.pcard.value),
+          request: this.request.value,
+          date: this.date.value,
+          items: this.items.array.map(function(item) {
+            return {
+              description: item.name.value,
+              price: item.price.value,
+              category: item.category.value
+            };
+          })
+        }).then(function(success) {
+          if (success) {
+            RecCtrl.alerts = [];
+            RecCtrl.createRecord.type.reset();
+            RecCtrl.createRecord.org.reset();
+            RecCtrl.createRecord.description.reset();
+            RecCtrl.createRecord.reimbursement.reset();
+            RecCtrl.createRecord.pcard.reset();
+            RecCtrl.createRecord.request.reset();
+            RecCtrl.createRecord.date.reset();
+            RecCtrl.createRecord.amount.reset();
+            RecCtrl.createRecord.items.array = [];
 
-
-
-  $scope.items = [];
-  $scope.links = [];
-  var itemNum = 1;
-  var linkNum = 1;
-  var item = {
-    name: "", 
-    price: 0, 
-    category: "", 
-    index: 0,
-      validation: {
-        isValid: 'empty',
-        nameHelpBlock: '',
-        priceHelpBlock: '',
-        categoryHelpBlock: ''
-      }
-  }
-  $scope.items.push(item);
-  $scope.specificationCheck = false;
-
-    $scope.validateItem = function(index){
-    $scope.items.forEach(function(item){
-    // console.log("validation item");
-      if (item.index == index) {
-        console.log("find the item");
-        console.log("index: " + index);
-        console.log(item.name);
-        item.validation.nameHelpBlock = "";
-        item.validation.priceHelpBlock = "";
-        item.validation.categoryHelpBlock = "";
-        if(item.name == ""  || !item.name){
-          item.validation.isValid = "invalid";
-          item.validation.nameHelpBlock = "The name cannot be empty";
-          console.log("name")
-          console.log(item.validation.isValid);
-          $scope.submitStatus -= 1; 
-        }
-        else{
-          $scope.submitStatus += 1; 
-          if(item.price == 0 || !item.price){
-            item.validation.isValid = "invalid";          
-            item.validation.priceHelpBlock = "The price must be a non-zero number";
-            item.validation.categoryHelpBlock = "";             
-            console.log("price")
-            console.log(item.validation.isValid);
-            $scope.submitStatus -= 1; 
           }
-          else{
-            $scope.submitStatus += 1; 
-            if (item.category == ""  || !item.category){
-              item.validation.isValid = "invalid";
-              item.validation.categoryHelpBlock = "The category cannot be empty";             
-              console.log("category")
-              console.log(item.validation.isValid);
-              $scope.submitStatus -= 1; 
-            }
-            else{
-              $scope.submitStatus += 1; 
-              item.validation.isValid = "valid";
-              item.validation.nameHelpBlock = "";
-              item.validation.priceHelpBlock = "";
-              item.validation.categoryHelpBlock = "";
-              console.log("else")
-              console.log(item.validation.isValid);
-            }
-          }
-        } 
-      };
-    })
-  }
-
-
-  $scope.addItem = function(){
-    var newItem = {
-      name: "", 
-      price: 0, 
-      category: "", 
-      index: itemNum,
-        validation: {
-          isValid:  'empty',
-          nameHelpBlock: '',
-          priceHelpBlock: '',
-          categoryHelpBlock: ''
-        }
+          RecCtrl.alerts.push({
+            type: success ? 'success' : 'danger',
+            msg: success ? 'Successfully created the record' : 'Failed to create the record'
+          });
+        });
+      } else {
+        RecCtrl.alerts.push({
+          type: 'danger',
+          msg: 'Something wrong with the form'
+        });
+      }
     }
-    itemNum += 1;
-    $scope.items.push(newItem);
-  };
-  $scope.delItem = function(index){
-    $scope.items.splice(index, 1);
-  };
-
-  $scope.sum = function(items, prop){
-      return items.reduce( function(a, b){
-          return a + b[prop];
-      }, 0);
-  };
-
-  $scope.totalamount = 0;
-
-  $scope.updatePrice = function(){
-    $scope.totalamount = $scope.sum($scope.items, 'price');
   }
 
-
-
-  $scope.sac = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
-      },
-    validate: function(){
-      if($scope.recordForm.sac.$valid){
-        this.validation.isValid = "valid";
+  OrgService.getOrgList().then(function(orgs) {
+    if (orgs) {
+      RecCtrl.orgs = orgs;
+      RecCtrl.createRecord.org.typeaheadOptions = {};
+      for (index in RecCtrl.orgs) {
+        var org = RecCtrl.orgs[index];
+        var name = org.shortName
+            ? org.name + ' (' + org.shortName + ')'
+            : org.name;
+        RecCtrl.createRecord.org.typeaheadOptions[name] = org._id;
       }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.sac.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else{
-          this.validation.helpBlock = "This field must be string";
-        }
-      }
-    } 
-  }
-
-  $scope.date = {
-    value: '',
-      validation: {
-        // isValid: 'valid',
-        isValid: 'empty',
-        helpBlock: ''
-      },
-    validate: function(){
-      if($scope.recordForm.date.$valid){
-        this.validation.isValid = "valid";
-      }
-      else{
-        this.validation.isValid = "invalid";
-        if($scope.recordForm.date.$error.required){
-          this.validation.helpBlock = "This field cannot be empty";
-        }
-        else if ($scope.recordForm.date.$error.pattern){
-          this.validation.helpBlock = "Please enter a valid date in the format MM/DD/YYYY";
-        }
-      }
-    } 
-  }
-
-  this.clear = function(field) {
-    field.value = '';
-    field.validation.isValid = 'empty';
-    field.validation.helpBlock = '';
-  };
-
-
-	this.submitCreateRecordForm = function() {
-
-    
-    $scope.reim.validate();
-    $scope.type.validate();
-    $scope.org.validate();
-    $scope.pcard.validate();
-    $scope.sac.validate();
-
-    var data = {
-      type: $scope.type.value,
-      occurred: new Date($scope.date.value),
-      paymentMethod: $scope.pcard.value,
-      request: $scope.requests.value,
-      value: $scope.totalamount,
-      details: $scope.items,
-      org: $scope.org.value,
-      void: false
     }
-    console.log(data);
-    RecordService.createRecord(data);
-    $scope.totalamount = 0;
-    this.clear($scope.org);
-    this.clear($scope.type);
-    this.clear($scope.pcard);
-    this.clear($scope.reim);
-    this.clear($scope.date);
-    this.clear($scope.sac);
-    $scope.requests = "";
-    
+  });
 
-    itemNum = 1;
-    $scope.items = $scope.items.splice(0, 1)
-    $scope.items.forEach(function(item){
-      item.name = "";
-      item.price = 0;
-      item.category = "";
-      item.validation.isValid = "empty";
-      item.validation.nameHelpBlock = "";
-        item.validation.priceHelpBlock = "";
-        item.validation.categoryHelpBlock = "";
-    })
-  
-	};  
+  RecordService.getRequests().then(function(requests) {
+    if (requests) {
+      RecCtrl.requests = requests;
+    }
+  });
 
-}).filter('search', function() {
-  return function(input, search) {
-    if (!input) return input;
-    if (!search) return input;
-    var expected = ('' + search).toLowerCase();
-    var result = [];
-    angular.forEach(input, function(id, name) {
-      if (name.toLowerCase().indexOf(expected) !== -1) {
-        result.push(name);
-      }
-    });
-    return result;
-  }
+  this.dismissAlert = function(index) {
+    RecCtrl.alerts.splice(index, 1);
+  };
 });
-
-

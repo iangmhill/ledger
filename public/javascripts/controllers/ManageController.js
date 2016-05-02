@@ -180,9 +180,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
 
   AuthService.getFundRequests().then(function(fundRequests) {
     MngCtrl.pendingFundRequests = fundRequests || [];
-    console.log("MngCtrl.pendingFundRequests");
-    console.log(MngCtrl.pendingFundRequests);
-
+    console.log(fundRequests);
   });
 
   AuthService.getPendingUsers().then(function(pendingUsers) {
@@ -190,16 +188,18 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
   });
 
   OrgService.getUserOrgs().then(function(response) {
+    console.log(response);
     var checkRoot = function(tree, roots, rootToCheck) {
       if (roots.indexOf(rootToCheck) > -1) { return false; }
-      return tree[rootToCheck].parent
+      return tree[rootToCheck] && tree[rootToCheck].parent
           ? checkRoot(tree, roots, tree[rootToCheck].parent)
           : true;
     }
+
     MngCtrl.roots = response.roots.filter(function(root) {
       var roots = response.roots.slice(0);
       roots.splice(roots.indexOf(root),1);
-      console.log(response.roots);
+
       return checkRoot(response.orgs, roots, root);
     });
     MngCtrl.orgs = response.orgs;
@@ -217,7 +217,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
       targetRequest.isApproved = false;
     }
     console.log("targetRequest");
-    console.log(targetRequest);  
+    console.log(targetRequest);
     RequestService.editRequest({request: targetRequest}).then(function(success){
       if(success){
         console.log("Modification Success");
@@ -228,17 +228,4 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
   };
 
 
-}).filter('search', function() {
-  return function(input, search) {
-    if (!input) return input;
-    if (!search) return input;
-    var expected = ('' + search).toLowerCase();
-    var result = [];
-    angular.forEach(input, function(id, name) {
-      if (name.toLowerCase().indexOf(expected) !== -1) {
-        result.push(name);
-      }
-    });
-    return result;
-  }
 });

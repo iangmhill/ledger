@@ -5,11 +5,12 @@ var Org        = require('../models/orgModel');
 var User       = require('../models/userModel');
 var Request    = require('../models/requestModel');
 var Transfer   = require('../models/transferModel');
-var Record     = require('../models/recordModel');
+var Record     = require('../models/recordModel').record;
+var Purchase   = require('../models/recordModel').purchase;
+var Revenue    = require('../models/recordModel').revenue;
 var q          = require('q');
 var validation = require('../utilities/validation');
 var async = require('async');
-
 
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
@@ -47,7 +48,7 @@ var routes = {
       var deferred = q.defer();
       var children = {};
       var nextIds = [];
-      Org.find({parent:ids[0]}, function(err, orgs) {
+      Org.find({parent: {$in: ids}}, function(err, orgs) {
 
         if (orgs.length > 0) {
           for (index in orgs) {
@@ -75,9 +76,12 @@ var routes = {
       recursiveFind(req.user.orgs).then(function(children) {
         var allOrgs = mergeArray(children, roots);
         User.find({orgs:{ $in: Object.keys(allOrgs)}}, function(err, users) {
+
           for (userIndex in users) {
             for (idIndex in users[userIndex].orgs) {
-              allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
+              if (Object.keys(allOrgs).indexOf(users[userIndex].orgs[idIndex].toString()) > -1) {
+                allOrgs[users[userIndex].orgs[idIndex]].owners.push(users[userIndex]);
+              }
             }
           }
           res.json({
@@ -110,7 +114,7 @@ var routes = {
               if (err) { res.json({isSuccessful: false}); }
               var allocated = 0;
               for (index in requests) {
-                allocated += requests[index].value;
+                allocated += requests[index].remaining;
               }
               for (index in children) {
                 allocated += children[index].budget;
@@ -284,55 +288,36 @@ var routes = {
 
   },
   createRequest: function(req, res) {
-    // Request.find().remove().exec();   
-
-    function confirm(err, request) {
-      if (err) {
-        console.log("fail creating request " + err)
-        return res.send({
-          success: false,
-          message: 'ERROR: Could not create request'
-        });
-      }
-      console.log("success!")
-      return res.send({
-        success: true,
+    console.log(req.body);
+    var request = {
+      user: req.user._id,
+      description: req.body.description,
+      value: req.body.amount,
+      remaining: req.body.amount,
+      org: req.body.org,
+      links: req.body.links,
+      items: req.body.items,
+      isActive: false,
+      isApproved: false
+    };
+    console.log(request)
+    validation.request.request(
+      request.description,
+      request.value,
+      request.org,
+      request.links,
+      request.items
+    ).then(function(preapproved) {
+      request.isApproved = preapproved;
+      return Request.create(request);
+    }).then(function(request) {
+      res.send({ isSuccessful: true, request: request });
+    }).catch(function(err) {
+      console.log(err);
+      res.send({
+        isSuccessful: false,
+        message: 'ERROR: Could not create request'
       });
-    }
-
-    var data = {
-              user: req.user._id,
-              description: req.body.description,
-              type: req.body.type,
-              value: req.body.amount,
-              org: req.body.organization,
-              details: req.body.details,
-              online: req.body.online,
-              specification: req.body.specification,
-              isActive: false,
-              isApproved: false
-            }
-    var errorResponse = { isSuccessful: false, isValid: false };
-    if (!validation.request.request(
-      data.description,
-      data.type,
-      data.value,
-      data.org,
-      data.details,
-      data.online,
-      data.specification
-    )) {
-      return res.json(errorResponse);
-    }
-    validation.org.getInfo(data.org).then(function (orgData){
-      data.org = orgData.id;
-      if(orgData.approval){
-        data.isApproved = true;
-      }
-      else{
-        data.isApproved = false;
-      }
-      Request.create(data, confirm);
     });
   },
   editRequest: function(req, res) {
@@ -349,10 +334,8 @@ var routes = {
         });
       }
 
-
     Request.find({_id: req.body.request._id}, function(err, requests) {
         if (err) {
-          console.log("fail edit request" + err)
           return res.send({
             success: false,
             message: 'ERROR: Could not edit request'
@@ -399,37 +382,83 @@ var routes = {
 
   },
   createRecord: function(req, res) {
-    function confirm(err, record) {
-      if (err) {
-        console.log("fail recording" + err)
-        return res.send({
-          success: false,
-          message: 'ERROR: Could not create record'
-        });
-      }
-      console.log("success!")
-      return res.send({
-        success: true,
+    function handleError(err) {
+      console.log(err);
+      res.send({
+        isSuccessful: false,
+        message: 'ERROR: Could not create request'
       });
     }
-
-    var data = {
-          user: req.user._id,
-          type: req.body.type,
-          occurred: req.body.occurred,
-          paymentMethod: req.body.paymentMethod,
-          request: req.body.request,
-          value: req.body.value,
-          details: req.body.details,
-          org: req.body.org,
-          void: req.body.void
-          }
-
-    var errorResponse = { isSuccessful: false, isValid: false };
-    console.log("server request ");
-    if(validation.record(data.type, data.paymentMethod, data.value, data.details)){    
-        Record.create(data, confirm);
-    } else { return res.json(errorResponse); }
+    function handleSuccess(record) {
+      res.send({ isSuccessful: true, request: record });
+    }
+    function adjustBudget(orgId, value) {
+      return new Promise(function(resolve,reject) {
+        Org.findById(orgId).then(function(org) {
+          if (org.budgeted) { org.budget += value; }
+          org.save(function(err) {
+            if (err) { return reject() }
+            if (org.parent) {
+              adjustBudget(org.parent, value).then(resolve,reject);
+            } else {
+              resolve();
+            }
+          })
+        });
+      });
+    }
+    function adjustRequest(requestId, value) {
+      return new Promise(function(resolve,reject) {
+        Request.findById(requestId).then(function(request) {
+          request.remaining += value;
+          request.save(function(err) {
+            if (err) { return reject() }
+            resolve();
+          })
+        });
+      });
+    }
+    var record = {
+      user: req.user._id,
+      type: req.body.type,
+      date: new Date(!!req.body.date ? req.body.date : false),
+      description: req.body.description,
+      value: req.body.value,
+      org: req.body.org
+    }
+    switch (record.type) {
+      case 'purchase':
+        record.request = req.body.request;
+        record.paymentMethod = req.body.paymentMethod;
+        record.pcard = req.body.pcard;
+        record.items = req.body.items;
+        validation.record.purchase(record.date, record.description,
+            record.value, record.org, record.request, record.paymentMethod,
+            record.pcard, record.items).then(function() {
+          return adjustBudget(record.org, -record.value);
+        })
+        .then(function() {
+          return adjustRequest(record.request, -record.value);
+        })
+        .then(function() {
+          return Purchase.create(record);
+        }).then(handleSuccess)
+        .catch(handleError);
+        break;
+      case 'revenue':
+        validation.record.revenue(record.date, record.description, record.value,
+            record.org).then(function() {
+          return adjustBudget(record.org, record.value);
+        })
+        .then(function() {
+          return Revenue.create(record);
+        })
+        .then(handleSuccess)
+        .catch(handleError);
+        break;
+      default:
+        handleError('Invalid record type');
+    }
   },
   editRecord: function(req, res) {
 
@@ -439,12 +468,12 @@ var routes = {
   },
 
   getPendingFundRequests: function(req, res){
- 
+
     var errorResponse = {
       pendingFundRequests: []
     };
-  
-    // console.log("routes, getPendingFundRequests");
+
+    console.log("routes, getPendingFundRequests");
     var orgs = req.user.orgs;
     var filteredOrgs = [];
     var pendingRequests = [];
@@ -455,37 +484,37 @@ var routes = {
 
 
     Org.find({_id:{$in: orgs}}, function(err,orgs){
-      // console.log("find org");
+      console.log("find org");
 
       orgs.forEach(function(org){
-          // console.log(org.name);
+          console.log(org.name);
           if(org.budgeted){
-            // console.log("is budgeted");
+            console.log("is budgeted");
             if(org.nonterminal){
-              // console.log("nonterminal");
+              console.log("nonterminal");
               filteredOrgs.push(org._id);
               budgetedNonterminal.push(org._id);
             }else{
-              // console.log("terminal");
+              console.log("terminal");
               filteredOrgs.push(org._id);
             }
           }
-      
+
       })
-      
-      // console.log("filteredOrgs: ");
-      // console.log(filteredOrgs);
-      // console.log("budgetedNonterminal: ");
-      // console.log(budgetedNonterminal); 
+
+      console.log("filteredOrgs: ");
+      console.log(filteredOrgs);
+      console.log("budgetedNonterminal: ");
+      console.log(budgetedNonterminal);
 
       budgetedNonterminal.forEach(function(pOrg){
         tasks.push(function(callback){
-          // console.log("parent: ");
-          // console.log(pOrg);
+          console.log("parent: ");
+          console.log(pOrg);
           Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
             orgs.forEach(function(org){
-              // console.log("find children");
-              // console.log(org.name);
+              console.log("find children");
+              console.log(org.name);
               filteredOrgs.push(org._id);
               callback(null, null);
             })
@@ -494,10 +523,10 @@ var routes = {
       })
 
       async.series(tasks, function(err, results){
-        // console.log("filteredOrgs: ");
-        // console.log(filteredOrgs);
-        // console.log("budgetedNonterminal: ");
-        // console.log(budgetedNonterminal);  
+        console.log("filteredOrgs: ");
+        console.log(filteredOrgs);
+        console.log("budgetedNonterminal: ");
+        console.log(budgetedNonterminal);
         Request.find({org:{$in: filteredOrgs}, isApproved: false, inApproved: true}, function(err, requests){
           if (err || !requests) { return res.json(errorResponse); }
           requests.forEach(function(request){
@@ -509,7 +538,7 @@ var routes = {
             tasks.push(function(callback){
               // console.log("request.user");
               // console.log(request.user);
-              User.find({_id:request.user}, function(err, users){ 
+              User.find({_id:request.user}, function(err, users){
                 if (err || !users) { return res.json(errorResponse); }
                 // console.log("find the user: ");
                 // console.log(users[0].username);
@@ -523,14 +552,14 @@ var routes = {
                   filtedPendingRequests.push(newRequest);
                   callback(null, null);
                 })
-              }) 
+              })
             })
           })
           async.series(tasks, function(err, results){
-            // console.log("filteredPendingRequests: ");
-            // console.log(filtedPendingRequests);
+            console.log("filteredPendingRequests: ");
+            console.log(filtedPendingRequests);
             res.json({pendingFundRequests: filtedPendingRequests});
-          }) 
+          })
         })
       })
 
