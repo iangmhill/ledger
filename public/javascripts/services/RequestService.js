@@ -14,7 +14,7 @@ app.service('RequestService', function($http, $q, $location) {
 
   this.editRequest = function(requestData, email) {
     var deferred = $q.defer();
-    console.log("request Service: " + requestData);
+    console.log(requestData);
     $http.post('/api/editRequest', requestData).then(function success(response) {
       console.log("response.data: " + response.data.success);
       if (response.data.success == true){
@@ -33,7 +33,7 @@ app.service('RequestService', function($http, $q, $location) {
     console.log("request Service: ");
     console.log(requestData);
 
-    $http.get('/api/getRequests' + requestData).then(function success(response) {
+    $http.get('/api/getRequests/' + requestData).then(function success(response) {
     console.log("response.data: " + response.data.success);
     console.log(response.data);
     if (response.data.success == true){
@@ -46,6 +46,15 @@ app.service('RequestService', function($http, $q, $location) {
   return deferred.promise;
   };
 
+  this.getOrgRequests = function(orgValue){
+    console.log("org value:" + orgValue);
+    var deferred = $q.defer();
+    $http.get('/api/getOrgRequests/' + orgValue).then(function (response) {
+      console.log(response.data);
+      return deferred.resolve(response.data);
+    });
+    return deferred.promise;
+  };
 // funciton for redirecting url
   this.go = function ( path ) {
     $location.path( path );

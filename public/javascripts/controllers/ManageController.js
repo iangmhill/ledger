@@ -247,7 +247,8 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     }
     console.log("targetRequest");
     console.log(targetRequest);
-    RequestService.editRequest({request: targetRequest}, email).then(function(success){
+
+    RequestService.editRequest(targetRequest, email).then(function(success){
       if(success){
         console.log("Modification Success");
         MngCtrl.comment.value = "";
