@@ -118,7 +118,8 @@ app.get('/api/getOrgByUrl/:url',
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
-app.get('/api/getRequests:user', authentication.authenticateUser, routes.getRequests);
+app.get('/api/getRequests/:user', authentication.authenticateUser,
+    routes.getRequests);
 app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
 //ToD0: To be implemented
