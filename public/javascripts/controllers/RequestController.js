@@ -7,6 +7,7 @@ app.controller('RequestController', function(RequestService, OrgService) {
   this.categories =
       ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
   this.reEditRequest = RequestService.reEditRequest;
+  this.resubmittedRequest = RequestService.reEditRequestInfo;
 
   function Field(initialValue) {
     this.value = initialValue;
@@ -187,9 +188,18 @@ app.controller('RequestController', function(RequestService, OrgService) {
             };
           })
         };
-        if (this.reEditRequest) {
-          request.comment = this.comment.value;
-          RequestService.editRequest(request).then(function(success) {
+
+        console.log(RequestService.reEditRequest);
+        if (RequestService.reEditRequest) {
+          ReqCtrl.resubmittedRequest.org = request.org;
+          ReqCtrl.resubmittedRequest.description = request.description;
+          ReqCtrl.resubmittedRequest.amount = request.amount;
+          ReqCtrl.resubmittedRequest.links = request.links;
+          ReqCtrl.resubmittedRequest.items = request.items;
+          ReqCtrl.resubmittedRequest.comment = this.comment.value;
+
+
+          RequestService.editRequest(ReqCtrl.resubmittedRequest).then(function(success) {
             if (success) {
               ReqCtrl.alerts = [];
               ReqCtrl.createRequest.resetAll();
@@ -234,26 +244,40 @@ app.controller('RequestController', function(RequestService, OrgService) {
       ReqCtrl.orgs = orgs;
 
       ReqCtrl.createRequest.org.typeaheadOptions = {};
+      ReqCtrl.createRequest.org.reverseTypeaheadOptions = {};
       for (index in ReqCtrl.orgs) {
         var org = ReqCtrl.orgs[index];
         var name = org.shortName
             ? org.name + ' (' + org.shortName + ')'
             : org.name;
         ReqCtrl.createRequest.org.typeaheadOptions[name] = org._id;
+        ReqCtrl.createRequest.org.reverseTypeaheadOptions[org._id] = name;
       }
     }
+
+    if (RequestService.reEditRequest && RequestService.reEditRequestInfo) {
+
+      ReqCtrl.createRequest.org.value =
+          ReqCtrl.createRequest.org.reverseTypeaheadOptions[ReqCtrl.resubmittedRequest.org];
+      ReqCtrl.createRequest.description.value = ReqCtrl.resubmittedRequest.description;
+      ReqCtrl.createRequest.amount.value = ReqCtrl.resubmittedRequest.value;
+      ReqCtrl.createRequest.online.value = ReqCtrl.resubmittedRequest.links.length > 1;
+      ReqCtrl.createRequest.links.array = ReqCtrl.resubmittedRequest.links.map(function(link) {
+        var fullLink = new Link();
+        fullLink.description.value = link.description;
+        fullLink.url.value = link.url;
+        return fullLink;
+      });
+      ReqCtrl.createRequest.items.array = ReqCtrl.resubmittedRequest.items.map(function(item) {
+        var fullItem = new Item();
+        fullItem.name.value = item.description;
+        fullItem.price.value = item.price;
+        fullItem.category.value = item.category;
+        return fullItem;
+      });
+    }
+
   });
-
-  if (RequestService.reEditRequest && RequestService.reEditRequestInfo) {
-    var targetRequest = RequestService.reEditRequestInfo;
-
-    this.org.value = targetRequest.orgName;
-    this.description.value = targetRequest.description;
-    this.amount.value = targetRequest.value;
-    this.online.value = targetRequest.links.length > 1;
-    this.links.array = targetRequest.online;
-    this.items.array = targetRequest.specification;
-  }
 
 
 });
