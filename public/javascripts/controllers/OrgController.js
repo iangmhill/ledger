@@ -21,7 +21,7 @@ app.controller('OrgController', function($routeParams, AuthService,
           height: width * .75,
           width: width,
           x: function(d){return d.key;},
-          y: function(d){return d.y;},
+          y: function(d){return d.val;},
           showLabels: true,
           duration: 500,
           labelThreshold: 0.01,
@@ -54,22 +54,23 @@ app.controller('OrgController', function($routeParams, AuthService,
   });
   this.data = [
             {
-                key: "CORe",
-                y: 9000
-            },
-            {
-                key: "SAC",
-                y: 16000
-            },
-            {
-                key: "SERV",
-                y: 7000
-            },
-            {
-                key: "CCO",
-                y: 19000
+                key: "No Data",
+                val: 1
             }
         ];
+  this.computeChartData = function() {
+    this.data = [];
+    this.data.push({key: 'Allocated', val: this.org.allocated});
+    this.data.push({
+      key: 'Unallocated',
+      val: (this.org.budget - this.org.allocated)
+    });
+    this.org.children.forEach(function(child) {
+      OrgCtrl.data.push({key: child.name, val: child.budget});
+    })
+
+
+  };
   /*
    * Changing ownership form
    */
@@ -290,6 +291,7 @@ app.controller('OrgController', function($routeParams, AuthService,
         return $location.path('/manage');
       }
       OrgCtrl.org = res.org;
+      OrgCtrl.computeChartData();
       OrgCtrl.generateOwnersList();
       OrgCtrl.removeCurrentOwners();
       OrgService.getOrgList().then(function(orgs) {
