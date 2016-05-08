@@ -1,8 +1,9 @@
 // public/javascripts/controllers/OrgController.js
 app.controller('OrgController', function($routeParams, AuthService,
-    OrgService, $location, $window, $scope) {
+    OrgService, $location, $window, $scope) { // I've usually seen the parameters to an Angular controller alphabetized -- common convention
 
   var OrgCtrl = this;
+  // vv make sure to clear out hardcoded dummy data before you deploy
   this.transfers = [
     { type: 'budget', from: 'SG', to: 'CORe', justification: '', value: 4 },
     { type: 'transfer', from: 'SG', to: 'CORe' , justification: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas cursus venenatis arcu eget laoreet. Pellentesque in consectetur dolor. Nulla facilisi. Proin commodo auctor condimentum. Donec eu mauris id neque dapibus placerat. Mauris luctus urna sit amet mi iaculis eleifend. Nunc id tellus risus. Ut mollis lorem luctus, convallis eros sit amet, eleifend nulla. Integer elit tortor, vulputate quis auctor id, elementum et lectus.', value: 50 }

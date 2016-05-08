@@ -14,35 +14,28 @@ app.service('RequestService', function($http, $q, $location) {
 
   this.editRequest = function(requestData) {
     var deferred = $q.defer();
-    console.log(requestData);
     $http.post('/api/editRequest', requestData).then(function success(response) {
-      console.log("response.data: " + response.data.success);
       if (response.data.success == true){
         deferred.resolve(response.data.success);
-      }
-      else{
+      } else { // usually you all style your elses like this, I think -- consistency throughout, please :)
         deferred.reject(response.data.success);
       }
-      });
+    }); // match indentation
     return deferred.promise;
   };
 
   this.getRequests = function(requestData) {
     var deferred = $q.defer();
-    console.log("request Service: ");
-    console.log(requestData);
 
     $http.get('/api/getRequests/' + requestData).then(function success(response) {
-    console.log("response.data: " + response.data.success);
-    console.log(response.data);
-    if (response.data.success == true){
-      deferred.resolve(response.data.requests);
-    }
-    else{
-      deferred.reject(response.data.success);
-    }
+      if (response.data.success == true){
+        deferred.resolve(response.data.requests);
+      }
+      else{
+        deferred.reject(response.data.success);
+      }
     });
-  return deferred.promise;
+    return deferred.promise;
   };
 
   this.getOrgRequests = function(orgValue){
@@ -54,9 +47,11 @@ app.service('RequestService', function($http, $q, $location) {
     });
     return deferred.promise;
   };
-// funciton for redirecting url
+  // funciton for redirecting url
   this.go = function ( path ) {
     $location.path( path );
   };
 
 });
+
+// comments about consistency, removing console.logs etc. apply throughout code -- I'm catching some of them, but not all

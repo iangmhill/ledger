@@ -169,7 +169,7 @@ var routes = {
               res.json({
                 isSuccessful: true,
                 isAuthorized:
-                    (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
+                    (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin), // same as below -- no need to compute this twice
                 org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
                     ? org
                     : undefined
@@ -177,13 +177,11 @@ var routes = {
             })
           })
         } else {
+          var isAuthorized = (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin) // no need to compute this twice
           res.json({
             isSuccessful: true,
-            isAuthorized:
-                (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin),
-            org: (req.user.orgs.indexOf(org._id) > -1 || req.user.isAdmin)
-                ? org
-                : undefined
+            isAuthorized: isAuthorized,
+            org: isAuthorized ? org : undefined
           });
         }
 
@@ -412,18 +410,16 @@ var routes = {
   editRequest: function(req, res) {
     function confirm(err, request) {
       if (err) {
-        console.log("I fail " + err)
+        // Get rid of debugging mechanisms
         return res.send({
           success: false,
-          message: 'ERROR:'
+          message: 'ERROR:' // not a useful error message
         });
       }
       return res.send({
         success: true,
       });
     }
-    console.log(req.body);
-    console.log(req.body._id);
     Request.findById(req.body._id, function(err, request) {
         if (err) {
           return res.send({
@@ -431,8 +427,6 @@ var routes = {
             message: 'ERROR: Could not edit request'
           });
         }
-        console.log(request);
-                console.log(req.body);
 
         request.description = req.body.description;
         request.value = req.body.value;
@@ -577,23 +571,23 @@ var routes = {
   sendRegEmail: function(req, res){
     console.log("got to email");
     var email = req.params.email;
-    console.log(email);
+    console.log(email); // probably not good to log your users' email addresses...
     var payload   = {
         to      :  email,
-        from    : 'DONT.REPLY@ledger.com',
+        from    : 'DONT.REPLY@ledger.com', // does this address exist? Maybe hide in process.env, also
         subject : 'Successful registration for ledger',
         text    : 'Congradualtions! You are successfully registered for ledger. Go and check it out!'
     }
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
         console.log(json);
-    }); 
+    });
   },
 
   sendReqEmail: function(req, res){
     console.log("got to email");
     var email = req.params.email;
-    console.log(email);
+    console.log(email); // same here, don't log emails
     var payload   = {
         to      :  email,
         from    : 'DONT.REPLY@ledger.com',
@@ -603,7 +597,7 @@ var routes = {
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
         console.log(json);
-    }); 
+    });
   },
 
   /**
@@ -618,7 +612,6 @@ var routes = {
       pendingFundRequests: []
     };
 
-    // console.log("routes, getPendingFundRequests");
     var orgs = req.user.orgs;
     var filteredOrgs = [];
     var pendingRequests = [];
@@ -629,88 +622,57 @@ var routes = {
 
 
     Org.find({_id:{$in: orgs}}, function(err,orgs){
-      // console.log("find org");
-
+      // please clean up dead code! particularly dead debugging mechanisms :/
       orgs.forEach(function(org){
-          // console.log(org.name);
-          if(org.budgeted){
-            // console.log("is budgeted");
-            if(org.nonterminal){
-              // console.log("nonterminal");
+          if (org.budgeted) {
+            if (org.nonterminal) {
               budgetedNonterminal.push(org._id);
-            }else{
-              // console.log("terminal");
+            } else {
+              // is this else block doing anything?
             }
             filteredOrgs.push(org._id);
           }
-
-      })
-
-      // console.log("filteredOrgs: ");
-      // console.log(filteredOrgs);
-      // console.log("budgetedNonterminal: ");
-      // console.log(budgetedNonterminal);
+      }); // be consistent about semicolons and spacing
 
       budgetedNonterminal.forEach(function(pOrg){
         tasks.push(function(callback){
-          // console.log("parent: ");
-          // console.log(pOrg);
           Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
-            if(orgs.length > 0){
+            if (orgs.length > 0) {
               orgs.forEach(function(org){
-                // console.log("find children");
-                // console.log(org.name);
                 filteredOrgs.push(org._id);
                 callback(null, null);
-              })
-            }else{
-                // console.log("no children!!!!!");
-                callback(null, null);
+              });
+            } else {
+              callback(null, null);
             }
+          });
+        });
+      });
 
-          })
-        })
-      })
-
-      async.series(tasks, function(err, results){
-
-        // console.log("second round");
-        // console.log("filteredOrgs: ");
-        console.log(filteredOrgs);
-        // console.log("budgetedNonterminal: ");
-        console.log(budgetedNonterminal);
-
+      async.series(tasks, function(err, results){ // do you ever use the results? Don't need to name the param if it's unused.
         Request.find({org:{$in: filteredOrgs}, isActive: true, isDecided: false}, function(err, requests){
           if (err || !requests) { return res.json(errorResponse); }
           requests.forEach(function(request){
             pendingRequests.push(request);
-            // requestsUserId.push(request.user);
-          })
-          tasks = [];
+          }); // is this the same as pendingRequests = requests? Not sure why you need the forEach.
+          tasks = []; // For the sake of clarity, I might name this variable differently -- a little weird to overwrite the existing "tasks" variable
+          // I think this forEach could be a tasks = pendingRequests.map(...)
           pendingRequests.forEach(function(request){
             tasks.push(function(callback){
-              // console.log("request.user");
-              // console.log(request.user);
               User.find({_id:request.user}, function(err, users){
                 if (err || !users) { return res.json(errorResponse); }
-                // console.log("find the user: ");
-                // console.log(users[0].username);
 
                 Org.find({_id: request.org}, function(err, orgs){
-                  // console.log("find the org: ");
-                  // console.log(orgs[0].name);
-                    var newRequest = JSON.parse(JSON.stringify(request));
-                    newRequest.username = users[0].username;
-                    newRequest.orgname = orgs[0].name
+                  var newRequest = JSON.parse(JSON.stringify(request));
+                  newRequest.username = users[0].username;
+                  newRequest.orgname = orgs[0].name
                   filtedPendingRequests.push(newRequest);
                   callback(null, null);
-                })
-              })
-            })
-          })
+                });
+              });
+            });
+          });
           async.series(tasks, function(err, results){
-            // console.log("filteredPendingRequests: ");
-            // console.log(filtedPendingRequests);
             res.json({pendingFundRequests: filtedPendingRequests});
           })
         })

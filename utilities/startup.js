@@ -12,7 +12,7 @@ var User = require('../models/userModel');
 var Org  = require('../models/orgModel');
 var q    = require('q');
 
-var errors = {
+var errors = { // I love this!
   ADMIN_FIND: 'Failure when attempting to find admin user',
   ADMIN_IMPOSSIBLE: 'Found neither 0 nor 1 number of admin users',
   ADMIN_SAVE: 'Could not save admin user',
@@ -54,6 +54,8 @@ module.exports = {
         if (err) { return deferred.resolve(errors.ADMIN_FIND) };
         switch (users.length) {
           case 0:
+            // You could hide the admin user login details in process.env variables, maybe --
+            // as is, anyone who reads your code knows how to log into your system until you change the admin password
             User.generateHash('changePassword').then(function(hash) {
               User.create({
                 username: 'admin',

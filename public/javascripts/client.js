@@ -5,7 +5,7 @@ var app = angular.module('ledger', [
     'ngTouch',
     'nvd3',
     'ui.bootstrap',
-    'smart-table' 
+    'smart-table'
   ]).config([
     '$routeProvider',
     '$locationProvider',
@@ -122,6 +122,8 @@ var app = angular.module('ledger', [
     $locationProvider.html5Mode(true);
 
 }]).controller('NavigationCtrl', function($scope, $location) {
+  // why doesn't the navigation controller get its own file?
+  // I think it could, for consistency (unless there's a good reason it needs to be here)
   $scope.isActive = function (viewLocation) {
     return viewLocation === $location.path();
   };

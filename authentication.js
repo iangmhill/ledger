@@ -31,7 +31,7 @@ module.exports = {
     passport.use('local-login', new LocalStrategy({
         usernameField: 'username',
         passwordField: 'password',
-        passReqToCallback : true
+        passReqToCallback: true
     },
     function(req, username, password, done) {
       User.findOne({ 'username' :  username }, function(err, user) {
@@ -175,7 +175,7 @@ module.exports = {
         email: req.user.email,
         orgs: req.user.orgs,
         isAdmin: req.user.isAdmin,
-        _id: req.user._id  
+        _id: req.user._id
       });
     } else {
       res.json({
@@ -378,7 +378,7 @@ module.exports = {
 };
 
 /**
- * A generic route callback type often called by authentication methods.
+ * A generic route callback type often called by authentication methods. <-- does the function associated w/ this header exist?
  * @callback nextRoute
  * @param {Object} req An Object representing the http request.
  * @param {Object} res An Object representing the http response.

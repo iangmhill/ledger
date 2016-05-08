@@ -7,12 +7,7 @@ app.controller('DashboardController', function($scope, RequestService, AuthServi
 		isCollapsed: true
 	};
 
-
-	console.log("AuthService.currentUser");
-	console.log(AuthService.currentUser);
 	RequestService.getRequests(AuthService.currentUser._id).then(function(requests) {
-		console.log("requests");
-		console.log(requests);
 		DashCtrl.requests = requests;
 	});
 
@@ -32,14 +27,12 @@ app.controller('DashboardController', function($scope, RequestService, AuthServi
 
 
     RequestService.editRequest(targetRequest).then(function(success){
-      if(success){
-        console.log("Modification Success");
-
-      }else{
-        alert("Modification Failure");
+      if (success) {
+        console.log("Modification Success"); // do you really need to log this?
+      } else {
+        alert("Modification Failure"); // Is an alert the right choice? I think you guys mostly use in-page error/validation messages... be consistent?
       }
-    })
-
+    });
   };
 
   this.cancel = function(index, ans){
@@ -48,12 +41,10 @@ app.controller('DashboardController', function($scope, RequestService, AuthServi
     targetRequest.isDecided = true;
     targetRequest.isActive = false;
 
-    console.log("targetRequest");
-    console.log(targetRequest);
     RequestService.editRequest(targetRequest).then(function(success){
-      if(success){
+      if (success) {
         console.log("Modification Success");
-      }else{
+      } else {
         alert("Modification Failure");
       }
     })

@@ -28,7 +28,7 @@ app.controller('RegisterController', function(AuthService) {
     validate: function() {
       if (!this.value || this.value.length < 3) {
         this.validation.isValid = 'invalid';
-        this.validation.helpBlock = 
+        this.validation.helpBlock =
             'Username must be at least 3 characters long';
       } else {
         var username = this;
@@ -82,7 +82,7 @@ app.controller('RegisterController', function(AuthService) {
       var regex = new RegExp("^[a-zA-Z0-9]+$");
       if (!this.value || !regex.test(this.value)) {
         this.validation.isValid = 'invalid';
-        this.validation.helpBlock = 
+        this.validation.helpBlock =
             'Password must only use letters and numbers';
       } else {
         this.validation.isValid = 'valid';
@@ -97,7 +97,7 @@ app.controller('RegisterController', function(AuthService) {
   };
 
   this.submitRegistrationForm = function() {
-    var RegCtrl = this;
+    var RegCtrl = this; // isn't this done globally? (this file, line 15)
     this.username.validate();
     this.password.validate();
     this.name.validate();

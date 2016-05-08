@@ -72,7 +72,7 @@ User.statics.generateHash = function(password) {
 User.methods.validPassword = function(password) {
   var hash = this.password;
   return new Promise(function(resolve, reject) {
-    console.log(password);
+    console.log(password); // logging passwords is probably not a good idea!
     console.log(hash);
     bcrypt.compare(password, hash, function(err, res) {
       resolve(res);

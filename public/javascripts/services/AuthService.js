@@ -98,6 +98,7 @@ app.service('AuthService', function($http, $q, $rootScope, $location) {
     var ifPermissionPassed = false;
 
     angular.forEach(validRoles, function (role) {
+      // This is really clean
       switch (role) {
         case roles.UNAUTH:
           if (!user.isAuthenticated) {

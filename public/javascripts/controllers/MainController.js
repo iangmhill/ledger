@@ -13,7 +13,7 @@ app.controller('MainController', function($scope, $location, AuthService) {
   this.onPermissionsUpdate = function(user) {
     MainCtrl.user = user;
     AuthService.currentUser = user;
-
+    // This is really clean
     var navRoutes = [];
     var authRoutes = [{
       name: 'Login',

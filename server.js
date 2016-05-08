@@ -20,7 +20,7 @@
  * @requires   NPM:connect-mongo
  * @requires   NPM:less-middleware
  * @requires   routes/routes
- * @requires   ultilities/startup
+ * @requires   utilities/startup
  * @requires   authentication
  */
 
