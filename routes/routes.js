@@ -37,8 +37,11 @@ var evaluateApprovals = function(approvalProcess, owners, approvals) {
       return true;
     case 'onlyone':
       for (index in approvals) {
+        console.log(owners);
+        console.log(approvals[index]);
         if (owners.indexOf(approvals[index]) > -1) { return true; }
       }
+      return false;
     case 'none':
       return true;
     default:
@@ -325,6 +328,7 @@ var routes = {
             var owners = users.map(function(user) { return user._id; });
             var isApproved =
                 evaluateApprovals(org.approvalProcess, owners, approvals);
+            console.log(isApproved);
             Transfer.create({
               user: req.user.id,
               justification: req.body.justification,
@@ -347,6 +351,15 @@ var routes = {
           isSuccessful: false
         });
       }
+    })
+  },
+  getPendingTransfers: function(req, res) {
+    Transfer.find({$and: [{from: req.params.org},{isApproved: false}]},
+        function(err, transfers) {
+      res.json({
+        isSuccessful: !err && transfers,
+        transfers: transfers
+      });
     })
   },
   approveTransfer: function(req, res) {
@@ -587,7 +600,7 @@ var routes = {
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
         console.log(json);
-    }); 
+    });
   },
 
   sendReqEmail: function(req, res){
@@ -603,7 +616,7 @@ var routes = {
     sendgrid.send(payload, function(err, json) {
       if (err) { console.error(err); }
         console.log(json);
-    }); 
+    });
   },
 
   /**

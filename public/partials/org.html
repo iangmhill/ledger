@@ -21,8 +21,9 @@ Description: Displays detailed information about one organization.
             <form role="form" autocomplete="off" name="approvalForm">
               <h5>
                 <b>{{transfer.type == 'budget' ? 'Budget Request' :
-                'Transfer Request' }}</b> from <b>{{transfer.from}}</b> to
-                <b>{{transfer.to}}</b>
+                'Transfer Request' }}</b>
+                from <b>{{OrgCtrl.directory[transfer.from].shortName}}</b>
+                to <b>{{OrgCtrl.directory[transfer.to].shortName}}</b>
               </h5>
               <!-- JUSTIFICATION -->
               <div class="form-group row"> <!-- Org name field -->

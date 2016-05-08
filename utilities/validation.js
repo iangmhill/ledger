@@ -251,17 +251,18 @@ module.exports = {
   transfer: {
     transfer: function(base, to, from, value, justification) {
       var deferred = q.defer();
+      console.log(base + ' ' + to + ' ' + from);
       Org.find({_id: {$in: [base, to, from]}}, function(err, orgs) {
         if (orgs.length != 2 || err) { return deferred.resolve(false); }
         var baseOrg, toOrg, fromOrg;
-        for (index in orgs) {
+        for (var index in orgs) {
           if (orgs[index]._id == base) { baseOrg = orgs[index]; }
           if (orgs[index]._id == to) { toOrg = orgs[index]; }
           if (orgs[index]._id == from) { fromOrg = orgs[index]; }
         }
         if (!baseOrg || !toOrg || !fromOrg || !toOrg.budgeted ||
             !fromOrg.budgeted) { return deferred.resolve(false); }
-        Org.find({ $and: [{parent: org._id}, {budgeted: true}]},
+        Org.find({ $and: [{parent: fromOrg._id}, {budgeted: true}]},
             function(err, children) {
           if (err) { return deferred.resolve(false); }
           Request.find({ $and: [{org: from},{isActive: true}]},

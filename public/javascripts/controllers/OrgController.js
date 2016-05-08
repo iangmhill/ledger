@@ -1,12 +1,8 @@
 // public/javascripts/controllers/OrgController.js
 app.controller('OrgController', function($routeParams, AuthService,
-    OrgService, $location, $window, $scope) {
+    OrgService, TransferService, $location, $window, $scope) {
 
   var OrgCtrl = this;
-  this.transfers = [
-    { type: 'budget', from: 'SG', to: 'CORe', justification: '', value: 4 },
-    { type: 'transfer', from: 'SG', to: 'CORe' , justification: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas cursus venenatis arcu eget laoreet. Pellentesque in consectetur dolor. Nulla facilisi. Proin commodo auctor condimentum. Donec eu mauris id neque dapibus placerat. Mauris luctus urna sit amet mi iaculis eleifend. Nunc id tellus risus. Ut mollis lorem luctus, convallis eros sit amet, eleifend nulla. Integer elit tortor, vulputate quis auctor id, elementum et lectus.', value: 50 }
-  ];
   /*
    * Chart properties
    */
@@ -59,17 +55,17 @@ app.controller('OrgController', function($routeParams, AuthService,
             }
         ];
   this.computeChartData = function() {
-    this.data = [];
-    this.data.push({key: 'Allocated', val: this.org.allocated});
-    this.data.push({
-      key: 'Unallocated',
-      val: (this.org.budget - this.org.allocated)
-    });
-    this.org.children.forEach(function(child) {
-      OrgCtrl.data.push({key: child.name, val: child.budget});
-    })
-
-
+    if (this.org.budget > 0) {
+      this.data = [];
+      this.data.push({key: 'Allocated', val: this.org.allocated});
+      this.data.push({
+        key: 'Unallocated',
+        val: (this.org.budget - this.org.allocated)
+      });
+      this.org.children.forEach(function(child) {
+        OrgCtrl.data.push({key: child.name, val: child.budget});
+      })
+    }
   };
   /*
    * Changing ownership form
@@ -202,12 +198,9 @@ app.controller('OrgController', function($routeParams, AuthService,
       helpBlock: '',
       validate: function() {
         this.value = Math.round(this.value * 100) / 100;
-        this.isValid = (
-          this.value <= (OrgCtrl.org.budget - OrgCtrl.org.allocated) &&
-          this.value > 0
-        );
+        this.isValid = this.value > 0;
         this.helpBlock = this.isValid ? '' : 'The allocation amount must be ' +
-            'greater than $0 and less than the org\'s unallocated funds';
+            'greater than $0';
         this.isValidated = true;
       }
     },
@@ -222,13 +215,14 @@ app.controller('OrgController', function($routeParams, AuthService,
       }
     },
     confirm: function() {
+      console.log('confirm');
       this.amount.validate();
       this.justification.validate();
       if (this.amount.isValid && this.justification.isValid) {
         OrgService.createTransfer(
-          this.org._id,
-          this.org._id,
-          this.org.parent,
+          OrgCtrl.org._id,
+          OrgCtrl.org._id,
+          OrgCtrl.org.parent,
           this.amount.value,
           this.justification.value
         ).then(function(response) {
@@ -282,22 +276,33 @@ app.controller('OrgController', function($routeParams, AuthService,
       }
     });
   }
+  this.generateDirectory = function() {
+    this.directory = {};
+    for (index in OrgCtrl.orgs) {
+      this.directory[OrgCtrl.orgs[index]._id] = OrgCtrl.orgs[index];
+    }
+  };
 
   AuthService.getUserList().then(function(users) {
     OrgCtrl.users = users;
     OrgCtrl.ownerForm.generateTypeahead();
-    OrgService.getOrgByUrl($routeParams.org.toLowerCase()).then(function (res) {
-      if (!res.isSuccessful || !res.isAuthorized || !res.org) {
-        return $location.path('/manage');
-      }
-      OrgCtrl.org = res.org;
-      OrgCtrl.computeChartData();
-      OrgCtrl.generateOwnersList();
-      OrgCtrl.removeCurrentOwners();
-      OrgService.getOrgList().then(function(orgs) {
-        OrgCtrl.orgs = orgs;
-        OrgCtrl.allocateForm.to.generateTypeahead();
-      });
-    })
+  });
+  OrgService.getOrgList().then(function(orgs) {
+    OrgCtrl.orgs = orgs;
+    OrgCtrl.generateDirectory();
+    return OrgService.getOrgByUrl($routeParams.org.toLowerCase());
+  }).then(function (response) {
+    if (!response.isSuccessful || !response.isAuthorized || !response.org) {
+      return $location.path('/manage');
+    }
+    OrgCtrl.org = response.org;
+    OrgCtrl.computeChartData();
+    OrgCtrl.generateOwnersList();
+    OrgCtrl.removeCurrentOwners();
+    OrgCtrl.allocateForm.to.generateTypeahead();
+    return TransferService.getPendingTransfers(OrgCtrl.org._id);
+  }).then(function(response) {
+    console.log(response);
+    OrgCtrl.transfers = response.transfers;
   });
 })

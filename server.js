@@ -131,6 +131,9 @@ app.get('/api/getOrgRecords/:id',
     authentication.authenticateUser, routes.getOrgRecords);
 app.get('/api/getUserRecords',
     authentication.authenticateUser, routes.getUserRecords);
+// transfer GET requests
+app.get('/api/getPendingTransfers/:org',
+    authentication.authenticateOwner, routes.getPendingTransfers);
 
 // emails
 app.get('/api/RegEmail/:email',

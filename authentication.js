@@ -65,7 +65,9 @@ module.exports = {
    *     an organization owner.
    */
   authenticateOwner: function(req, res, next) {
-    if (req.isAuthenticated() && (req.user.orgs.indexOf(req.body.org) > -1)) {
+    if (req.isAuthenticated() &&
+      (req.user.orgs.indexOf(req.body.org) > -1 ||
+      (!! req.params.org && req.user.orgs.indexOf(req.params.org) > -1))) {
       return next();
     }
     res.status(401).send();
@@ -175,7 +177,7 @@ module.exports = {
         email: req.user.email,
         orgs: req.user.orgs,
         isAdmin: req.user.isAdmin,
-        _id: req.user._id  
+        _id: req.user._id
       });
     } else {
       res.json({
