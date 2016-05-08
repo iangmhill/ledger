@@ -36,6 +36,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
       }
     });
   };
+
   this.updateOrgs = function() {
     for (id in this.orgs) {
       this.orgs[id].ownersList = this.orgs[id].owners.map(function(owner) {
@@ -166,7 +167,6 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     }
   };
 
-
   this.resolveUser = function(index, isApproved) {
     AuthService.resolveUser(this.pendingUsers[index], isApproved, this.pendingUsers[index].email).then(function(response) {
       MngCtrl.alert.isActive = true;
@@ -206,9 +206,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     MngCtrl.updateOrgs();
   });
 
-
-
- this.comment = {
+  this.comment = {
     value: '',
     validation: {
       isValid: 'empty',
@@ -223,40 +221,27 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
         this.validation.isValid = 'valid';
       }
     }
-  }
+  };
 
-  this.resolveFunRequest = function(index, ans){
-    // this.isCollapsed = !this.isCollapsed;
-    // console.log("this.isCollapsed");
-    // console.log(this.isCollapsed);
-
-
-    console.log(this.comment.value);
-
+  this.resolveFunRequest = function(index, ans){ // again, semantic variable names -- what's a "fun request"?
     var targetRequest = MngCtrl.pendingFundRequests.splice(index, 1);
-
 
     targetRequest = targetRequest[0]
     targetRequest.isDecided = true;
     targetRequest.comment = MngCtrl.comment.value
-    if(ans){
+    if (ans) {
       targetRequest.isApproved = true;
-    }else{
+    } else {
       targetRequest.isApproved = false;
     }
-    console.log("targetRequest");
-    console.log(targetRequest);
 
     RequestService.editRequest(targetRequest).then(function(success){
-      if(success){
-        console.log("Modification Success");
+      if (success) {
         MngCtrl.comment.value = "";
         MngCtrl.isCollapsed = true;
-      }else{
+      } else {
         alert("Modification Failure");
       }
     })
   };
-
-
 });

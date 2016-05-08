@@ -72,6 +72,18 @@ app.service('OrgService', function($http, $q) {
       return deferred.resolve(response.data);
     });
     return deferred.promise;
+    /*
+    Not 100% sure, but you might be able to just
+    return $http.post('/api/createTransfer', {
+      org: org,
+      to: to,
+      from: from,
+      value: value,
+      justification: justification
+    });
+
+    ...$http.post is a promise, as evidenced by its .then method :)
+    */
   };
 
 });

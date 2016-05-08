@@ -124,7 +124,7 @@ module.exports = {
       })
       return isValid == 0;
     },
-    request:function(description, value, orgId, links, items) {
+    request: function(description, value, orgId, links, items) {
       var requestValidator = this;
       return new Promise(function(resolve, reject) {
         Org.findById(orgId, function(err, org) {
@@ -291,3 +291,4 @@ module.exports = {
 
 };
 
+// Your utility modules are super clean! Nice modularization.

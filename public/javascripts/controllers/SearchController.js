@@ -8,7 +8,7 @@ app.controller('SearchController', function($scope, OrgService,
     }
   });
 
-  $scope.req = true;
+  $scope.req = true; // why not use full request/record instead of req/rec? Easier to read & maintain, in my opinion.
   $scope.rec = true;
 
   $scope.rowCollection = [];

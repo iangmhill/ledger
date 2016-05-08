@@ -76,11 +76,11 @@ app.controller('AccountController', function($uibModal, AuthService) {
       helpBlock: ''
     },
     validate: function() {
-      var regex = new RegExp("^[a-zA-Z0-9]+$");
+      var regex = new RegExp("^[a-zA-Z0-9]+$"); // give regex a more semantic variable name? e.g. var validPasswordRegex = ...
       if (typeof this.value !== 'string' ||
           !regex.test(this.value)) {
         this.validation.isValid = 'invalid';
-        this.validation.helpBlock = 
+        this.validation.helpBlock =
             'Password must only use letters and numbers and cannot be empty';
       } else {
         this.validation.isValid = 'valid';
@@ -171,7 +171,7 @@ app.controller('AccountController', function($uibModal, AuthService) {
           });
         } else {
           AccCtrl.currentPassword.validation.isValid = 'invalid';
-          AccCtrl.currentPassword.validation.helpBlock = 
+          AccCtrl.currentPassword.validation.helpBlock =
             'Incorrect password';
         }
         if (res.isSuccessful) { AccCtrl.closeEditPassword(); }

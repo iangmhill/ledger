@@ -40,7 +40,7 @@ app.directive('listing', function ($compile) {
     link: function (scope, element, attrs) {
       scope.$watch('children', function() {
         if (scope.children[scope.parent].length > 0) {
-          element.append("<listing ng-repeat='child in children[parent]' directory='directory' parent='child' children='children'></listing>");
+          element.append("<listing ng-repeat='child in children[parent]' directory='directory' parent='child' children='children'></listing>"); // recursion! This is cool.
           $compile(element.contents())(scope)
         }
       })

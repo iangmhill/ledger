@@ -5,6 +5,7 @@ app.controller('RecordController', function(RecordService, RequestService,
   this.categories =
       ['Food', 'Consumable Supplies', 'Long Term Supplies', 'Service/Events'];
 
+  // These constructors are identical to the Field function in requestController -- could you modularize into a shared utils file, like you did serverside? or maybe a service?
   function Field(initialValue) {
     this.value = initialValue;
     this.isValidated = false;
