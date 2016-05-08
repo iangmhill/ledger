@@ -3,6 +3,28 @@ app.controller('OrgController', function($routeParams, AuthService,
     OrgService, TransferService, $location, $window, $scope) {
 
   var OrgCtrl = this;
+
+  function Field(initialValue) {
+    this.value = initialValue;
+    this.isValidated = false;
+    this.isValid = false;
+    this.helpBlock = '';
+    this.reset = function() {
+      this.value = initialValue;
+      this.isValidated = false;
+      this.isValid = false;
+      this.helpBlock = '';
+    };
+  }
+  function FieldWithValidation(initialValue, validationFunction) {
+    Field.call(this, initialValue);
+    this.validate = validationFunction;
+  }
+  function FieldWithTypeahead(initialValue, validationFunction,
+      generateTypeahead) {
+    FieldWithValidation.call(this, initialValue, validationFunction);
+    this.generateTypeahead = generateTypeahead;
+  }
   /*
    * Chart properties
    */
@@ -49,11 +71,11 @@ app.controller('OrgController', function($routeParams, AuthService,
     $scope.$apply();
   });
   this.data = [
-            {
-                key: "No Data",
-                val: 1
-            }
-        ];
+    {
+      key: "No Data",
+      val: 1
+    }
+  ];
   this.computeChartData = function() {
     if (this.org.budget > 0) {
       this.data = [];
@@ -70,63 +92,45 @@ app.controller('OrgController', function($routeParams, AuthService,
   /*
    * Changing ownership form
    */
-  this.ownerForm = {
-    value: '',
-    isValidated: false,
-    isValid: false,
-    validate: function() {
-
-    },
-    generateTypeahead: function() {
-      for (index in OrgCtrl.users) {
-        OrgCtrl.users[index].typeahead = OrgCtrl.users[index].name + ' (' +
-            OrgCtrl.users[index].username + ')';
-      }
+  this.ownerForm = new FieldWithTypeahead('', function() {
+    var check = 0;
+    for (index in OrgCtrl.users) {
+      check += OrgCtrl.users[index].username == this.value ? 1 : 0;
     }
-  };
+    this.isValid = check > 0;
+    this.helpBlock = this.isValid ? '' : 'Please input valid username';
+    this.isValidated = true;
+  }, function() {
+    for (index in OrgCtrl.users) {
+      OrgCtrl.users[index].typeahead = OrgCtrl.users[index].name + ' (' +
+          OrgCtrl.users[index].username + ')';
+    }
+  });
   /*
    * Transfer and budget allocation form
    */
-  this.allocateForm = {
+  this.createAllocation = {
     isCollapsed: true,
     open: function() {
       this.isCollapsed = false;
-      OrgCtrl.requestForm.close();
+      OrgCtrl.createBudgetRequest.close();
     },
-    resetField: function(field, value) {
-      field.value = value;
-      field.isValidated = false;
-      field.isValid = false;
-    },
-    amount: {
-      value: 0,
-      isValidated: false,
-      isValid: false,
-      helpBlock: '',
-      validate: function() {
-        this.value = Math.round(this.value * 100) / 100;
-        this.isValid = (
-          this.value <= (OrgCtrl.org.budget - OrgCtrl.org.allocated) &&
-          this.value > 0
-        );
-        this.helpBlock = this.isValid ? '' : 'The allocation amount must be ' +
-            'greater than $0 and less than the org\'s unallocated funds';
-        this.isValidated = true;
-      }
-    },
-    to: {
-      value: '',
-      isValidated: false,
-      isValid: false,
-      helpBlock: '',
-      typeaheadOptions: {},
-      validate: function() {
+    amount: new FieldWithValidation(0, function() {
+      this.value = Math.round(this.value * 100) / 100;
+      this.isValid = (
+        this.value <= (OrgCtrl.org.budget - OrgCtrl.org.allocated) &&
+        this.value > 0
+      );
+      this.helpBlock = this.isValid ? '' : 'The allocation amount must be ' +
+          'greater than $0 and less than the org\'s unallocated funds';
+      this.isValidated = true;
+    }),
+    to: new FieldWithTypeahead('', function() {
         this.isValid = (this.typeaheadOptions[this.value]);
         this.helpBlock = this.isValid ? '' : 'Funds can only be transfered ' +
             'to other budgeted orgs';
         this.isValidated = true;
-      },
-      generateTypeahead: function() {
+      }, function() {
         this.typeaheadOptions = {};
         for (index in OrgCtrl.orgs) {
           var org = OrgCtrl.orgs[index];
@@ -138,17 +142,12 @@ app.controller('OrgController', function($routeParams, AuthService,
           }
         }
       }
-    },
-    description: {
-      value: '',
-      isValidated: false,
-      isValid: false,
-      validate: function() {
-        this.isValid = true;
-        this.helpBlock = '';
-        this.isValidated = true;
-      }
-    },
+    ),
+    description: new FieldWithValidation('', function() {
+      this.isValid = true;
+      this.helpBlock = '';
+      this.isValidate = true;
+    }),
     confirm: function() {
       this.amount.validate();
       this.to.validate();
@@ -156,7 +155,7 @@ app.controller('OrgController', function($routeParams, AuthService,
       if (this.amount.isValid &&
           this.to.isValid &&
           this.description.isValid) {
-        OrgService.createTransfer(
+        TransferService.createTransfer(
             this.org._id,
             this.to.typeaheadOptions[this.to.value],
             this.org._id,
@@ -164,62 +163,46 @@ app.controller('OrgController', function($routeParams, AuthService,
             this.justification.value
         ).then(function(response) {
           if (response.isSuccessful) {
-            OrgCtrl.requestForm.close();
+            OrgCtrl.createBudgetRequest.close();
           }
         })
       }
     },
     close: function() {
       this.isCollapsed = true;
-      this.resetField(this.to, '');
-      this.resetField(this.description, '');
-      this.resetField(this.amount, 0);
+      this.to.reset();
+      this.description.reset();
+      this.amount.reset();
     }
   };
 
   /*
    * Request budget form
    */
-  this.requestForm = {
+  this.createBudgetRequest = {
     isCollapsed: true,
     open: function() {
       this.isCollapsed = false;
-      OrgCtrl.allocateForm.close();
+      OrgCtrl.createAllocation.close();
     },
-    resetField: function(field, value) {
-      field.value = value;
-      field.isValidated = false;
-      field.isValid = false;
-    },
-    amount: {
-      value: 0,
-      isValidated: false,
-      isValid: false,
-      helpBlock: '',
-      validate: function() {
-        this.value = Math.round(this.value * 100) / 100;
-        this.isValid = this.value > 0;
-        this.helpBlock = this.isValid ? '' : 'The allocation amount must be ' +
-            'greater than $0';
-        this.isValidated = true;
-      }
-    },
-    justification: {
-      value: '',
-      isValidated: false,
-      isValid: false,
-      validate: function() {
-        this.isValid = true;
-        this.helpBlock = '';
-        this.isValidated = true;
-      }
-    },
+    amount: new FieldWithValidation(0, function() {
+      this.value = Math.round(this.value * 100) / 100;
+      this.isValid = this.value > 0;
+      this.helpBlock = this.isValid ? '' : 'The allocation amount must be ' +
+          'greater than $0';
+      this.isValidated = true;
+    }),
+    justification: new FieldWithValidation('', function() {
+      this.isValid = true;
+      this.helpBlock = '';
+      this.isValidated = true;
+    }),
     confirm: function() {
       console.log('confirm');
       this.amount.validate();
       this.justification.validate();
       if (this.amount.isValid && this.justification.isValid) {
-        OrgService.createTransfer(
+        TransferService.createTransfer(
           OrgCtrl.org._id,
           OrgCtrl.org._id,
           OrgCtrl.org.parent,
@@ -227,17 +210,42 @@ app.controller('OrgController', function($routeParams, AuthService,
           this.justification.value
         ).then(function(response) {
           if (response.isSuccessful) {
-            OrgCtrl.requestForm.close();
+            OrgCtrl.createBudgetRequest.close();
           }
         })
       }
     },
     close: function() {
       this.isCollapsed = true;
-      this.resetField(this.justification, '');
-      this.resetField(this.amount, 0);
+      this.justification.reset();
+      this.amount.reset();
     }
   };
+
+  /*
+   * Decide transfer form
+   */
+  this.decideTransfer = {
+    transfers: [],
+    decide: function(index, verdict) {
+      var isValid = 0;
+      var transfer = this.transfers[index];
+      isValid += transfer.response.validate() ? 1 : 0;
+      isValid += transfer.approvedValue.validate() ? 1 : 0;
+      if (isValid == 0) {
+        TransferService.decideTransfer(
+          OrgCtrl.org._id,
+          transfer._id,
+          transfer.response.value,
+          transfer.approvedValue.value,
+          verdict
+        ).then(function(response) {
+
+        })
+      }
+    }
+  };
+
   this.removeCurrentOwners = function() {
     this.users = this.users.filter(function(user) {
       for (index in OrgCtrl.org.owners) {
@@ -299,10 +307,27 @@ app.controller('OrgController', function($routeParams, AuthService,
     OrgCtrl.computeChartData();
     OrgCtrl.generateOwnersList();
     OrgCtrl.removeCurrentOwners();
-    OrgCtrl.allocateForm.to.generateTypeahead();
+    OrgCtrl.createAllocation.to.generateTypeahead();
     return TransferService.getPendingTransfers(OrgCtrl.org._id);
   }).then(function(response) {
-    console.log(response);
-    OrgCtrl.transfers = response.transfers;
+    if (response.isSuccessful) {
+      OrgCtrl.decideTransfer.transfers = response.transfers;
+      for (index in OrgCtrl.decideTransfer.transfers) {
+        OrgCtrl.decideTransfer.transfers[index].response =
+            new FieldWithValidation('', function() {
+          this.isValid = this.value.length > 0;
+          this.helpBlock = this.isValid ? '' : 'Please provide a response';
+          this.isValidated = true;
+        });
+        OrgCtrl.decideTransfer.transfers[index].approvedValue =
+            new FieldWithValidation(0, function() {
+          this.isValid = typeof this.value == 'number' && this.value >= 0;
+          this.helpBlock = this.isValid
+              ? ''
+              : 'Please specify a value greater than or equal to $0';
+          this.isValidated = true;
+        });
+      }
+    }
   });
 })

@@ -29,6 +29,8 @@ var async      = require('async');
 
 
 var evaluateApprovals = function(approvalProcess, owners, approvals) {
+  owners = owners.map(function(owner) { return owner.toString(); });
+  approvals = approvals.map(function(approval) { return approval.toString(); });
   switch (approvalProcess) {
     case 'strict':
       for (index in owners) {
@@ -37,8 +39,7 @@ var evaluateApprovals = function(approvalProcess, owners, approvals) {
       return true;
     case 'onlyone':
       for (index in approvals) {
-        console.log(owners);
-        console.log(approvals[index]);
+        console.log(owners.indexOf(approvals[index]) > -1);
         if (owners.indexOf(approvals[index]) > -1) { return true; }
       }
       return false;
@@ -312,6 +313,7 @@ var routes = {
     })
   },
   createTransfer: function(req, res) {
+    console.log(req.body);
     validation.transfer.transfer(
       req.body.org,
       req.body.to,
@@ -319,16 +321,18 @@ var routes = {
       req.body.value,
       req.body.justification
     ).then(function(isValid) {
+      console.log(isValid);
       if (isValid) {
         Org.findById(req.body.from, function(err, org) {
+
           User.find({orgs: req.body.from}, '', function(err, users) {
             var approvals = (req.user.orgs.indexOf(req.body.from) > -1)
                 ? [req.user._id]
                 : [];
-            var owners = users.map(function(user) { return user._id; });
+            var owners =
+                users.map(function(user) { return user._id; });
             var isApproved =
                 evaluateApprovals(org.approvalProcess, owners, approvals);
-            console.log(isApproved);
             Transfer.create({
               user: req.user.id,
               justification: req.body.justification,
@@ -362,7 +366,45 @@ var routes = {
       });
     })
   },
-  approveTransfer: function(req, res) {
+  decideTransfer: function(req, res) {
+    //TODO: Add validation
+    var owners, transfer, from, to;
+    Transfer.findById(req.body.transfer).then(function(trans) {
+      transfer = trans;
+      return User.find({orgs: transfer.from});
+    }).then(function(users) {
+      owners = users.map(function(user) { return user._id; });
+      return Org.findById(transfer.from);
+    }).then(function(org) {
+      from = org;
+      return Org.findById(transfer.to);
+    }).then(function(org) {
+      to = org;
+      if (req.body.verdict && transfer.approvals.indexOf(req.user._id) == -1) {
+        transfer.approvals.push(req.user._id);
+      }
+      transfer.isDecided = true;
+      transfer.isApproved =
+          evaluateApprovals(from.approvalProcess, owners, transfer.approvals);
+      transfer.approvedValue = req.body.approvedValue;
+      transfer.response = req.body.response;
+      return transfer.save();
+    }).then(function() {
+      if (transfer.isApproved) {
+        to.budget += transfer.approvedValue;
+        if (to.parent != from._id) { from.budget -= transfer.approvedValue; }
+        return from.save();
+      }
+    }).then(function() {
+      if (transfer.isApproved) {
+        return to.save();
+      }
+    }).then(function() {
+      res.json({ isSuccessful: true, transfer: transfer });
+    }).catch(function(err) {
+      console.log(err);
+      res.json({ isSuccessful: false });
+    })
   },
   editOrg: function(req, res) {
 

@@ -189,8 +189,8 @@ app.post('/api/voidRecord',
 // transfer POST requests
 app.post('/api/createTransfer',
     authentication.authenticateOwner, routes.createTransfer);
-app.post('/api/approveTransfer',
-    authentication.authenticateOwner, routes.approveTransfer);
+app.post('/api/decideTransfer',
+    authentication.authenticateOwner, routes.decideTransfer);
 
 
 // AngularJS requests

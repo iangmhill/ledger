@@ -57,21 +57,5 @@ app.service('OrgService', function($http, $q) {
     });
     return deferred.promise;
   };
-  /*
-   * Create and approve transfer requests
-   */
-  this.createTransfer = function(org, to, from, value, justification) {
-    var deferred = $q.defer();
-    $http.post('/api/createTransfer', {
-      org: org,
-      to: to,
-      from: from,
-      value: value,
-      justification: justification
-    }).then(function (response) {
-      return deferred.resolve(response.data);
-    });
-    return deferred.promise;
-  };
 
 });

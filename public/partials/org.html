@@ -16,7 +16,7 @@ Description: Displays detailed information about one organization.
         <div class="list-group">
           <div
               class="list-group-item"
-              ng-repeat="transfer in OrgCtrl.transfers">
+              ng-repeat="transfer in OrgCtrl.decideTransfer.transfers">
 
             <form role="form" autocomplete="off" name="approvalForm">
               <h5>
@@ -79,8 +79,7 @@ Description: Displays detailed information about one organization.
                         rows="2"
                         autocomplete="off"
                         ng-model="transfer.response.value"
-                        ng-init="OrgCtrl.approvalForm.response.init($index)"
-                        ng-blur="OrgCtrl.approvalForm.response.validate($index)"
+                        ng-blur="transfer.response.validate()"
                         required></textarea>
                     <span
                         ng-if="transfer.response.isValidated &&
@@ -103,8 +102,9 @@ Description: Displays detailed information about one organization.
                 <div class="col-sm-10">
                   <div
                       class="form-group"
-                      ng-class="transfer.amount.isValidated
-                          ? (transfer.amount.isValid
+                      ng-class=
+                          "transfer.approvedValue.isValidated
+                          ? (transfer.approvedValue.isValid
                             ? 'has-success has-feedback'
                             : 'has-error has-feedback')
                           : ''">
@@ -118,26 +118,26 @@ Description: Displays detailed information about one organization.
                           name="price"
                           step="0.01"
                           min="0"
-                          ng-model="transfer.amount.value"
-                          ng-init="OrgCtrl.approvalForm.amount.init($index)"
-                          ng-blur="OrgCtrl.approvalForm.amount.validate($index)"
+                          ng-model="transfer.approvedValue.value"
+                          ng-blur="transfer.approvedValue.validate()"
                           required/>
                       <span
-                          ng-if="transfer.amount.isValidated &&
-                              transfer.amount.isValid"
+                          ng-if="transfer.approvedValue.isValidated &&
+                              transfer.approvedValue.isValid"
                           class="glyphicon glyphicon-ok form-control-feedback"
                           aria-hidden="true"></span>
                       <span
-                          ng-if="transfer.amount.isValidated &&
-                              !transfer.amount.isValid"
-                          class="glyphicon glyphicon-remove form-control-feedback"
+                          ng-if="transfer.approvedValue.isValidated &&
+                              !transfer.approvedValue.isValid"
+                          class=
+                              "glyphicon glyphicon-remove form-control-feedback"
                           aria-hidden="true"></span>
                     </div>
                     <span
-                        ng-if="transfer.amount.isValidated &&
-                            !transfer.amount.isValid"
+                        ng-if="transfer.approvedValue.isValidated &&
+                            !transfer.approvedValue.isValid"
                         class="help-block">
-                      {{transfer.amount.helpBlock}}
+                      {{transfer.approvedValue.helpBlock}}
                     </span>
                   </div> <!-- .form-group -->
                 </div> <!-- .col-sm-10 -->
@@ -148,13 +148,13 @@ Description: Displays detailed information about one organization.
                     <button
                         type="button"
                         class="btn btn-default"
-                        ng-click="OrgCtrl.approvalForm.approve($index)">
+                        ng-click="OrgCtrl.decideTransfer.decide($index, true)">
                       Approve
                     </button>
                     <button
                         type="button"
                         class="btn btn-default"
-                        ng-click="OrgCtrl.approvalForm.reject($index)">
+                        ng-click="OrgCtrl.decideTransfer.decide($index, false)">
                       Reject
                     </button>
                   </div>
@@ -209,25 +209,25 @@ Description: Displays detailed information about one organization.
           <button
               type="button"
               class="btn btn-default"
-              ng-click="OrgCtrl.allocateForm.open()"
-              ng-disabled="!OrgCtrl.allocateForm.isCollapsed">
+              ng-click="OrgCtrl.createAllocation.open()"
+              ng-disabled="!OrgCtrl.createAllocation.isCollapsed">
             Allocate Funds</button>
           <button
               type="button"
               class="btn btn-default"
-              ng-click="OrgCtrl.requestForm.open()"
-              ng-disabled="!OrgCtrl.requestForm.isCollapsed">
+              ng-click="OrgCtrl.createBudgetRequest.open()"
+              ng-disabled="!OrgCtrl.createBudgetRequest.isCollapsed">
             Request Funds</button>
         </div>
       </div>
     </div>
 
     <div
-        uib-collapse="OrgCtrl.allocateForm.isCollapsed"
+        uib-collapse="OrgCtrl.createAllocation.isCollapsed"
         class="panel panel-default panel-form">
       <div class="panel-heading">Allocate Funds</div>
       <div class="panel-body">
-        <form role="form" autocomplete="off" name="allocateForm">
+        <form role="form" autocomplete="off" name="createAllocation">
           <!-- AMOUNT -->
           <div class="form-group row"> <!-- Org name field -->
             <label
@@ -239,8 +239,8 @@ Description: Displays detailed information about one organization.
             <div class="col-sm-10">
               <div
                   class="form-group"
-                  ng-class="OrgCtrl.allocateForm.amount.isValidated
-                      ? (OrgCtrl.allocateForm.amount.isValid
+                  ng-class="OrgCtrl.createAllocation.amount.isValidated
+                      ? (OrgCtrl.createAllocation.amount.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
                       : ''">
@@ -254,25 +254,25 @@ Description: Displays detailed information about one organization.
                       name="price"
                       step="0.01"
                       min="0"
-                      ng-model="OrgCtrl.allocateForm.amount.value"
-                      ng-blur="OrgCtrl.allocateForm.amount.validate()"
+                      ng-model="OrgCtrl.createAllocation.amount.value"
+                      ng-blur="OrgCtrl.createAllocation.amount.validate()"
                       required/>
                   <span
-                      ng-if="OrgCtrl.allocateForm.amount.isValidated &&
-                          OrgCtrl.allocateForm.amount.isValid"
+                      ng-if="OrgCtrl.createAllocation.amount.isValidated &&
+                          OrgCtrl.createAllocation.amount.isValid"
                       class="glyphicon glyphicon-ok form-control-feedback"
                       aria-hidden="true"></span>
                   <span
-                      ng-if="OrgCtrl.allocateForm.amount.isValidated &&
-                          !OrgCtrl.allocateForm.amount.isValid"
+                      ng-if="OrgCtrl.createAllocation.amount.isValidated &&
+                          !OrgCtrl.createAllocation.amount.isValid"
                       class="glyphicon glyphicon-remove form-control-feedback"
                       aria-hidden="true"></span>
                 </div>
                 <span
-                    ng-if="OrgCtrl.allocateForm.amount.isValidated &&
-                        !OrgCtrl.allocateForm.amount.isValid"
+                    ng-if="OrgCtrl.createAllocation.amount.isValidated &&
+                        !OrgCtrl.createAllocation.amount.isValid"
                     class="help-block">
-                  {{OrgCtrl.allocateForm.amount.helpBlock}}
+                  {{OrgCtrl.createAllocation.amount.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
             </div> <!-- .col-sm-10 -->
@@ -289,8 +289,8 @@ Description: Displays detailed information about one organization.
             <div class="col-sm-10">
               <div
                   class="form-group"
-                  ng-class="OrgCtrl.allocateForm.to.isValidated
-                      ? (OrgCtrl.allocateForm.to.isValid
+                  ng-class="OrgCtrl.createAllocation.to.isValidated
+                      ? (OrgCtrl.createAllocation.to.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
                       : ''">
@@ -300,25 +300,25 @@ Description: Displays detailed information about one organization.
                     type="text"
                     class="form-control"
                     autocomplete="off"
-                    ng-model="OrgCtrl.allocateForm.to.value"
-                    ng-blur="OrgCtrl.allocateForm.to.validate()"
-                    uib-typeahead="name for name in OrgCtrl.allocateForm.to.typeaheadOptions | search:$viewValue | limitTo:8"
+                    ng-model="OrgCtrl.createAllocation.to.value"
+                    ng-blur="OrgCtrl.createAllocation.to.validate()"
+                    uib-typeahead="name for name in OrgCtrl.createAllocation.to.typeaheadOptions | search:$viewValue | limitTo:8"
                     required>
                 <span
-                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
-                        OrgCtrl.allocateForm.to.isValid"
+                    ng-if="OrgCtrl.createAllocation.to.isValidated &&
+                        OrgCtrl.createAllocation.to.isValid"
                     class="glyphicon glyphicon-ok form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
-                        !OrgCtrl.allocateForm.to.isValid"
+                    ng-if="OrgCtrl.createAllocation.to.isValidated &&
+                        !OrgCtrl.createAllocation.to.isValid"
                     class="glyphicon glyphicon-remove form-control-feedback"
                     aria-hidden="true"></span>
                 <span
-                    ng-if="OrgCtrl.allocateForm.to.isValidated &&
-                        !OrgCtrl.allocateForm.to.isValid"
+                    ng-if="OrgCtrl.createAllocation.to.isValidated &&
+                        !OrgCtrl.createAllocation.to.isValid"
                     class="help-block">
-                  {{OrgCtrl.allocateForm.to.helpBlock}}
+                  {{OrgCtrl.createAllocation.to.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
             </div> <!-- .col-sm-10 -->
@@ -335,8 +335,8 @@ Description: Displays detailed information about one organization.
             <div class="col-sm-10">
               <div
                   class="form-group"
-                  ng-class="OrgCtrl.allocateForm.description.isValidated
-                      ? (OrgCtrl.allocateForm.description.isValid
+                  ng-class="OrgCtrl.createAllocation.description.isValidated
+                      ? (OrgCtrl.createAllocation.description.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
                       : ''">
@@ -346,14 +346,14 @@ Description: Displays detailed information about one organization.
                     class="form-control"
                     rows="2"
                     autocomplete="off"
-                    ng-model="OrgCtrl.allocateForm.description.value"
-                    ng-blur="OrgCtrl.allocateForm.description.validate()"
+                    ng-model="OrgCtrl.createAllocation.description.value"
+                    ng-blur="OrgCtrl.createAllocation.description.validate()"
                     required></textarea>
                 <span
-                    ng-if="OrgCtrl.allocateForm.description.isValidated &&
-                        !OrgCtrl.allocateForm.description.isValid"
+                    ng-if="OrgCtrl.createAllocation.description.isValidated &&
+                        !OrgCtrl.createAllocation.description.isValid"
                     class="help-block">
-                  {{OrgCtrl.allocateForm.description.helpBlock}}
+                  {{OrgCtrl.createAllocation.description.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
             </div> <!-- .col-sm-10 -->
@@ -362,13 +362,13 @@ Description: Displays detailed information about one organization.
             <button
                 type="button"
                 class="btn btn-default"
-                ng-click="OrgCtrl.allocateForm.confirm()">
+                ng-click="OrgCtrl.createAllocation.confirm()">
               Confirm
             </button>
             <button
                 type="button"
                 class="btn btn-default"
-                ng-click="OrgCtrl.allocateForm.close()">
+                ng-click="OrgCtrl.createAllocation.close()">
               Cancel
             </button>
           </div>
@@ -377,11 +377,11 @@ Description: Displays detailed information about one organization.
     </div>
 
     <div
-        uib-collapse="OrgCtrl.requestForm.isCollapsed"
+        uib-collapse="OrgCtrl.createBudgetRequest.isCollapsed"
         class="panel panel-default panel-form">
       <div class="panel-heading">Request Funds</div>
       <div class="panel-body">
-        <form role="form" autocomplete="off" name="requestForm">
+        <form role="form" autocomplete="off" name="createBudgetRequest">
           <!-- AMOUNT -->
           <div class="form-group row"> <!-- Org name field -->
             <label
@@ -393,8 +393,8 @@ Description: Displays detailed information about one organization.
             <div class="col-sm-10">
               <div
                   class="form-group"
-                  ng-class="OrgCtrl.requestForm.amount.isValidated
-                      ? (OrgCtrl.requestForm.amount.isValid
+                  ng-class="OrgCtrl.createBudgetRequest.amount.isValidated
+                      ? (OrgCtrl.createBudgetRequest.amount.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
                       : ''">
@@ -408,25 +408,25 @@ Description: Displays detailed information about one organization.
                       name="price"
                       step="0.01"
                       min="0"
-                      ng-model="OrgCtrl.requestForm.amount.value"
-                      ng-blur="OrgCtrl.requestForm.amount.validate()"
+                      ng-model="OrgCtrl.createBudgetRequest.amount.value"
+                      ng-blur="OrgCtrl.createBudgetRequest.amount.validate()"
                       required/>
                   <span
-                      ng-if="OrgCtrl.requestForm.amount.isValidated &&
-                          OrgCtrl.requestForm.amount.isValid"
+                      ng-if="OrgCtrl.createBudgetRequest.amount.isValidated &&
+                          OrgCtrl.createBudgetRequest.amount.isValid"
                       class="glyphicon glyphicon-ok form-control-feedback"
                       aria-hidden="true"></span>
                   <span
-                      ng-if="OrgCtrl.requestForm.amount.isValidated &&
-                          !OrgCtrl.requestForm.amount.isValid"
+                      ng-if="OrgCtrl.createBudgetRequest.amount.isValidated &&
+                          !OrgCtrl.createBudgetRequest.amount.isValid"
                       class="glyphicon glyphicon-remove form-control-feedback"
                       aria-hidden="true"></span>
                 </div>
                 <span
-                    ng-if="OrgCtrl.requestForm.amount.isValidated &&
-                        !OrgCtrl.requestForm.amount.isValid"
+                    ng-if="OrgCtrl.createBudgetRequest.amount.isValidated &&
+                        !OrgCtrl.createBudgetRequest.amount.isValid"
                     class="help-block">
-                  {{OrgCtrl.requestForm.amount.helpBlock}}
+                  {{OrgCtrl.createBudgetRequest.amount.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
             </div> <!-- .col-sm-10 -->
@@ -443,8 +443,9 @@ Description: Displays detailed information about one organization.
             <div class="col-sm-10">
               <div
                   class="form-group"
-                  ng-class="OrgCtrl.requestForm.justification.isValidated
-                      ? (OrgCtrl.requestForm.justification.isValid
+                  ng-class=
+                      "OrgCtrl.createBudgetRequest.justification.isValidated
+                      ? (OrgCtrl.createBudgetRequest.justification.isValid
                         ? 'has-success has-feedback'
                         : 'has-error has-feedback')
                       : ''">
@@ -454,14 +455,16 @@ Description: Displays detailed information about one organization.
                     class="form-control"
                     rows="2"
                     autocomplete="off"
-                    ng-model="OrgCtrl.requestForm.justification.value"
-                    ng-blur="OrgCtrl.requestForm.justification.validate()"
+                    ng-model="OrgCtrl.createBudgetRequest.justification.value"
+                    ng-blur=
+                        "OrgCtrl.createBudgetRequest.justification.validate()"
                     required></textarea>
                 <span
-                    ng-if="OrgCtrl.requestForm.justification.isValidated &&
-                        !OrgCtrl.requestForm.justification.isValid"
+                    ng-if="OrgCtrl.createBudgetRequest.justification
+                        .isValidated &&
+                        !OrgCtrl.createBudgetRequest.justification.isValid"
                     class="help-block">
-                  {{OrgCtrl.requestForm.justification.helpBlock}}
+                  {{OrgCtrl.createBudgetRequest.justification.helpBlock}}
                 </span>
               </div> <!-- .form-group -->
             </div> <!-- .col-sm-10 -->
@@ -470,13 +473,13 @@ Description: Displays detailed information about one organization.
             <button
                 type="button"
                 class="btn btn-default"
-                ng-click="OrgCtrl.requestForm.confirm()">
+                ng-click="OrgCtrl.createBudgetRequest.confirm()">
               Confirm
             </button>
             <button
                 type="button"
                 class="btn btn-default"
-                ng-click="OrgCtrl.requestForm.close()">
+                ng-click="OrgCtrl.createBudgetRequest.close()">
               Cancel
             </button>
           </div>

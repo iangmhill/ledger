@@ -37,6 +37,14 @@ var Transfer = mongoose.Schema({
     ref: 'orgs',
     required: true
   },
+  response: {
+    type: String,
+    required: false
+  },
+  approvedValue: {
+    type: Number,
+    required: false
+  },
   approvals: {
     type: [ObjectId],
     ref: 'users',
@@ -44,6 +52,11 @@ var Transfer = mongoose.Schema({
     default: []
   },
   isApproved: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  isDecided: {
     type: Boolean,
     required: true,
     default: false
