@@ -1,5 +1,5 @@
 <div class="container container-login">
-  <uib-alert 
+  <uib-alert
       ng-repeat="alert in LgnCtrl.alerts"
       type="{{alert.type}}"
       close="LgnCtrl.dismissAlert($index)">
@@ -7,10 +7,10 @@
   </uib-alert>
 
   <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Login</h3>
-    </div>
     <div class="panel-body">
+      <div id="login-logo">
+        <img alt="Ledger" src="images/LedgerLogo.png">
+      </div>
       <form role="form" ng-submit="LgnCtrl.loginForm()">
         <div class="form-group">
           <label>Username</label>
