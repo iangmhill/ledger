@@ -10,12 +10,15 @@ Description: Allows the users to manage all types of requests and the funds of
       close="MngCtrl.alert.isActive = false">
     {{MngCtrl.alert.msg}}
   </uib-alert>
-  <h1>Manage</h1>
+  <h3>Manage Requests and Orgs</h3>
   <hr>
   <div
       ng-if="MainCtrl.user.isAdmin"
       ng-switch="MngCtrl.pendingUsers.length > 0">
     <h4>Account Creation Requests</h4>
+    <div ng-switch-when="false">
+      <span class="subtext">No accounts are awaiting admin approval.</span>
+    </div>
     <div
         class="row vertical-align"
         ng-repeat="user in MngCtrl.pendingUsers"
@@ -55,27 +58,94 @@ Description: Allows the users to manage all types of requests and the funds of
         </div>
       </div>
     </div>
-
-    <div ng-switch-when="false">
-      <span class="subtext">No approvals pending</span>
-    </div>
   </div>
 
-  <hr>
 
-  <div>
+  <section
+      ng-switch="MainCtrl.orgBudgetRequests.length > 0">
     <h4>Organization Budget Requests</h4>
-  </div>
+    <div class="subtext" ng-switch-when="false">
+      No pending budget requests are awaiting your review.
+    </div>
+  </section>
 
-  <hr>
 
-
-  <div
+  <section
       ng-switch="MngCtrl.pendingFundRequests.length > 0">
     <h4>Funding Requests</h4>
+    <div
+        class="subtext"
+        ng-switch-when="false">
+      No pending funding requests are awaiting your review.
+    </div>
+
+    <div ng-switch-when="true">
+      <div
+            class="panel {{request.isDecided === true ? (request.isApproved === true ? 'panel-success' : 'panel-danger') : 'panel-warning'}}"
+            ng-repeat = "request in MngCtrl.pendingFundRequests">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-3 col-sm-6">
+              <strong>Submitted: </strong>{{request.created| date}}
+            </div>
+            <div class="col-md-2 col-sm-6">
+              <strong>User: </strong>{{request.user.username}}
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <strong>Org: </strong>{{request.org.name}}
+            </div>
+            <div class="col-md-2 col-sm-6">
+              <strong>Amount: </strong>{{request.value| currency}}
+            </div>
+            <div class="col-md-2 col-sm-6">
+              <strong>Status: </strong>{{request.isDecided === true ? (request.isApproved === true ? "Approved" : "Declined") : "Pending"}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+              <Strong>Description: </Strong>{{request.description}}
+            </div>
+          </div>
+        </div>
+        <div class="panel-body" ng-if="request.comments">
+          <div ng-repeat="comment in request.comments">
+            <Strong>{{comment.posted| date}} {{comment.user.username}}: </Strong> {{comment.text}}
+          </div>
+        </div>
+        <div class="panel-footer">
+          <div class="request-button-actions" >
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="MngCtrl.commentOnRequest($index)">
+              <span class="glyphicon glyphicon-comment"></span>
+              <span>Comment</span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="MngCtrl.resolveFundingRequest($index, true)">
+              <span class="glyphicon glyphicon-ok"></span>
+              <span>Approve</span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="MngCtrl.resolveFundingRequest($index, false)">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Reject</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
-    <ul class="list-group" ng-repeat = "request in MngCtrl.pendingFundRequests">
+
+<!--     <ul
+        class="list-group"
+        ng-repeat = "request in MngCtrl.pendingFundRequests"
+        ng-switch-when="true">
       <p class="list-group-item-text vertical-align">
             <div class="panel panel-info">
           <div class="panel-heading">
@@ -108,7 +178,7 @@ Description: Allows the users to manage all types of requests and the funds of
         </div>
       </p>
     </ul>
-
+ -->
 
 
 <!--     <div ng-repeat="request in MngCtrl.pendingFundRequests">
@@ -165,76 +235,65 @@ Description: Allows the users to manage all types of requests and the funds of
     </div> -->
 
 
-
-
-  <div
-      uib-collapse="MngCtrl.isCollapsed"
-      class="panel panel-default panel-form">
-    <div class="panel-heading">Comments</div>
-    <div class="panel-body">
-      <form role="form" autocomplete="off" name="commentForm">
-        <div class="form-group row">
-          <div class="col-sm-12">
-            <div
-                class="form-group"
-                ng-class="{valid:'has-success has-feedback',
-                    invalid:'has-error has-feedback',
-                    empty:''}[MngCtrl.comment.validation.isValid]">
-              <input
-                  name="comment"
-                  id="commentContent"
-                  type="text"
-                  class="form-control"
-                  placeholder="why do you reject?"
-                  autocomplete="off"
-                  ng-model="MngCtrl.comment.value"
-                  ng-blur="MngCtrl.comment.validate()"
-                  required>
-              <span
-                  ng-if="MngCtrl.comment.validation.isValid == 'valid'"
-                  class="glyphicon glyphicon-ok form-control-feedback"
-                  aria-hidden="true"></span>
-              <span
-                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
-                  class="glyphicon glyphicon-remove form-control-feedback"
-                  aria-hidden="true"></span>
-              <span
-                  ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
-                  class="help-block">
-                {{MngCtrl.comment.validation.helpBlock}}
-              </span>
-            </div> <!-- .form-group -->
-          </div> <!-- .col-sm-10 --> 
-        </div> <!-- .form-group .row -->
-        <div class="btn-toolbar pull-right">
-          <button
-              type="button"
-              class="btn btn-default"
-              ng-click="MngCtrl.resolveFunRequest($index, false)"> 
-            Save
-          </button>
-          <button
-              type="button"
-              class="btn btn-default"
-              ng-click = "MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
-            Cancel
-          </button>
-        </div>
-      </form>
+    <div
+        uib-collapse="MngCtrl.isCollapsed"
+        class="panel panel-default panel-form">
+      <div class="panel-heading">Comments</div>
+      <div class="panel-body">
+        <form role="form" autocomplete="off" name="commentForm">
+          <div class="form-group row">
+            <div class="col-sm-12">
+              <div
+                  class="form-group"
+                  ng-class="{valid:'has-success has-feedback',
+                      invalid:'has-error has-feedback',
+                      empty:''}[MngCtrl.comment.validation.isValid]">
+                <input
+                    name="comment"
+                    id="commentContent"
+                    type="text"
+                    class="form-control"
+                    placeholder="why do you reject?"
+                    autocomplete="off"
+                    ng-model="MngCtrl.comment.value"
+                    ng-blur="MngCtrl.comment.validate()"
+                    required>
+                <span
+                    ng-if="MngCtrl.comment.validation.isValid == 'valid'"
+                    class="glyphicon glyphicon-ok form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                    class="glyphicon glyphicon-remove form-control-feedback"
+                    aria-hidden="true"></span>
+                <span
+                    ng-if="MngCtrl.comment.validation.isValid == 'invalid'"
+                    class="help-block">
+                  {{MngCtrl.comment.validation.helpBlock}}
+                </span>
+              </div> <!-- .form-group -->
+            </div> <!-- .col-sm-10 -->
+          </div> <!-- .form-group .row -->
+          <div class="btn-toolbar pull-right">
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click="MngCtrl.resolveFunRequest($index, false)">
+              Save
+            </button>
+            <button
+                type="button"
+                class="btn btn-default"
+                ng-click = "MngCtrl.isCollapsed = !MngCtrl.isCollapsed">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
+  </section>
 
-
-
-
-
-    <div ng-switch-when="false">
-      <span class="subtext">No approvals pending</span>
-    </div>
-
-  <hr>
-
-  <div>
+  <section>
     <h4>Your Organizations</h4>
     <listing
         id="root-org"
@@ -474,6 +533,5 @@ Description: Allows the users to manage all types of requests and the funds of
         </form>
       </div>
     </div>
-    <hr>
-  </div>
+  </section>
 </div>

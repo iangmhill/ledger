@@ -118,7 +118,7 @@ app.get('/api/getOrgByUrl/:url',
 app.get('/api/getOrgFinances',
     authentication.authenticateOwner, routes.getOrgFinances);
 // request GET requests
-app.get('/api/getRequests/:user', authentication.authenticateUser,
+app.get('/api/getRequests/', authentication.authenticateUser,
     routes.getRequests);
 app.get('/api/getOrgRequests/:id',
     authentication.authenticateUser, routes.getOrgRequests);
@@ -210,4 +210,3 @@ initialize.then(function(err) {
     console.log('STARTUP ERROR: ' + err);
   }
 });
-

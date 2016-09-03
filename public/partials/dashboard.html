@@ -1,71 +1,71 @@
 <!-- public/partials/dashboard.html -->
 <div class="container">
-  <div class="panel panel-info">
-    <div class="panel-heading">
-      <h1 class="panel-title">Welcome to Ledger</h1>
+  <h3>Dashboard</h3>
+  <hr>
+  <section class="row">
+    <div class="col-md-12 ">
+      <h4>Request History</h4>
+      <div class="subtext" ng-if="!DashCtrl.requests.length">
+        Sorry! We can't find any requests linked to your account or your organization(s). You can submit a request on the <a href="/request">Request</a> page.
+      </div>
+      <div
+          class="panel {{request.isDecided === true ? (request.isApproved === true ? 'panel-success' : 'panel-danger') : 'panel-warning'}}"
+          ng-repeat = "request in DashCtrl.requests">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-3 col-sm-6">
+              <strong>Submitted: </strong>{{request.created| date}}
+            </div>
+            <div class="col-md-5 col-sm-6">
+              <strong>Org: </strong>{{request.org.name}}
+            </div>
+            <div class="col-md-2 col-sm-6">
+              <strong>Amount: </strong>{{request.value| currency}}
+            </div>
+            <div class="col-md-2 col-sm-6">
+              <strong>Status: </strong>{{request.isDecided === true ? (request.isApproved === true ? "Approved" : "Declined") : "Pending"}}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 col-sm-12">
+              <Strong>Description: </Strong>{{request.description}}
+            </div>
+          </div>
+        </div>
+        <div class="panel-body" ng-if="request.comments">
+          <div ng-repeat="comment in request.comments">
+            <Strong>{{comment.posted| date}} {{comment.user.username}}: </Strong> {{comment.text}}
+          </div>
+        </div>
+        <div class="panel-footer">
+
+            <div class="request-button-actions" >
+              <button
+                  type="button"
+                  class="btn btn-default"
+                  ng-if="!request.isApproved && request.isDecided"
+                  ng-click="DashCtrl.resubmit($index, true)">
+                Resubmit
+              </button>
+              <button
+                  type="button"
+                  class="btn btn-default"
+                  ng-click="DashCtrl.cancel($index, true)">
+                Cancel
+              </button>
+            </div>
+        </div>
+      </div>
     </div>
-    <div class="panel-body">
-      <p>This is a placeholder for the main landing page of Ledger. This page will eventually show a summary of the finances managed by Ledger.</p>
-    </div> 
-  </div>
-
-	<div class="row">
-	<div class="col-xs-9">
-	  <div class="row">
-	    <label class="col-sm-6">Requests History</label>
-	  </div>
-	</div>
-	<div class="col-xs-3">
-	  <button
-	      type="button"
-	      class="btn btn-default pull-right"
-	      ng-click=
-	          "DashCtrl.requestsHistory.isCollapsed =
-	          !DashCtrl.requestsHistory.isCollapsed">
-	    <span>{{DashCtrl.requestsHistory.isCollapsed ? "+" : "-"}}</span>
-	  </button>
-	</div>
-	</div>
+  </section>
 
 
-
-	<div
-	      uib-collapse="DashCtrl.requestsHistory.isCollapsed"
-	      class="panel panel-info panel-form">
-	    <div class="panel-body col-md-12 ">
-	        <ul class="list-group" ng-repeat = "request in DashCtrl.requests">
-	        	<p class="list-group-item-text vertical-align">
-	        		<div class="panel panel-info">
-					  <div class="panel-heading">
-					  	{{request.created| date}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.orgName}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.value| currency}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isApproved === true ? "Approved" : "Declined"}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{request.isDecided === true ? "Decided" : "Undecided"}}
-					  </div>
-					  <div class="panel-body">
-					    <Strong>Description: </Strong>{{request.description}}
-						<div ng-show = "request.isDecided" ng-if = "request.comment != ''">
-						  <Strong>Comment: </Strong> {{request.comment}}
-						</div>
-						<div class="btn-toolbar pull-right" >
-				          	<button
-				              	type="button"
-				              	class="btn btn-default"
-				              	ng-click="DashCtrl.resubmit($index, true)">
-				            	Resubmit
-				          	</button>
-				          	<button
-				              	type="button"
-				              	class="btn btn-default"
-				              	ng-click="DashCtrl.cancel($index, true)">
-				            	Cancel
-				          	</button>
-			  	        </div>
-					  </div>
-					</div>
-				</p>
-			
-			</ul>
-
-	    </div>
-	  </div>
-	  <hr>
-
+  <section class="row">
+    <div class="col-md-12 ">
+      <h4>Records History</h4>
+      <div class="subtext" ng-if="!DashCtrl.records.length">
+        Sorry! We can't find any records linked to your account or your organization(s). You can record a purchase on the <a href="/record">Record</a> page.
+      </div>
+    </div>
+  </section>
 </div>

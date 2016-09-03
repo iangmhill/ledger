@@ -435,7 +435,6 @@ var routes = {
       isActive: true,
       isApproved: false,
       isDecided: false,
-      comment: ''
     };
     validation.request.request(
       request.description,
@@ -511,35 +510,25 @@ var routes = {
   */
   getRequests: function(req, res) {
     var tasks = [];
-    var id = mongoose.Types.ObjectId(req.params.user);
     var filteredRequests = [];
 
-    Request.find({user: id, isActive: true}, function(err, requests) {
+    Request
+      .find({user: req.user._id, isActive: true})
+      .populate('org', 'name')
+      .sort('-created')
+      .exec(function(err, requests) {
+        console.log(requests)
         if (err) {
-          console.log("fail edit request" + err)
           return res.send({
             success: false,
-            message: 'ERROR: Could not edit request'
+            message: 'ERROR: Could not get requests'
           });
         }
-        requests.forEach(function(request){
-          tasks.push(function(callback){
-            Org.find({_id: request.org}, function(err, orgs){
-              var newRequest = JSON.parse(JSON.stringify(request));
-              // newRequest.orgName = orgs[0].name;
-              filteredRequests.push(newRequest);
-              callback(null, null);
-            })
-          })
-        })
-
-        async.series(tasks, function(err, results){
-          res.status(200).json({
-            success: true,
-            requests: filteredRequests
-          });
-        })
-      });
+        res.status(200).json({
+          success: true,
+          requests: requests
+        });
+    });
   },
   closeRequest: function(req, res) {
 
@@ -667,111 +656,36 @@ var routes = {
    * @param {object} res The HTTP response to be sent.
    * @param {object} req.user.orgs The authenticated user's organizations.
    */
-  getPendingFundRequests: function(req, res){
+  getPendingFundRequests: function(req, res) {
 
-    var errorResponse = {
-      pendingFundRequests: []
-    };
-
-    // console.log("routes, getPendingFundRequests");
-    var orgs = req.user.orgs;
-    var filteredOrgs = [];
-    var pendingRequests = [];
-    var tasks = []
-    var budgetedNonterminal = []
-    var requestsUserId = [];
-    var filtedPendingRequests = [];
-
-
-    Org.find({_id:{$in: orgs}}, function(err,orgs){
-      // console.log("find org");
-
-      orgs.forEach(function(org){
-          // console.log(org.name);
-          if(org.budgeted){
-            // console.log("is budgeted");
-            if(org.nonterminal){
-              // console.log("nonterminal");
-              budgetedNonterminal.push(org._id);
-            }else{
-              // console.log("terminal");
-            }
-            filteredOrgs.push(org._id);
-          }
-
+    Request
+      .find({
+        'isActive': true,
+        'isDecided': false
       })
-
-      // console.log("filteredOrgs: ");
-      // console.log(filteredOrgs);
-      // console.log("budgetedNonterminal: ");
-      // console.log(budgetedNonterminal);
-
-      budgetedNonterminal.forEach(function(pOrg){
-        tasks.push(function(callback){
-          // console.log("parent: ");
-          // console.log(pOrg);
-          Org.find({parent: pOrg, budgeted: false}, function(err,orgs){
-            if(orgs.length > 0){
-              orgs.forEach(function(org){
-                // console.log("find children");
-                // console.log(org.name);
-                filteredOrgs.push(org._id);
-                callback(null, null);
-              })
-            }else{
-                // console.log("no children!!!!!");
-                callback(null, null);
-            }
-
-          })
+      .populate('user', 'username')
+      .populate({
+        path: 'org',
+        select: 'name parent budgeted nonterminal',
+        populate: {
+          path: 'parent',
+          select: 'budgeted'
+        }
+      })
+      .exec(function(err, requests) {
+        requests.filter(function(request) {
+          return (
+            req.user.orgs.indexOf(request.org._id) > -1 &&
+            request.org.budgeted === true
+          ) || (
+            req.user.orgs.indexOf(request.org.parent._id) > -1 &&
+            request.org.budgeted === false &&
+            request.org.nonterminal === false
+          )
         })
+        console.log(requests[0].org.parent);
+        res.json({pendingFundRequests: requests});
       })
-
-      async.series(tasks, function(err, results){
-
-        // console.log("second round");
-        // console.log("filteredOrgs: ");
-        console.log(filteredOrgs);
-        // console.log("budgetedNonterminal: ");
-        console.log(budgetedNonterminal);
-
-        Request.find({org:{$in: filteredOrgs}, isActive: true, isDecided: false}, function(err, requests){
-          if (err || !requests) { return res.json(errorResponse); }
-          requests.forEach(function(request){
-            pendingRequests.push(request);
-            // requestsUserId.push(request.user);
-          })
-          tasks = [];
-          pendingRequests.forEach(function(request){
-            tasks.push(function(callback){
-              // console.log("request.user");
-              // console.log(request.user);
-              User.find({_id:request.user}, function(err, users){
-                if (err || !users) { return res.json(errorResponse); }
-                // console.log("find the user: ");
-                // console.log(users[0].username);
-
-                Org.find({_id: request.org}, function(err, orgs){
-                  // console.log("find the org: ");
-                  // console.log(orgs[0].name);
-                    var newRequest = JSON.parse(JSON.stringify(request));
-                    newRequest.username = users[0].username;
-                    newRequest.orgname = orgs[0].name
-                  filtedPendingRequests.push(newRequest);
-                  callback(null, null);
-                })
-              })
-            })
-          })
-          async.series(tasks, function(err, results){
-            // console.log("filteredPendingRequests: ");
-            // console.log(filtedPendingRequests);
-            res.json({pendingFundRequests: filtedPendingRequests});
-          })
-        })
-      })
-
-    })
   }
 };
 

@@ -21,6 +21,10 @@
 @container-login: (360px + @grid-gutter-width);
 @row-height: 50px;
 
+section {
+  margin-bottom: 30px;
+}
+
 .container-login {
   max-width: @container-login;
 }
@@ -145,6 +149,13 @@ input[type=number]::-webkit-outer-spin-button {
   }
   & > dd {
     margin-left: 120px;
+  }
+}
+.request-button-actions {
+  display: flex;
+  justify-content: flex-end;
+  & button:not(:last-child) {
+    margin-right: 10px;
   }
 }
 

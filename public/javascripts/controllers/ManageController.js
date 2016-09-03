@@ -225,7 +225,7 @@ app.controller('ManageController', function(AuthService, OrgService, RequestServ
     }
   }
 
-  this.resolveFunRequest = function(index, ans){
+  this.resolveFundingRequest = function(index, ans){
     // this.isCollapsed = !this.isCollapsed;
     // console.log("this.isCollapsed");
     // console.log(this.isCollapsed);

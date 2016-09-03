@@ -87,9 +87,10 @@ var Request = mongoose.Schema({
     default: false
   },
   comment: {
-    type: String,
+    type: [ObjectId],
+    ref: 'comments',
     required: false,
-    default: ''
+    default: []
   }
 });
 

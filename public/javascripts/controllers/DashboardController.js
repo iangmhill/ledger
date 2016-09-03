@@ -1,20 +1,15 @@
 // public/javascripts/controllers/DashboardController.js
 app.controller('DashboardController', function($scope, RequestService, AuthService) {
-	console.log(new Date());
+  console.log(new Date());
   var DashCtrl = this;
 
-	this.requestsHistory= {
-		isCollapsed: true
-	};
-
-
-	console.log("AuthService.currentUser");
-	console.log(AuthService.currentUser);
-	RequestService.getRequests(AuthService.currentUser._id).then(function(requests) {
-		console.log("requests");
-		console.log(requests);
-		DashCtrl.requests = requests;
-	});
+  console.log("AuthService.currentUser");
+  console.log(AuthService.currentUser);
+  RequestService.getRequests().then(function(requests) {
+    console.log("requests");
+    console.log(requests);
+    DashCtrl.requests = requests;
+  });
 
   this.resubmit = function(index, ans){
     RequestService.go("/request");

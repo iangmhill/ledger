@@ -1,7 +1,7 @@
 <!-- public/partials/request.html -->
 
 <div class="container container-small">
-  <h1>Request Funds</h1>
+  <h3>Request Funds</h3>
   <hr>
   <form
       name="ReqCtrl.requestForm"
@@ -34,7 +34,8 @@
           autocomplete="off"
           ng-model="ReqCtrl.createRequest.org.value"
           ng-blur="ReqCtrl.createRequest.org.validate()"
-          uib-typeahead="name for name in ReqCtrl.createRequest.org.typeaheadOptions | search:$viewValue | limitTo:8"
+          uib-typeahead="name for name in ReqCtrl.createRequest
+              .org.typeaheadOptions | search:$viewValue | limitTo:8"
           required />
       <span
           ng-if="ReqCtrl.createRequest.org.isValidated &&

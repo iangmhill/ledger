@@ -27,20 +27,15 @@ app.service('RequestService', function($http, $q, $location) {
     return deferred.promise;
   };
 
-  this.getRequests = function(requestData) {
+  this.getRequests = function() {
     var deferred = $q.defer();
-    console.log("request Service: ");
-    console.log(requestData);
 
-    $http.get('/api/getRequests/' + requestData).then(function success(response) {
-    console.log("response.data: " + response.data.success);
-    console.log(response.data);
-    if (response.data.success == true){
-      deferred.resolve(response.data.requests);
-    }
-    else{
-      deferred.reject(response.data.success);
-    }
+    $http.get('/api/getRequests/').then(function success(response) {
+      if (response.data.success == true){
+        deferred.resolve(response.data.requests);
+      } else {
+        deferred.reject(response.data.success);
+      }
     });
   return deferred.promise;
   };
